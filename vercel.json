@@ -2,8 +2,7 @@
   "version": 2,
   "functions": {
     "api/analyze.js": {
-      "maxDuration": 30,
-      "runtime": "nodejs20.x"
+      "maxDuration": 30
     }
   }
 }
