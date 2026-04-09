@@ -899,44 +899,25 @@ function getColor(pct) {
   return '#22C55E'
 }
 
-const ROADMAP = [
-  {
-    phase: 'Месяц 1', subtitle: 'Закрыть критические P0',
-    tasks: [
-      { id: 't1', text: 'Провести аудит обработки ошибок в AI-процессах', axis: 'Q', priority: 'p0' },
-      { id: 't2', text: 'Составить карту точек silent fail', axis: 'Q', priority: 'p0' },
-      { id: 't3', text: 'Зафиксировать стратегию применения AI: где и зачем', axis: 'A', priority: 'p0' },
-      { id: 't4', text: 'Провести инвентаризацию источников данных', axis: 'K', priority: 'p0' },
-      { id: 't5', text: 'Назначить ответственного за архитектуру данных', axis: 'K', priority: 'p1' },
-    ]
-  },
-  {
-    phase: 'Месяц 2', subtitle: 'Стабилизация и мониторинг',
-    tasks: [
-      { id: 't6', text: 'Внедрить базовый мониторинг AI-процессов', axis: 'A', priority: 'p1' },
-      { id: 't7', text: 'Настроить алерты на ошибки в ключевых цепочках', axis: 'Q', priority: 'p1' },
-      { id: 't8', text: 'Описать единую модель данных (data contract)', axis: 'K', priority: 'p1' },
-      { id: 't9', text: 'Сформировать базовые регламенты по AI', axis: 'A', priority: 'p2' },
-    ]
-  },
-  {
-    phase: 'Месяц 3', subtitle: 'Рост и масштаб',
-    tasks: [
-      { id: 't10', text: 'Разработать план масштабирования AI на 6 месяцев', axis: 'S', priority: 'p2' },
-      { id: 't11', text: 'Определить метрики устойчивости системы', axis: 'S', priority: 'p2' },
-      { id: 't12', text: 'Провести первый ретро-аудит по K-A-Q-S', axis: 'Q', priority: 'p2' },
-      { id: 't13', text: 'Запланировать повторную диагностику', axis: 'K', priority: 'p2' },
-    ]
-  }
-]
+const ROADMAP = (() => {
+  const p0items = RISKS.find(r => r.level === 'P0')?.items || []
+  const p1items = RISKS.find(r => r.level === 'P1')?.items || []
+  const p2items = RISKS.find(r => r.level === 'P2')?.items || []
+  let tid = 1
+  const toTasks = (items, priority) => items.map(r => ({ id: 't' + tid++, text: r.title, axis: r.axis, priority }))
+  return [
+    { phase: 'Месяц 1', subtitle: 'Закрыть критические P0', tasks: toTasks(p0items, 'p0') },
+    { phase: 'Месяц 2', subtitle: 'Стабилизация и рост', tasks: toTasks(p1items, 'p1') },
+    { phase: 'Месяц 3', subtitle: 'Стратегические задачи', tasks: toTasks(p2items, 'p2') },
+  ].filter(phase => phase.tasks.length > 0)
+})()
 
-const RISKS = [
+const RISKS_FALLBACK = [
   {
     level: 'P0', items: [
       { title: 'Silent fail в AI-процессах', desc: 'Необработанные ошибки накапливаются незаметно и могут привести к критическим сбоям в операционной системе.', axis: 'Q' },
       { title: 'AI без стратегии', desc: 'Бессистемное внедрение AI создаёт технический хаос и блокирует последующую архитектуру.', axis: 'A' },
       { title: 'Хаос данных', desc: 'AI-системы работают на данных. Без единой архитектуры AI принимает решения на противоречивых источниках.', axis: 'K' },
-      { title: 'AI без мониторинга', desc: 'AI-процессы без мониторинга могут давать ошибки незаметно, накапливая критические последствия.', axis: 'A' },
     ]
   },
   {
@@ -952,6 +933,18 @@ const RISKS = [
     ]
   }
 ]
+
+const RISKS = (() => {
+  if (SAVED.risks && Array.isArray(SAVED.risks) && SAVED.risks.length > 0) {
+    const groups = {}
+    SAVED.risks.forEach(r => {
+      if (!groups[r.level]) groups[r.level] = []
+      groups[r.level].push({ title: r.title, desc: r.desc, axis: r.axis })
+    })
+    return ['P0', 'P1', 'P2'].filter(l => groups[l]).map(l => ({ level: l, items: groups[l] }))
+  }
+  return RISKS_FALLBACK
+})()
 
 const METRICS_DETAIL = {
   K: [
