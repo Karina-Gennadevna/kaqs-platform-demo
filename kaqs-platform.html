@@ -883,19 +883,6 @@ function getColor(pct) {
   return '#22C55E'
 }
 
-const ROADMAP = (() => {
-  const p0items = RISKS.find(r => r.level === 'P0')?.items || []
-  const p1items = RISKS.find(r => r.level === 'P1')?.items || []
-  const p2items = RISKS.find(r => r.level === 'P2')?.items || []
-  let tid = 1
-  const toTasks = (items, priority) => items.map(r => ({ id: 't' + tid++, text: r.title, axis: r.axis, priority }))
-  return [
-    { phase: 'Месяц 1', subtitle: 'Закрыть критические P0', tasks: toTasks(p0items, 'p0') },
-    { phase: 'Месяц 2', subtitle: 'Стабилизация и рост', tasks: toTasks(p1items, 'p1') },
-    { phase: 'Месяц 3', subtitle: 'Стратегические задачи', tasks: toTasks(p2items, 'p2') },
-  ].filter(phase => phase.tasks.length > 0)
-})()
-
 const RISKS_FALLBACK = [
   {
     level: 'P0', items: [
@@ -928,6 +915,19 @@ const RISKS = (() => {
     return ['P0', 'P1', 'P2'].filter(l => groups[l]).map(l => ({ level: l, items: groups[l] }))
   }
   return RISKS_FALLBACK
+})()
+
+const ROADMAP = (() => {
+  const p0items = RISKS.find(r => r.level === 'P0')?.items || []
+  const p1items = RISKS.find(r => r.level === 'P1')?.items || []
+  const p2items = RISKS.find(r => r.level === 'P2')?.items || []
+  let tid = 1
+  const toTasks = (items, priority) => items.map(r => ({ id: 't' + tid++, text: r.title, axis: r.axis, priority }))
+  return [
+    { phase: 'Месяц 1', subtitle: 'Закрыть критические P0', tasks: toTasks(p0items, 'p0') },
+    { phase: 'Месяц 2', subtitle: 'Стабилизация и рост', tasks: toTasks(p1items, 'p1') },
+    { phase: 'Месяц 3', subtitle: 'Стратегические задачи', tasks: toTasks(p2items, 'p2') },
+  ].filter(phase => phase.tasks.length > 0)
 })()
 
 const METRICS_DETAIL = {
