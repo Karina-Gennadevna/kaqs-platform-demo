@@ -2,8 +2,7 @@
   "name": "kaqs-platform-demo",
   "version": "1.0.0",
   "private": true,
-  "type": "module",
-  "dependencies": {
+"dependencies": {
     "@anthropic-ai/sdk": "^0.80.0"
   }
 }
