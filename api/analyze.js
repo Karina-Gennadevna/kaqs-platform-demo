@@ -1,11 +1,18 @@
 const https = require('https')
 
 module.exports = async function handler(req, res) {
+  console.log('analyze called, method:', req.method)
+
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' })
   }
 
+  const key = (process.env.ANTHROPIC_API_KEY || '').trim()
+  console.log('key length:', key.length, 'starts with:', key.slice(0, 10))
+
   const { answers } = req.body
+  console.log('answers count:', answers ? answers.length : 'null')
+
   if (!answers || !Array.isArray(answers)) {
     return res.status(400).json({ error: 'answers required' })
   }
@@ -57,8 +64,10 @@ ${Object.keys(axisNames).map(ax => `═══ ${axisNames[ax]} ═══\n${form
       let data = ''
       response.on('data', chunk => { data += chunk })
       response.on('end', () => {
+        console.log('anthropic status:', response.statusCode, 'data length:', data.length)
         try {
           if (response.statusCode !== 200) {
+            console.error('anthropic error:', data.slice(0, 300))
             res.status(500).json({ error: 'anthropic_error', status: response.statusCode, body: data })
             return resolve()
           }
