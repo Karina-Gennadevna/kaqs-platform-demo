@@ -2507,13 +2507,13 @@ function renderCompare(prev, curr) {
    LOCALSTORAGE
 ══════════════════════════════════════════════ */
 function saveResult(data) {
-  const history = JSON.parse(localStorage.getItem('kaqs_results') || '[]')
+  const history = JSON.parse(localStorage.getItem('kaqs_history') || '[]')
   history.unshift(data)
   if (history.length > 10) history.pop()
-  localStorage.setItem('kaqs_results', JSON.stringify(history))
+  localStorage.setItem('kaqs_history', JSON.stringify(history))
 }
 function getPrevResult() {
-  const history = JSON.parse(localStorage.getItem('kaqs_results') || '[]')
+  const history = JSON.parse(localStorage.getItem('kaqs_history') || '[]')
   return history[0] || null  // before saving new one
 }
 

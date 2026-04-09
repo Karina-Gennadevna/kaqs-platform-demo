@@ -863,7 +863,7 @@
    DATA
 ══════════════════════════════════════════════ */
 let SAVED = {}
-try { const raw = localStorage.getItem('kaqs_results'); if (raw) SAVED = JSON.parse(raw) || {} } catch(e) {}
+try { const raw = localStorage.getItem('kaqs_results'); if (raw) { SAVED = JSON.parse(raw) || {}; if (Array.isArray(SAVED)) SAVED = SAVED[0] || {} } } catch(e) { SAVED = {} }
 const INDEX  = (typeof SAVED.index === 'number') ? SAVED.index : 67
 const PCT    = SAVED.pct   || { K: 60, A: 50, Q: 47, S: 67 }
 const STATUS = SAVED.statusLabel || 'Управляемая'
@@ -960,7 +960,8 @@ const METRICS_DETAIL = {
 /* ══════════════════════════════════════════════
    TASK STATE
 ══════════════════════════════════════════════ */
-let taskDone = JSON.parse(localStorage.getItem('kaqs_tasks') || '{}')
+let taskDone = {}
+try { taskDone = JSON.parse(localStorage.getItem('kaqs_tasks') || '{}') || {} } catch(e) {}
 
 function toggleTask(id) {
   taskDone[id] = !taskDone[id]
@@ -1206,12 +1207,12 @@ function renderMetrics() {
 /* ══════════════════════════════════════════════
    INIT
 ══════════════════════════════════════════════ */
-renderOverview()
-renderRoadmap()
-renderTasks()
-renderRisks()
-renderMetrics()
-updateTasksBadge()
+try { renderOverview() } catch(e) { console.error('renderOverview:', e) }
+try { renderRoadmap() } catch(e) { console.error('renderRoadmap:', e) }
+try { renderTasks() } catch(e) { console.error('renderTasks:', e) }
+try { renderRisks() } catch(e) { console.error('renderRisks:', e) }
+try { renderMetrics() } catch(e) { console.error('renderMetrics:', e) }
+try { updateTasksBadge() } catch(e) {}
 </script>
 </body>
 </html>
