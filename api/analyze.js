@@ -45,7 +45,7 @@ ${Object.keys(axisNames).map(ax => `═══ ${axisNames[ax]} ═══\n${form
   })
 
   return new Promise((resolve) => {
-    const path = `/v1beta/models/gemini-1.5-flash:generateContent?key=${key}`
+    const path = `/v1beta/models/gemini-2.0-flash:generateContent?key=${key}`
     const options = {
       hostname: 'generativelanguage.googleapis.com',
       path,
