@@ -2229,9 +2229,14 @@ async function runProcessing() {
     })
     if (res.ok) {
       result = await res.json()
+    } else {
+      const errText = await res.text()
+      console.error('API error', res.status, errText)
+      localStorage.setItem('kaqs_api_error', JSON.stringify({ status: res.status, body: errText }))
     }
   } catch (e) {
     console.warn('API unavailable, using local scoring', e)
+    localStorage.setItem('kaqs_api_error', JSON.stringify({ status: 'fetch_failed', body: e.message }))
   }
 
   // Fallback — локальный расчёт если API недоступен
