@@ -1,0 +1,1229 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>K-A-Q-S™ — Платформа</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:       #0B0F14;
+      --surface:  #0F141B;
+      --elevated: #131A22;
+      --overlay:  #1A2230;
+      --border:   rgba(255,255,255,.07);
+      --border2:  rgba(255,255,255,.12);
+      --text:     #F0F4F8;
+      --text2:    #8A97A8;
+      --muted:    #4A5568;
+      --accent:   #3B82F6;
+      --accent-l: #2563EB;
+      --accent-xl:#60A5FA;
+      --accent-bg:rgba(59,130,246,.08);
+      --accent-bd:rgba(59,130,246,.2);
+      --red:      #EF4444;
+      --orange:   #F97316;
+      --yellow:   #EAB308;
+      --green:    #22C55E;
+      --mono:     'JetBrains Mono', monospace;
+      --sidebar-w:220px;
+    }
+
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: inherit; text-decoration: none; }
+
+    /* ── HEADER ── */
+    .app-header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(13,15,17,.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      height: 52px;
+      display: flex;
+      align-items: center;
+      padding: 0 20px;
+      gap: 16px;
+    }
+    .header-logo {
+      font-family: var(--mono);
+      font-size: .72rem;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+      color: var(--accent-xl);
+      white-space: nowrap;
+    }
+    .header-sep { flex: 1; }
+    .header-user {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .user-avatar {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--accent-bg);
+      border: 1px solid var(--accent-bd);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: .65rem;
+      font-weight: 600;
+      color: var(--accent-xl);
+      font-family: var(--mono);
+    }
+    .user-name {
+      font-size: .78rem;
+      color: var(--text2);
+    }
+    .btn-exit {
+      font-size: .75rem;
+      color: var(--muted);
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 4px 8px;
+      border-radius: 6px;
+      transition: color .15s, background .15s;
+    }
+    .btn-exit:hover { color: var(--text2); background: var(--elevated); }
+
+    /* ── LAYOUT ── */
+    .app-body {
+      display: flex;
+      flex: 1;
+    }
+
+    /* ── SIDEBAR ── */
+    .sidebar {
+      width: var(--sidebar-w);
+      border-right: 1px solid var(--border);
+      background: var(--surface);
+      padding: 20px 12px;
+      flex-shrink: 0;
+      position: sticky;
+      top: 52px;
+      height: calc(100vh - 52px);
+      overflow-y: auto;
+    }
+    .nav-section-label {
+      font-family: var(--mono);
+      font-size: .58rem;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+      color: var(--muted);
+      padding: 0 8px;
+      margin-bottom: 6px;
+    }
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 10px;
+      border-radius: 8px;
+      font-size: .82rem;
+      color: var(--text2);
+      cursor: pointer;
+      transition: background .15s, color .15s;
+      margin-bottom: 2px;
+      border: none;
+      background: none;
+      width: 100%;
+      text-align: left;
+    }
+    .nav-item:hover { background: var(--elevated); color: var(--text); }
+    .nav-item.active { background: var(--accent-bg); color: var(--accent-xl); }
+    .nav-item svg { opacity: .6; flex-shrink: 0; }
+    .nav-item.active svg { opacity: 1; }
+    .nav-badge {
+      margin-left: auto;
+      font-family: var(--mono);
+      font-size: .6rem;
+      padding: 2px 6px;
+      border-radius: 4px;
+      background: rgba(239,68,68,.12);
+      color: var(--red);
+    }
+    .nav-divider { height: 1px; background: var(--border); margin: 12px 0; }
+
+    /* ── MAIN CONTENT ── */
+    .main-content {
+      flex: 1;
+      min-width: 0;
+      padding: 32px 28px;
+      max-width: 900px;
+    }
+    .section { display: none; }
+    .section.active { display: block; }
+
+    /* ── PAGE HEADER ── */
+    .page-eyebrow {
+      font-family: var(--mono);
+      font-size: .6rem;
+      letter-spacing: .22em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+    .page-title {
+      font-size: 1.4rem;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+    .page-subtitle {
+      font-size: .85rem;
+      color: var(--text2);
+      margin-bottom: 28px;
+    }
+
+    /* ── CARDS ── */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 16px;
+    }
+    .card-label {
+      font-family: var(--mono);
+      font-size: .6rem;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 10px;
+    }
+
+    /* ── OVERVIEW SECTION ── */
+    .health-hero {
+      display: grid;
+      grid-template-columns: 200px 1fr;
+      gap: 24px;
+      align-items: center;
+    }
+    .index-ring-wrap {
+      position: relative;
+      width: 160px;
+      height: 160px;
+      margin: 0 auto;
+    }
+    .index-ring-wrap svg { transform: rotate(-90deg); }
+    .index-center {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    .index-num {
+      font-family: var(--mono);
+      font-size: 2.2rem;
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1;
+    }
+    .index-max {
+      font-size: .75rem;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+    .health-meta { }
+    .health-level {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+    .health-desc {
+      font-size: .83rem;
+      color: var(--text2);
+      line-height: 1.6;
+      margin-bottom: 16px;
+    }
+    .health-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .tag {
+      font-family: var(--mono);
+      font-size: .62rem;
+      padding: 4px 10px;
+      border-radius: 6px;
+      border: 1px solid var(--border2);
+      color: var(--text2);
+    }
+    .tag.good { border-color: rgba(34,197,94,.25); color: #4ADE80; background: rgba(34,197,94,.06); }
+    .tag.warn { border-color: rgba(234,179,8,.25); color: #FDE047; background: rgba(234,179,8,.06); }
+    .tag.crit { border-color: rgba(239,68,68,.25); color: #F87171; background: rgba(239,68,68,.06); }
+
+    /* Axis grid */
+    .axis-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    .axis-card {
+      background: var(--elevated);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px;
+      position: relative;
+      overflow: hidden;
+    }
+    .axis-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: var(--axis-color, var(--accent));
+    }
+    .axis-key {
+      font-family: var(--mono);
+      font-size: .75rem;
+      font-weight: 600;
+      color: var(--axis-color, var(--accent-xl));
+      margin-bottom: 4px;
+    }
+    .axis-name {
+      font-size: .72rem;
+      color: var(--muted);
+      margin-bottom: 12px;
+    }
+    .axis-pct {
+      font-family: var(--mono);
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .axis-bar-wrap {
+      height: 3px;
+      background: var(--border);
+      border-radius: 2px;
+      margin-top: 10px;
+      overflow: hidden;
+    }
+    .axis-bar-fill {
+      height: 100%;
+      border-radius: 2px;
+      background: var(--axis-color, var(--accent));
+      transition: width 1s ease;
+    }
+
+    /* Quick wins */
+    .quick-list { display: flex; flex-direction: column; gap: 8px; }
+    .quick-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 12px 14px;
+      background: var(--elevated);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+    }
+    .quick-priority {
+      font-family: var(--mono);
+      font-size: .6rem;
+      font-weight: 700;
+      padding: 3px 7px;
+      border-radius: 4px;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+    .p0 { background: rgba(239,68,68,.15); color: #F87171; }
+    .p1 { background: rgba(249,115,22,.15); color: #FB923C; }
+    .p2 { background: rgba(234,179,8,.15); color: #FDE047; }
+    .quick-text {
+      font-size: .82rem;
+      color: var(--text2);
+      line-height: 1.5;
+    }
+    .quick-text strong { color: var(--text); font-weight: 500; }
+
+    /* ── ROADMAP SECTION ── */
+    .roadmap-phases {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+    .phase-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    .phase-header {
+      padding: 16px 18px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .phase-title {
+      font-family: var(--mono);
+      font-size: .72rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+    .phase-progress-txt {
+      font-family: var(--mono);
+      font-size: .65rem;
+      color: var(--muted);
+    }
+    .phase-tasks { padding: 12px 8px; }
+    .task-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 9px 10px;
+      border-radius: 7px;
+      cursor: pointer;
+      transition: background .15s;
+      user-select: none;
+    }
+    .task-item:hover { background: var(--elevated); }
+    .task-check {
+      width: 16px;
+      height: 16px;
+      border: 1.5px solid var(--border2);
+      border-radius: 4px;
+      flex-shrink: 0;
+      margin-top: 1px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: border-color .15s, background .15s;
+    }
+    .task-item.done .task-check {
+      background: var(--accent);
+      border-color: var(--accent);
+    }
+    .task-item.done .task-check::after {
+      content: '';
+      display: block;
+      width: 8px;
+      height: 8px;
+      background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 10'%3E%3Cpath d='M1.5 5l2.5 2.5 4.5-4.5' stroke='white' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round' fill='none'/%3E%3C/svg%3E") center/contain no-repeat;
+    }
+    .task-item.done .task-text { color: var(--muted); text-decoration: line-through; }
+    .task-text { font-size: .8rem; color: var(--text2); line-height: 1.4; }
+    .task-axis-tag {
+      margin-left: auto;
+      font-family: var(--mono);
+      font-size: .6rem;
+      color: var(--muted);
+      flex-shrink: 0;
+    }
+    .phase-bar-wrap {
+      height: 2px;
+      background: var(--border);
+      border-radius: 2px;
+      margin: 0 18px 12px;
+    }
+    .phase-bar-fill {
+      height: 100%;
+      background: var(--accent);
+      border-radius: 2px;
+      transition: width .5s ease;
+    }
+
+    /* ── TASKS SECTION ── */
+    .tasks-filters {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 16px;
+    }
+    .filter-btn {
+      font-size: .75rem;
+      padding: 6px 14px;
+      border-radius: 7px;
+      border: 1px solid var(--border);
+      background: none;
+      color: var(--text2);
+      cursor: pointer;
+      transition: all .15s;
+    }
+    .filter-btn:hover { border-color: var(--border2); color: var(--text); }
+    .filter-btn.active { background: var(--accent-bg); border-color: var(--accent-bd); color: var(--accent-xl); }
+    .task-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 14px 16px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      margin-bottom: 8px;
+      cursor: pointer;
+      transition: border-color .15s;
+    }
+    .task-row:hover { border-color: var(--border2); }
+    .task-row.done { opacity: .5; }
+    .task-row-check {
+      width: 18px;
+      height: 18px;
+      border: 1.5px solid var(--border2);
+      border-radius: 5px;
+      flex-shrink: 0;
+      margin-top: 1px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all .15s;
+    }
+    .task-row.done .task-row-check {
+      background: var(--accent);
+      border-color: var(--accent);
+    }
+    .task-row.done .task-row-check::after {
+      content: '';
+      display: block;
+      width: 10px;
+      height: 10px;
+      background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 10'%3E%3Cpath d='M1.5 5l2.5 2.5 4.5-4.5' stroke='white' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round' fill='none'/%3E%3C/svg%3E") center/contain no-repeat;
+    }
+    .task-row-body { flex: 1; min-width: 0; }
+    .task-row-title { font-size: .85rem; font-weight: 500; margin-bottom: 3px; }
+    .task-row.done .task-row-title { text-decoration: line-through; color: var(--muted); }
+    .task-row-desc { font-size: .78rem; color: var(--text2); line-height: 1.5; }
+    .task-row-meta {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+    .task-phase-tag {
+      font-family: var(--mono);
+      font-size: .62rem;
+      color: var(--muted);
+      border: 1px solid var(--border);
+      padding: 2px 7px;
+      border-radius: 4px;
+    }
+
+    /* ── RISKS SECTION ── */
+    .risk-group { margin-bottom: 24px; }
+    .risk-group-label {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+    .risk-group-badge {
+      font-family: var(--mono);
+      font-size: .65rem;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 5px;
+    }
+    .risk-group-count {
+      font-size: .78rem;
+      color: var(--muted);
+    }
+    .risk-card {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      padding: 16px 18px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      margin-bottom: 8px;
+    }
+    .risk-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .risk-body { flex: 1; }
+    .risk-title { font-size: .85rem; font-weight: 500; margin-bottom: 4px; }
+    .risk-desc { font-size: .78rem; color: var(--text2); line-height: 1.5; }
+    .risk-footer {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 10px;
+    }
+    .risk-axis-tag {
+      font-family: var(--mono);
+      font-size: .62rem;
+      color: var(--muted);
+      border: 1px solid var(--border);
+      padding: 2px 8px;
+      border-radius: 4px;
+    }
+    .risk-action {
+      font-size: .72rem;
+      color: var(--accent-xl);
+      background: var(--accent-bg);
+      border: 1px solid var(--accent-bd);
+      padding: 3px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+      border: none;
+      cursor: pointer;
+    }
+
+    /* ── METRICS SECTION ── */
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    .metric-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 22px;
+    }
+    .metric-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+    .metric-axis-key {
+      font-family: var(--mono);
+      font-size: 1rem;
+      font-weight: 700;
+    }
+    .metric-axis-name {
+      font-size: .78rem;
+      color: var(--text2);
+      margin-top: 2px;
+    }
+    .metric-pct-big {
+      font-family: var(--mono);
+      font-size: 1.8rem;
+      font-weight: 700;
+    }
+    .metric-sub-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+    .metric-sub-name {
+      font-size: .78rem;
+      color: var(--text2);
+      flex: 1;
+    }
+    .metric-sub-bar {
+      width: 80px;
+      height: 4px;
+      background: var(--border);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+    .metric-sub-fill {
+      height: 100%;
+      border-radius: 2px;
+    }
+    .metric-sub-val {
+      font-family: var(--mono);
+      font-size: .68rem;
+      color: var(--text2);
+      width: 30px;
+      text-align: right;
+    }
+
+    /* ── MOBILE ── */
+    @media (max-width: 768px) {
+      .sidebar { display: none; }
+      .main-content { padding: 20px 16px; }
+      .health-hero { grid-template-columns: 1fr; }
+      .axis-grid { grid-template-columns: repeat(2, 1fr); }
+      .roadmap-phases { grid-template-columns: 1fr; }
+      .metrics-grid { grid-template-columns: 1fr; }
+      .mobile-nav {
+        display: flex !important;
+      }
+    }
+    .mobile-nav {
+      display: none;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      z-index: 100;
+      padding: 8px 0;
+    }
+    .mobile-nav-item {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+      padding: 6px 0;
+      font-size: .62rem;
+      color: var(--muted);
+      cursor: pointer;
+      border: none;
+      background: none;
+      transition: color .15s;
+    }
+    .mobile-nav-item.active { color: var(--accent-xl); }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="app-header">
+    <span class="header-logo">K-A-Q-S™</span>
+    <div class="header-sep"></div>
+    <div class="header-user">
+      <div class="user-avatar" id="user-avatar">DE</div>
+      <span class="user-name" id="user-name">demo@company.ru</span>
+      <button class="btn-exit" onclick="window.location.href='index.html'">Выйти</button>
+    </div>
+  </header>
+
+  <div class="app-body">
+
+    <!-- Sidebar -->
+    <nav class="sidebar">
+      <p class="nav-section-label">Платформа</p>
+
+      <button class="nav-item active" onclick="showSection('overview', this)">
+        <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><rect x="1" y="1" width="6" height="6" rx="1.5" stroke="currentColor" stroke-width="1.3"/><rect x="9" y="1" width="6" height="6" rx="1.5" stroke="currentColor" stroke-width="1.3"/><rect x="1" y="9" width="6" height="6" rx="1.5" stroke="currentColor" stroke-width="1.3"/><rect x="9" y="9" width="6" height="6" rx="1.5" stroke="currentColor" stroke-width="1.3"/></svg>
+        Обзор
+      </button>
+
+      <button class="nav-item" onclick="showSection('roadmap', this)">
+        <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M2 4h12M2 8h8M2 12h5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+        Roadmap
+      </button>
+
+      <button class="nav-item" onclick="showSection('tasks', this)">
+        <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M5.5 4l2 2 3-3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/><rect x="1" y="2" width="13" height="12" rx="2" stroke="currentColor" stroke-width="1.3"/><path d="M4 8h8M4 11h5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+        Задачи
+        <span class="nav-badge" id="tasks-badge">4</span>
+      </button>
+
+      <button class="nav-item" onclick="showSection('risks', this)">
+        <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M8 2l6 12H2L8 2z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/><path d="M8 7v3M8 11.5v.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+        Риски
+      </button>
+
+      <button class="nav-item" onclick="showSection('metrics', this)">
+        <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M1 12l4-5 3 3 4-6 3 4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Метрики
+      </button>
+
+      <div class="nav-divider"></div>
+      <p class="nav-section-label">Диагностика</p>
+
+      <button class="nav-item" onclick="window.location.href='kaqs-results.html'">
+        <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.3"/><path d="M8 5v3l2 1" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+        Результаты
+      </button>
+
+      <button class="nav-item" onclick="window.location.href='kaqs-quiz.html'">
+        <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M8 1v14M1 8h14" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+        Новая диагностика
+      </button>
+    </nav>
+
+    <!-- Main -->
+    <main class="main-content">
+
+      <!-- ═══ OVERVIEW ═══ -->
+      <div class="section active" id="section-overview">
+        <p class="page-eyebrow">// Обзор</p>
+        <h1 class="page-title">Здоровье бизнеса</h1>
+        <p class="page-subtitle" id="overview-date">Диагностика от 9 апреля 2026</p>
+
+        <!-- Health card -->
+        <div class="card">
+          <div class="health-hero">
+            <div class="index-ring-wrap">
+              <svg width="160" height="160" viewBox="0 0 160 160">
+                <circle cx="80" cy="80" r="64" fill="none" stroke="rgba(255,255,255,.06)" stroke-width="12"/>
+                <circle cx="80" cy="80" r="64" fill="none" stroke="#1F5F5B" stroke-width="12"
+                  stroke-dasharray="402" stroke-dashoffset="402"
+                  stroke-linecap="round" id="ring-fill"
+                  style="transition: stroke-dashoffset 1.2s ease"/>
+              </svg>
+              <div class="index-center">
+                <span class="index-num" id="idx-num">—</span>
+                <span class="index-max">/100</span>
+              </div>
+            </div>
+            <div class="health-meta">
+              <p class="health-level" id="health-level">Загрузка...</p>
+              <p class="health-desc" id="health-desc">Результаты диагностики K-A-Q-S™ загружаются.</p>
+              <div class="health-tags" id="health-tags"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Axis grid -->
+        <div class="axis-grid" id="axis-grid"></div>
+
+        <!-- Top priorities -->
+        <p class="card-label" style="margin-bottom:10px;">// Приоритеты прямо сейчас</p>
+        <div class="quick-list">
+          <div class="quick-item">
+            <span class="quick-priority p0">P0</span>
+            <span class="quick-text"><strong>Silent fail в AI-процессах</strong> — Необработанные ошибки накапливаются незаметно. Блок Q.</span>
+          </div>
+          <div class="quick-item">
+            <span class="quick-priority p0">P0</span>
+            <span class="quick-text"><strong>AI без стратегии</strong> — Бессистемное внедрение блокирует архитектуру. Блок A.</span>
+          </div>
+          <div class="quick-item">
+            <span class="quick-priority p0">P0</span>
+            <span class="quick-text"><strong>Хаос данных</strong> — AI принимает решения на противоречивых источниках. Блок K.</span>
+          </div>
+          <div class="quick-item">
+            <span class="quick-priority p1">P1</span>
+            <span class="quick-text"><strong>Нет стратегии роста</strong> — Без плана рост потребует переписывания архитектуры. Блок S.</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ ROADMAP ═══ -->
+      <div class="section" id="section-roadmap">
+        <p class="page-eyebrow">// Дорожная карта</p>
+        <h1 class="page-title">Roadmap на 90 дней</h1>
+        <p class="page-subtitle">Кликайте на задачи, чтобы отметить выполнение</p>
+
+        <div class="roadmap-phases" id="roadmap-phases"></div>
+      </div>
+
+      <!-- ═══ TASKS ═══ -->
+      <div class="section" id="section-tasks">
+        <p class="page-eyebrow">// Задачи</p>
+        <h1 class="page-title">Все задачи</h1>
+        <p class="page-subtitle">Полный список по всем фазам roadmap</p>
+
+        <div class="tasks-filters">
+          <button class="filter-btn active" onclick="filterTasks('all', this)">Все</button>
+          <button class="filter-btn" onclick="filterTasks('active', this)">Открытые</button>
+          <button class="filter-btn" onclick="filterTasks('done', this)">Выполнено</button>
+          <button class="filter-btn" onclick="filterTasks('p0', this)">P0</button>
+        </div>
+
+        <div id="tasks-list"></div>
+      </div>
+
+      <!-- ═══ RISKS ═══ -->
+      <div class="section" id="section-risks">
+        <p class="page-eyebrow">// Карта рисков</p>
+        <h1 class="page-title">Риски и угрозы</h1>
+        <p class="page-subtitle">Выявлено по результатам диагностики</p>
+
+        <div id="risks-container"></div>
+      </div>
+
+      <!-- ═══ METRICS ═══ -->
+      <div class="section" id="section-metrics">
+        <p class="page-eyebrow">// Метрики</p>
+        <h1 class="page-title">Показатели по блокам</h1>
+        <p class="page-subtitle">Детальный разрез по осям K / A / Q / S</p>
+
+        <div class="metrics-grid" id="metrics-grid"></div>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- Mobile nav -->
+  <nav class="mobile-nav">
+    <button class="mobile-nav-item active" onclick="showSection('overview', this)">
+      <svg width="18" height="18" viewBox="0 0 16 16" fill="none"><rect x="1" y="1" width="6" height="6" rx="1.5" stroke="currentColor" stroke-width="1.3"/><rect x="9" y="1" width="6" height="6" rx="1.5" stroke="currentColor" stroke-width="1.3"/><rect x="1" y="9" width="6" height="6" rx="1.5" stroke="currentColor" stroke-width="1.3"/><rect x="9" y="9" width="6" height="6" rx="1.5" stroke="currentColor" stroke-width="1.3"/></svg>
+      Обзор
+    </button>
+    <button class="mobile-nav-item" onclick="showSection('roadmap', this)">
+      <svg width="18" height="18" viewBox="0 0 16 16" fill="none"><path d="M2 4h12M2 8h8M2 12h5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+      Roadmap
+    </button>
+    <button class="mobile-nav-item" onclick="showSection('tasks', this)">
+      <svg width="18" height="18" viewBox="0 0 16 16" fill="none"><rect x="1" y="2" width="13" height="12" rx="2" stroke="currentColor" stroke-width="1.3"/><path d="M4 8h8M4 11h5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+      Задачи
+    </button>
+    <button class="mobile-nav-item" onclick="showSection('risks', this)">
+      <svg width="18" height="18" viewBox="0 0 16 16" fill="none"><path d="M8 2l6 12H2L8 2z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/><path d="M8 7v3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+      Риски
+    </button>
+    <button class="mobile-nav-item" onclick="showSection('metrics', this)">
+      <svg width="18" height="18" viewBox="0 0 16 16" fill="none"><path d="M1 12l4-5 3 3 4-6 3 4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Метрики
+    </button>
+  </nav>
+
+<script>
+/* ══════════════════════════════════════════════
+   DATA
+══════════════════════════════════════════════ */
+const SAVED = JSON.parse(localStorage.getItem('kaqs_results') || '{}')
+const INDEX  = SAVED.index || 67
+const PCT    = SAVED.pct   || { K: 60, A: 50, Q: 47, S: 67 }
+const STATUS = SAVED.statusLabel || 'Управляемая'
+const DATE   = SAVED.date || '9 апреля 2026'
+
+const AXIS_CONFIG = {
+  K: { name: 'Knowledge',   color: '#60A5FA', desc: 'Знания и прозрачность' },
+  A: { name: 'AI Design',   color: '#818CF8', desc: 'Архитектура AI-систем' },
+  Q: { name: 'Quality',     color: '#F87171', desc: 'Качество и контроль' },
+  S: { name: 'Scalability', color: '#34D399', desc: 'Масштабируемость' },
+}
+
+function getColor(pct) {
+  if (pct < 40) return '#EF4444'
+  if (pct < 60) return '#F97316'
+  if (pct < 75) return '#EAB308'
+  return '#22C55E'
+}
+
+const ROADMAP = [
+  {
+    phase: 'Месяц 1', subtitle: 'Закрыть критические P0',
+    tasks: [
+      { id: 't1', text: 'Провести аудит обработки ошибок в AI-процессах', axis: 'Q', priority: 'p0' },
+      { id: 't2', text: 'Составить карту точек silent fail', axis: 'Q', priority: 'p0' },
+      { id: 't3', text: 'Зафиксировать стратегию применения AI: где и зачем', axis: 'A', priority: 'p0' },
+      { id: 't4', text: 'Провести инвентаризацию источников данных', axis: 'K', priority: 'p0' },
+      { id: 't5', text: 'Назначить ответственного за архитектуру данных', axis: 'K', priority: 'p1' },
+    ]
+  },
+  {
+    phase: 'Месяц 2', subtitle: 'Стабилизация и мониторинг',
+    tasks: [
+      { id: 't6', text: 'Внедрить базовый мониторинг AI-процессов', axis: 'A', priority: 'p1' },
+      { id: 't7', text: 'Настроить алерты на ошибки в ключевых цепочках', axis: 'Q', priority: 'p1' },
+      { id: 't8', text: 'Описать единую модель данных (data contract)', axis: 'K', priority: 'p1' },
+      { id: 't9', text: 'Сформировать базовые регламенты по AI', axis: 'A', priority: 'p2' },
+    ]
+  },
+  {
+    phase: 'Месяц 3', subtitle: 'Рост и масштаб',
+    tasks: [
+      { id: 't10', text: 'Разработать план масштабирования AI на 6 месяцев', axis: 'S', priority: 'p2' },
+      { id: 't11', text: 'Определить метрики устойчивости системы', axis: 'S', priority: 'p2' },
+      { id: 't12', text: 'Провести первый ретро-аудит по K-A-Q-S', axis: 'Q', priority: 'p2' },
+      { id: 't13', text: 'Запланировать повторную диагностику', axis: 'K', priority: 'p2' },
+    ]
+  }
+]
+
+const RISKS = [
+  {
+    level: 'P0', items: [
+      { title: 'Silent fail в AI-процессах', desc: 'Необработанные ошибки накапливаются незаметно и могут привести к критическим сбоям в операционной системе.', axis: 'Q' },
+      { title: 'AI без стратегии', desc: 'Бессистемное внедрение AI создаёт технический хаос и блокирует последующую архитектуру.', axis: 'A' },
+      { title: 'Хаос данных', desc: 'AI-системы работают на данных. Без единой архитектуры AI принимает решения на противоречивых источниках.', axis: 'K' },
+      { title: 'AI без мониторинга', desc: 'AI-процессы без мониторинга могут давать ошибки незаметно, накапливая критические последствия.', axis: 'A' },
+    ]
+  },
+  {
+    level: 'P1', items: [
+      { title: 'Нет стратегии роста', desc: 'Без плана роста AI-системы рост бизнеса потребует переписывания архитектуры с нуля.', axis: 'S' },
+      { title: 'Нет метрик устойчивости', desc: 'Без метрик невозможно управлять ростом: деградация системы будет незаметна до критической точки.', axis: 'S' },
+    ]
+  },
+  {
+    level: 'P2', items: [
+      { title: 'Отсутствие документации AI-решений', desc: 'Знания сосредоточены в головах сотрудников. Уход ключевого человека — риск для всей системы.', axis: 'K' },
+      { title: 'Ручное тестирование AI-процессов', desc: 'Отсутствие автоматических проверок замедляет итерации и увеличивает вероятность регрессий.', axis: 'Q' },
+    ]
+  }
+]
+
+const METRICS_DETAIL = {
+  K: [
+    { name: 'Документация процессов', val: 65 },
+    { name: 'Прозрачность данных', val: 50 },
+    { name: 'Роли и ответственность', val: 70 },
+    { name: 'Единая модель данных', val: 40 },
+  ],
+  A: [
+    { name: 'Стратегия AI', val: 45 },
+    { name: 'Покрытие автоматизацией', val: 55 },
+    { name: 'Качество промптов', val: 60 },
+    { name: 'Мониторинг AI', val: 35 },
+  ],
+  Q: [
+    { name: 'Обработка ошибок', val: 40 },
+    { name: 'Тестирование', val: 45 },
+    { name: 'Код-ревью AI-интеграций', val: 50 },
+    { name: 'SLA на AI-сервисы', val: 42 },
+  ],
+  S: [
+    { name: 'Модульность архитектуры', val: 70 },
+    { name: 'План роста', val: 55 },
+    { name: 'Метрики устойчивости', val: 60 },
+    { name: 'Нагрузочное тестирование', val: 65 },
+  ],
+}
+
+/* ══════════════════════════════════════════════
+   TASK STATE
+══════════════════════════════════════════════ */
+let taskDone = JSON.parse(localStorage.getItem('kaqs_tasks') || '{}')
+
+function toggleTask(id) {
+  taskDone[id] = !taskDone[id]
+  localStorage.setItem('kaqs_tasks', JSON.stringify(taskDone))
+  renderRoadmap()
+  renderTasks()
+  updateTasksBadge()
+}
+
+function updateTasksBadge() {
+  const allTasks = ROADMAP.flatMap(p => p.tasks)
+  const open = allTasks.filter(t => !taskDone[t.id]).length
+  document.getElementById('tasks-badge').textContent = open
+  document.getElementById('tasks-badge').style.display = open > 0 ? 'inline' : 'none'
+}
+
+/* ══════════════════════════════════════════════
+   NAVIGATION
+══════════════════════════════════════════════ */
+function showSection(name, btn) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'))
+  document.getElementById('section-' + name).classList.add('active')
+
+  // Sidebar
+  document.querySelectorAll('.sidebar .nav-item').forEach(b => b.classList.remove('active'))
+  // Mobile
+  document.querySelectorAll('.mobile-nav-item').forEach(b => b.classList.remove('active'))
+  if (btn) btn.classList.add('active')
+}
+
+/* ══════════════════════════════════════════════
+   RENDER OVERVIEW
+══════════════════════════════════════════════ */
+function renderOverview() {
+  // Date
+  document.getElementById('overview-date').textContent = 'Диагностика от ' + DATE
+
+  // Ring animation
+  const circ = 2 * Math.PI * 64
+  const fill = circ * (1 - INDEX / 100)
+  setTimeout(() => {
+    document.getElementById('ring-fill').style.strokeDashoffset = fill
+  }, 100)
+  document.getElementById('idx-num').textContent = INDEX
+  document.getElementById('health-level').textContent = STATUS
+
+  const descs = {
+    'Хаотичная': 'Процессы непредсказуемы, AI внедрён бессистемно. Нужны срочные архитектурные решения.',
+    'Базовая':   'Есть отдельные элементы системы, но они не связаны между собой. Требуется структурирование.',
+    'Управляемая':'Основные процессы под контролем. Есть пробелы в архитектуре AI и данных — их можно закрыть.',
+    'Зрелая':    'Системный подход выстроен. AI работает предсказуемо. Фокус на масштабировании и оптимизации.',
+  }
+  document.getElementById('health-desc').textContent = descs[STATUS] || 'Результаты диагностики K-A-Q-S™.'
+
+  // Tags
+  const tagsEl = document.getElementById('health-tags')
+  const tagData = [
+    { text: 'K: ' + PCT.K + '%', cls: PCT.K >= 65 ? 'good' : PCT.K >= 45 ? 'warn' : 'crit' },
+    { text: 'A: ' + PCT.A + '%', cls: PCT.A >= 65 ? 'good' : PCT.A >= 45 ? 'warn' : 'crit' },
+    { text: 'Q: ' + PCT.Q + '%', cls: PCT.Q >= 65 ? 'good' : PCT.Q >= 45 ? 'warn' : 'crit' },
+    { text: 'S: ' + PCT.S + '%', cls: PCT.S >= 65 ? 'good' : PCT.S >= 45 ? 'warn' : 'crit' },
+  ]
+  tagsEl.innerHTML = tagData.map(t => `<span class="tag ${t.cls}">${t.text}</span>`).join('')
+
+  // Axis grid
+  const grid = document.getElementById('axis-grid')
+  grid.innerHTML = Object.entries(AXIS_CONFIG).map(([key, cfg]) => {
+    const p = PCT[key] || 50
+    const color = cfg.color
+    return `
+      <div class="axis-card" style="--axis-color:${color}">
+        <div class="axis-key">${key}</div>
+        <div class="axis-name">${cfg.desc}</div>
+        <div class="axis-pct" style="color:${getColor(p)}">${p}%</div>
+        <div class="axis-bar-wrap">
+          <div class="axis-bar-fill" style="width:0%;background:${color}" data-target="${p}"></div>
+        </div>
+      </div>`
+  }).join('')
+
+  setTimeout(() => {
+    document.querySelectorAll('.axis-bar-fill[data-target]').forEach(el => {
+      el.style.width = el.dataset.target + '%'
+    })
+  }, 150)
+}
+
+/* ══════════════════════════════════════════════
+   RENDER ROADMAP
+══════════════════════════════════════════════ */
+function renderRoadmap() {
+  const container = document.getElementById('roadmap-phases')
+  container.innerHTML = ROADMAP.map(phase => {
+    const total = phase.tasks.length
+    const done = phase.tasks.filter(t => taskDone[t.id]).length
+    const pct = Math.round(done / total * 100)
+
+    return `
+      <div class="phase-card">
+        <div class="phase-header">
+          <div>
+            <div class="phase-title">${phase.phase}</div>
+            <div style="font-size:.72rem;color:var(--muted);margin-top:2px">${phase.subtitle}</div>
+          </div>
+          <span class="phase-progress-txt">${done}/${total}</span>
+        </div>
+        <div class="phase-bar-wrap" style="margin-top:12px">
+          <div class="phase-bar-fill" style="width:${pct}%"></div>
+        </div>
+        <div class="phase-tasks">
+          ${phase.tasks.map(t => `
+            <div class="task-item ${taskDone[t.id] ? 'done' : ''}" onclick="toggleTask('${t.id}')">
+              <div class="task-check"></div>
+              <span class="task-text">${t.text}</span>
+              <span class="task-axis-tag">${t.axis}</span>
+            </div>`).join('')}
+        </div>
+      </div>`
+  }).join('')
+}
+
+/* ══════════════════════════════════════════════
+   RENDER TASKS
+══════════════════════════════════════════════ */
+let currentFilter = 'all'
+function filterTasks(f, btn) {
+  currentFilter = f
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'))
+  btn.classList.add('active')
+  renderTasks()
+}
+
+function renderTasks() {
+  const allTasks = ROADMAP.flatMap((phase, pi) =>
+    phase.tasks.map(t => ({ ...t, phaseLabel: phase.phase, phaseIdx: pi + 1 }))
+  )
+  const filtered = allTasks.filter(t => {
+    if (currentFilter === 'done')   return taskDone[t.id]
+    if (currentFilter === 'active') return !taskDone[t.id]
+    if (currentFilter === 'p0')     return t.priority === 'p0'
+    return true
+  })
+  const list = document.getElementById('tasks-list')
+  if (!filtered.length) {
+    list.innerHTML = '<p style="color:var(--muted);font-size:.85rem;padding:20px 0;">Нет задач в этой категории.</p>'
+    return
+  }
+  list.innerHTML = filtered.map(t => `
+    <div class="task-row ${taskDone[t.id] ? 'done' : ''}" onclick="toggleTask('${t.id}')">
+      <div class="task-row-check"></div>
+      <div class="task-row-body">
+        <div class="task-row-title">${t.text}</div>
+        <div class="task-row-desc">Блок <strong>${t.axis}</strong> · Фаза ${t.phaseIdx}</div>
+      </div>
+      <div class="task-row-meta">
+        <span class="quick-priority ${t.priority}" style="font-size:.6rem;padding:2px 6px;border-radius:4px;">${t.priority.toUpperCase()}</span>
+        <span class="task-phase-tag">${t.phaseLabel}</span>
+      </div>
+    </div>`).join('')
+}
+
+/* ══════════════════════════════════════════════
+   RENDER RISKS
+══════════════════════════════════════════════ */
+function renderRisks() {
+  const riskColors = {
+    P0: { bg: 'rgba(239,68,68,.12)', color: '#F87171', icon: '#EF4444' },
+    P1: { bg: 'rgba(249,115,22,.12)', color: '#FB923C', icon: '#F97316' },
+    P2: { bg: 'rgba(234,179,8,.12)',  color: '#FDE047', icon: '#EAB308' },
+  }
+  document.getElementById('risks-container').innerHTML = RISKS.map(group => {
+    const c = riskColors[group.level]
+    return `
+      <div class="risk-group">
+        <div class="risk-group-label">
+          <span class="risk-group-badge" style="background:${c.bg};color:${c.color}">${group.level}</span>
+          <span class="risk-group-count">${group.items.length} ${group.items.length === 1 ? 'риск' : 'риска'}</span>
+        </div>
+        ${group.items.map(r => `
+          <div class="risk-card">
+            <div class="risk-icon" style="background:${c.bg}">
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M8 2l6 12H2L8 2z" stroke="${c.icon}" stroke-width="1.3" stroke-linejoin="round"/><path d="M8 7v2.5M8 11.2v.3" stroke="${c.icon}" stroke-width="1.3" stroke-linecap="round"/></svg>
+            </div>
+            <div class="risk-body">
+              <div class="risk-title">${r.title}</div>
+              <div class="risk-desc">${r.desc}</div>
+              <div class="risk-footer">
+                <span class="risk-axis-tag">Блок ${r.axis}</span>
+              </div>
+            </div>
+          </div>`).join('')}
+      </div>`
+  }).join('')
+}
+
+/* ══════════════════════════════════════════════
+   RENDER METRICS
+══════════════════════════════════════════════ */
+function renderMetrics() {
+  const grid = document.getElementById('metrics-grid')
+  grid.innerHTML = Object.entries(AXIS_CONFIG).map(([key, cfg]) => {
+    const p = PCT[key] || 50
+    const color = cfg.color
+    const subs = METRICS_DETAIL[key] || []
+    // Scale sub-items to reflect overall axis score
+    const factor = p / 60
+    return `
+      <div class="metric-card">
+        <div class="metric-header">
+          <div>
+            <div class="metric-axis-key" style="color:${color}">${key}</div>
+            <div class="metric-axis-name">${cfg.desc}</div>
+          </div>
+          <div class="metric-pct-big" style="color:${getColor(p)}">${p}%</div>
+        </div>
+        ${subs.map(s => {
+          const v = Math.round(Math.min(100, s.val * factor))
+          const bc = getColor(v)
+          return `
+          <div class="metric-sub-item">
+            <span class="metric-sub-name">${s.name}</span>
+            <div class="metric-sub-bar">
+              <div class="metric-sub-fill" style="width:${v}%;background:${bc}"></div>
+            </div>
+            <span class="metric-sub-val">${v}%</span>
+          </div>`
+        }).join('')}
+      </div>`
+  }).join('')
+}
+
+/* ══════════════════════════════════════════════
+   INIT
+══════════════════════════════════════════════ */
+renderOverview()
+renderRoadmap()
+renderTasks()
+renderRisks()
+renderMetrics()
+updateTasksBadge()
+</script>
+</body>
+</html>

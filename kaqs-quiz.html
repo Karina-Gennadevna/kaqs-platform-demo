@@ -1,0 +1,2583 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>K-A-Q-S™ — Диагностика управляемости бизнеса</title>
+  <meta name="description" content="24 вопроса. 15 минут. Узнайте Индекс управляемости вашего бизнеса по 4 осям: знания, автоматизация, качество, масштаб.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #0B0F14;
+      --surface:   #0F141B;
+      --elevated:  #131A22;
+      --overlay:   #1A2230;
+      --accent:    #3B82F6;
+      --accent-h:  #2563EB;
+      --accent-bg: rgba(59,130,246,.08);
+      --accent-bd: rgba(59,130,246,.2);
+      --text:      #F0F4F8;
+      --text2:     #8A97A8;
+      --text3:     #4A5568;
+      --border:    rgba(255,255,255,.07);
+      --border2:   rgba(255,255,255,.12);
+      --red:       #EF4444;
+      --orange:    #F97316;
+      --yellow:    #EAB308;
+      --green:     #22C55E;
+      --r:         12px;
+      --r-sm:      8px;
+      --mono:      'JetBrains Mono', monospace;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+      line-height: 1.6;
+    }
+
+    /* ── SCREENS ── */
+    .screen {
+      display: none;
+      min-height: 100vh;
+      animation: fadeIn .3s ease;
+    }
+    .screen.active { display: flex; flex-direction: column; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── SHARED HEADER ── */
+    .quiz-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      background: rgba(11,15,20,.92);
+      backdrop-filter: blur(14px);
+      z-index: 10;
+      flex-shrink: 0;
+    }
+    .logo {
+      font-family: var(--mono);
+      font-size: .8rem;
+      font-weight: 600;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      color: var(--accent);
+    }
+    .header-meta {
+      font-family: var(--mono);
+      font-size: .65rem;
+      color: var(--text3);
+    }
+
+    /* ── WELCOME ── */
+    #s-welcome .body {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 48px 24px 64px;
+      max-width: 560px;
+      margin: 0 auto;
+      width: 100%;
+      text-align: center;
+    }
+    .welcome-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-family: var(--mono);
+      font-size: .6rem;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+      color: rgba(59,130,246,.7);
+      background: rgba(59,130,246,.06);
+      border: 1px solid rgba(59,130,246,.15);
+      border-radius: 99px;
+      padding: 5px 12px;
+      margin-bottom: 28px;
+    }
+    .welcome-badge::before {
+      content: '';
+      width: 5px; height: 5px;
+      border-radius: 50%;
+      background: var(--accent);
+      opacity: .7;
+      flex-shrink: 0;
+    }
+    .welcome-h1 {
+      font-size: clamp(24px, 5vw, 38px);
+      font-weight: 700;
+      line-height: 1.15;
+      letter-spacing: -.025em;
+      color: var(--text);
+      margin-bottom: 16px;
+    }
+    .welcome-h1 span { color: var(--accent); }
+    .welcome-sub {
+      font-size: 15px;
+      color: var(--text2);
+      line-height: 1.7;
+      margin-bottom: 32px;
+      max-width: 440px;
+    }
+    .axis-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: center;
+      margin-bottom: 36px;
+    }
+    .axis-pill {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 14px;
+      border-radius: 99px;
+      background: var(--surface);
+      border: 1px solid var(--border2);
+      font-size: .78rem;
+    }
+    .axis-pill .dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .axis-pill .key {
+      font-family: var(--mono);
+      font-weight: 600;
+      font-size: .7rem;
+      color: var(--accent);
+    }
+    .axis-pill .name { color: var(--text2); font-size: .75rem; }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 14px 32px;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: var(--r-sm);
+      font-size: .95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background .15s, transform .1s, box-shadow .15s;
+      box-shadow: 0 0 24px rgba(59,130,246,.2);
+      text-decoration: none;
+      white-space: nowrap;
+    }
+    .btn-primary:hover {
+      background: var(--accent-h);
+      box-shadow: 0 0 32px rgba(59,130,246,.35);
+      transform: translateY(-1px);
+    }
+    .btn-primary:active { transform: scale(.98); }
+
+    .welcome-note {
+      margin-top: 16px;
+      font-size: .72rem;
+      color: var(--text3);
+    }
+
+    /* ── QUESTION ── */
+    #s-question .body {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 28px 24px 40px;
+      max-width: 600px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .progress-wrap { margin-bottom: 28px; }
+    .progress-segs {
+      display: flex;
+      gap: 3px;
+      margin-bottom: 6px;
+    }
+    .prog-seg {
+      height: 3px;
+      flex: 1;
+      border-radius: 99px;
+      background: var(--border2);
+      overflow: hidden;
+      position: relative;
+    }
+    .prog-seg-fill {
+      height: 100%;
+      border-radius: 99px;
+      background: var(--accent);
+      width: 0;
+      transition: width .4s ease;
+    }
+    .progress-labels {
+      display: flex;
+      justify-content: space-between;
+    }
+    .prog-lbl {
+      font-family: var(--mono);
+      font-size: .6rem;
+      letter-spacing: .08em;
+      color: var(--text3);
+      transition: color .2s;
+    }
+    .prog-lbl.active { color: var(--accent); }
+    .prog-lbl.done   { color: var(--text3); opacity: .7; }
+
+    .q-axis-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--mono);
+      font-size: .65rem;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--text3);
+      margin-bottom: 20px;
+    }
+    .q-axis-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+      flex-shrink: 0;
+    }
+
+    .q-text {
+      font-size: clamp(17px, 3vw, 21px);
+      font-weight: 600;
+      line-height: 1.38;
+      letter-spacing: -.015em;
+      color: var(--text);
+      margin-bottom: 28px;
+      flex: 1;
+    }
+
+    .answers {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .answer-btn {
+      width: 100%;
+      padding: 14px 18px;
+      background: var(--surface);
+      border: 1px solid var(--border2);
+      border-radius: var(--r-sm);
+      text-align: left;
+      font-size: .88rem;
+      color: var(--text2);
+      cursor: pointer;
+      transition: all .15s;
+      line-height: 1.45;
+      font-family: inherit;
+    }
+    .answer-btn:hover {
+      border-color: var(--accent);
+      color: var(--text);
+      background: var(--accent-bg);
+    }
+    .answer-btn.selected {
+      background: rgba(59,130,246,.12);
+      border-color: var(--accent);
+      color: var(--text);
+    }
+    .answer-btn:disabled {
+      pointer-events: none;
+    }
+
+    .q-nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 24px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border);
+    }
+    .btn-back {
+      background: none;
+      border: none;
+      font-size: .82rem;
+      color: var(--text3);
+      cursor: pointer;
+      padding: 6px 0;
+      transition: color .15s;
+      font-family: inherit;
+    }
+    .btn-back:hover { color: var(--text2); }
+    .btn-back:disabled { opacity: .3; cursor: not-allowed; }
+    .q-progress-txt {
+      font-family: var(--mono);
+      font-size: .65rem;
+      color: var(--text3);
+    }
+
+    /* ── CONTACT ── */
+    #s-contact .body {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 24px 60px;
+      max-width: 480px;
+      margin: 0 auto;
+      width: 100%;
+    }
+    .contact-icon {
+      width: 52px; height: 52px;
+      border-radius: 14px;
+      background: var(--accent-bg);
+      border: 1px solid var(--accent-bd);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 24px;
+    }
+    .contact-h { font-size: 22px; font-weight: 700; margin-bottom: 8px; }
+    .contact-sub { font-size: .88rem; color: var(--text2); margin-bottom: 32px; text-align: center; line-height: 1.6; }
+
+    .field-wrap { width: 100%; margin-bottom: 14px; }
+    .field-label {
+      display: block;
+      font-size: .75rem;
+      color: var(--text3);
+      margin-bottom: 6px;
+      font-family: var(--mono);
+      letter-spacing: .04em;
+    }
+    .field {
+      width: 100%;
+      padding: 12px 16px;
+      background: var(--surface);
+      border: 1px solid var(--border2);
+      border-radius: var(--r-sm);
+      font-size: .9rem;
+      color: var(--text);
+      font-family: inherit;
+      transition: border-color .15s;
+      outline: none;
+    }
+    .field::placeholder { color: var(--text3); }
+    .field:focus { border-color: var(--accent); }
+
+    .toggle-wrap {
+      display: flex;
+      gap: 8px;
+      width: 100%;
+      margin-bottom: 14px;
+    }
+    .toggle-btn {
+      flex: 1;
+      padding: 11px;
+      border-radius: var(--r-sm);
+      border: 1px solid var(--border2);
+      background: var(--surface);
+      font-size: .85rem;
+      color: var(--text2);
+      cursor: pointer;
+      transition: all .15s;
+      font-family: inherit;
+      font-weight: 500;
+    }
+    .toggle-btn.active {
+      background: var(--accent-bg);
+      border-color: var(--accent);
+      color: var(--text);
+    }
+
+    .btn-skip {
+      background: none;
+      border: none;
+      font-size: .8rem;
+      color: var(--text3);
+      cursor: pointer;
+      margin-top: 16px;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+      transition: color .15s;
+      font-family: inherit;
+    }
+    .btn-skip:hover { color: var(--text2); }
+
+    /* ── PROCESSING ── */
+    #s-processing .body {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 24px;
+      text-align: center;
+    }
+    .proc-logo {
+      font-family: var(--mono);
+      font-size: 1rem;
+      font-weight: 600;
+      letter-spacing: .18em;
+      color: var(--accent);
+      margin-bottom: 40px;
+    }
+    .proc-spinner {
+      width: 44px; height: 44px;
+      border: 2px solid var(--border2);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 36px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .proc-steps { display: flex; flex-direction: column; gap: 14px; text-align: left; min-width: 260px; }
+    .proc-step {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: .88rem;
+      color: var(--text3);
+      opacity: 0;
+      transform: translateY(6px);
+      transition: all .4s ease;
+    }
+    .proc-step.show {
+      opacity: 1;
+      transform: translateY(0);
+      color: var(--text2);
+    }
+    .proc-step.done { color: var(--text); }
+    .step-icon {
+      width: 20px; height: 20px;
+      border-radius: 50%;
+      border: 1.5px solid var(--border2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: all .3s;
+    }
+    .proc-step.done .step-icon {
+      background: rgba(34,197,94,.15);
+      border-color: rgba(34,197,94,.4);
+    }
+    .check-svg { display: none; }
+    .proc-step.done .check-svg { display: block; }
+    .dot-pulse { width: 4px; height: 4px; border-radius: 50%; background: var(--accent); animation: pulse 1s infinite; }
+    .proc-step.done .dot-pulse { display: none; }
+    @keyframes pulse { 0%,100%{opacity:.3} 50%{opacity:1} }
+
+    /* ── RESULTS ── */
+    #s-results .body {
+      flex: 1;
+      padding: 32px 24px 80px;
+      max-width: 640px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    /* Score hero */
+    .score-hero {
+      text-align: center;
+      padding: 36px 24px;
+      background: var(--surface);
+      border: 1px solid var(--border2);
+      border-radius: var(--r);
+      margin-bottom: 20px;
+      position: relative;
+      overflow: hidden;
+    }
+    .score-hero::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--accent), transparent);
+    }
+    .score-eyebrow {
+      font-family: var(--mono);
+      font-size: .6rem;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+      color: var(--text3);
+      margin-bottom: 12px;
+    }
+    .score-num {
+      font-size: clamp(52px, 10vw, 72px);
+      font-weight: 700;
+      letter-spacing: -.04em;
+      line-height: 1;
+      color: var(--text);
+    }
+    .score-denom { font-size: .4em; color: var(--text3); font-weight: 400; }
+    .score-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 14px;
+      border-radius: 99px;
+      font-size: .78rem;
+      font-weight: 600;
+      margin: 12px 0 8px;
+    }
+    .score-desc { font-size: .85rem; color: var(--text2); }
+
+    /* Radar */
+    .radar-wrap {
+      background: var(--surface);
+      border: 1px solid var(--border2);
+      border-radius: var(--r);
+      padding: 24px;
+      margin-bottom: 20px;
+    }
+    .section-title {
+      font-size: .75rem;
+      font-family: var(--mono);
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--text3);
+      margin-bottom: 20px;
+    }
+    .radar-svg-wrap {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 24px;
+    }
+    .radar-svg { overflow: visible; }
+    .axis-bars { display: flex; flex-direction: column; gap: 12px; }
+    .axis-bar-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .axis-bar-key {
+      font-family: var(--mono);
+      font-size: .7rem;
+      font-weight: 600;
+      color: var(--accent);
+      width: 16px;
+      flex-shrink: 0;
+    }
+    .axis-bar-name { font-size: .78rem; color: var(--text2); width: 140px; flex-shrink: 0; }
+    .axis-bar-track {
+      flex: 1;
+      height: 4px;
+      background: var(--border2);
+      border-radius: 99px;
+      overflow: hidden;
+    }
+    .axis-bar-fill {
+      height: 100%;
+      border-radius: 99px;
+      width: 0;
+      transition: width .8s cubic-bezier(.16,1,.3,1);
+    }
+    .axis-bar-pct {
+      font-family: var(--mono);
+      font-size: .72rem;
+      width: 36px;
+      text-align: right;
+      flex-shrink: 0;
+    }
+
+    /* Analysis */
+    .analysis-wrap {
+      background: var(--surface);
+      border: 1px solid var(--border2);
+      border-radius: var(--r);
+      padding: 24px;
+      margin-bottom: 20px;
+    }
+    .analysis-text {
+      font-size: .9rem;
+      color: var(--text2);
+      line-height: 1.75;
+      margin-bottom: 14px;
+    }
+    .analysis-text:last-child { margin-bottom: 0; }
+
+    /* Risks */
+    .risks-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    .risk-card {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 14px 16px;
+      background: rgba(239,68,68,.05);
+      border: 1px solid rgba(239,68,68,.15);
+      border-radius: var(--r-sm);
+    }
+    .risk-icon {
+      width: 18px; height: 18px;
+      flex-shrink: 0;
+      margin-top: 1px;
+      opacity: .8;
+    }
+    .risk-text { font-size: .85rem; color: var(--text2); line-height: 1.5; }
+
+    /* Recs */
+    .recs-wrap {
+      background: var(--surface);
+      border: 1px solid var(--border2);
+      border-radius: var(--r);
+      padding: 24px;
+      margin-bottom: 20px;
+    }
+    .rec-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .rec-item:last-child { border-bottom: none; padding-bottom: 0; }
+    .rec-num {
+      font-family: var(--mono);
+      font-size: .65rem;
+      color: var(--accent);
+      font-weight: 600;
+      width: 20px;
+      flex-shrink: 0;
+      padding-top: 2px;
+    }
+    .rec-text { font-size: .87rem; color: var(--text2); line-height: 1.6; }
+
+    /* Action buttons */
+    .action-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    .btn-outline {
+      flex: 1;
+      min-width: 130px;
+      padding: 11px 16px;
+      background: transparent;
+      border: 1px solid var(--border2);
+      border-radius: var(--r-sm);
+      font-size: .83rem;
+      color: var(--text2);
+      cursor: pointer;
+      transition: all .15s;
+      font-family: inherit;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      white-space: nowrap;
+    }
+    .btn-outline:hover {
+      border-color: var(--accent);
+      color: var(--text);
+      background: var(--accent-bg);
+    }
+
+    /* Comparison */
+    .compare-wrap {
+      background: var(--elevated);
+      border: 1px solid var(--border);
+      border-radius: var(--r-sm);
+      padding: 16px 18px;
+      margin-bottom: 20px;
+    }
+    .compare-title {
+      font-size: .75rem;
+      font-family: var(--mono);
+      color: var(--text3);
+      letter-spacing: .06em;
+      margin-bottom: 12px;
+    }
+    .compare-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 6px;
+    }
+    .compare-key { font-family: var(--mono); font-size: .7rem; color: var(--accent); width: 20px; }
+    .compare-val { font-family: var(--mono); font-size: .8rem; color: var(--text); }
+    .compare-delta {
+      font-family: var(--mono);
+      font-size: .72rem;
+      font-weight: 600;
+      padding: 1px 6px;
+      border-radius: 4px;
+    }
+    .delta-up   { background: rgba(34,197,94,.12); color: #22C55E; }
+    .delta-down { background: rgba(239,68,68,.12);  color: #EF4444; }
+    .delta-same { background: var(--border); color: var(--text3); }
+
+    /* Paywall */
+    .paywall {
+      margin-top: 32px;
+      padding-top: 32px;
+      border-top: 1px solid var(--border);
+    }
+    .paywall-label {
+      font-family: var(--mono);
+      font-size: .62rem;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: var(--text3);
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .paywall-plans {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    @media (max-width: 600px) {
+      .paywall-plans { grid-template-columns: 1fr; }
+    }
+    .paywall-card {
+      background: var(--surface);
+      border: 1px solid var(--border2);
+      border-radius: var(--r);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    .paywall-card.featured {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 1px var(--accent);
+    }
+    .paywall-badge {
+      background: var(--accent);
+      color: #fff;
+      font-family: var(--mono);
+      font-size: .62rem;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      text-align: center;
+      padding: 6px 12px;
+    }
+    .paywall-head {
+      padding: 28px 24px 24px;
+      text-align: center;
+      border-bottom: 1px solid var(--border);
+    }
+    .paywall-h {
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    .paywall-sub { font-size: .85rem; color: var(--text2); line-height: 1.6; margin-bottom: 20px; }
+    .paywall-includes {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      text-align: left;
+      margin-bottom: 24px;
+    }
+    .paywall-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: .83rem;
+      color: var(--text2);
+    }
+    .paywall-item-dot {
+      width: 5px; height: 5px;
+      border-radius: 50%;
+      background: var(--accent);
+      margin-top: 7px;
+      flex-shrink: 0;
+    }
+    .paywall-price {
+      font-size: 32px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+    .paywall-price-note { font-size: .78rem; color: var(--text3); margin-bottom: 20px; }
+
+    .months-preview {
+      display: flex;
+      gap: 10px;
+      padding: 20px 24px;
+      position: relative;
+    }
+    .month-card {
+      flex: 1;
+      background: var(--elevated);
+      border: 1px solid var(--border);
+      border-radius: var(--r-sm);
+      padding: 14px 12px;
+      filter: blur(5px);
+      user-select: none;
+      pointer-events: none;
+    }
+    .month-card-title {
+      font-family: var(--mono);
+      font-size: .6rem;
+      color: var(--text3);
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+    .month-card-line {
+      height: 6px;
+      border-radius: 3px;
+      background: var(--border2);
+      margin-bottom: 6px;
+    }
+    .months-lock {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+    .lock-icon {
+      width: 28px; height: 28px;
+      background: var(--overlay);
+      border: 1px solid var(--border2);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .lock-text {
+      font-size: .72rem;
+      color: var(--text3);
+      font-family: var(--mono);
+    }
+    .paywall-cta {
+      padding: 16px 24px 24px;
+      text-align: center;
+    }
+    .paywall-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 15px 36px;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: var(--r-sm);
+      font-size: .95rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background .15s, box-shadow .15s, transform .1s;
+      box-shadow: 0 0 28px rgba(59,130,246,.25);
+      width: 100%;
+      justify-content: center;
+    }
+    .paywall-btn:hover {
+      background: var(--accent-h);
+      box-shadow: 0 0 36px rgba(59,130,246,.4);
+      transform: translateY(-1px);
+    }
+    .paywall-fine {
+      margin-top: 10px;
+      font-size: .72rem;
+      color: var(--text3);
+    }
+
+    /* ── MOBILE ── */
+    @media (max-width: 480px) {
+      .quiz-header { padding: 16px 18px; }
+      #s-welcome .body,
+      #s-question .body,
+      #s-contact .body { padding-left: 18px; padding-right: 18px; }
+      .axis-bar-name { display: none; }
+      .months-preview { gap: 6px; padding: 16px; }
+    }
+
+    /* ── PREVIEW ── */
+    #s-preview .body {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 36px 24px 60px;
+      max-width: 520px;
+      margin: 0 auto;
+      width: 100%;
+    }
+    .preview-eyebrow {
+      font-family: var(--mono);
+      font-size: .6rem;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+      color: var(--text3);
+      margin-bottom: 10px;
+      text-align: center;
+    }
+    .preview-index-row {
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+      margin-bottom: 4px;
+    }
+    .preview-index-num {
+      font-size: clamp(56px, 12vw, 76px);
+      font-weight: 700;
+      letter-spacing: -.04em;
+      line-height: 1;
+    }
+    .preview-index-denom {
+      font-size: 1.2rem;
+      color: var(--text3);
+      font-family: var(--mono);
+    }
+    .preview-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 14px;
+      border-radius: 99px;
+      font-size: .78rem;
+      font-weight: 600;
+      margin-bottom: 24px;
+    }
+    .preview-axes {
+      width: 100%;
+      background: var(--surface);
+      border: 1px solid var(--border2);
+      border-radius: var(--r);
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+    .preview-axes-title {
+      font-family: var(--mono);
+      font-size: .62rem;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--text3);
+      margin-bottom: 16px;
+    }
+    .preview-axis-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+    .preview-axis-row:last-child { margin-bottom: 0; }
+    .preview-axis-key {
+      font-family: var(--mono);
+      font-size: .72rem;
+      font-weight: 600;
+      width: 18px;
+      flex-shrink: 0;
+    }
+    .preview-axis-label {
+      font-size: .78rem;
+      color: var(--text2);
+      width: 120px;
+      flex-shrink: 0;
+    }
+    .preview-axis-track {
+      flex: 1;
+      height: 5px;
+      background: var(--border2);
+      border-radius: 99px;
+      overflow: hidden;
+    }
+    .preview-axis-fill {
+      height: 100%;
+      border-radius: 99px;
+      width: 0;
+      transition: width .9s cubic-bezier(.16,1,.3,1);
+    }
+    .preview-axis-pct {
+      font-family: var(--mono);
+      font-size: .72rem;
+      width: 38px;
+      text-align: right;
+      flex-shrink: 0;
+    }
+    .preview-highlight {
+      width: 100%;
+      padding: 16px;
+      border-radius: var(--r-sm);
+      margin-bottom: 24px;
+      font-size: .87rem;
+      line-height: 1.65;
+      color: var(--text2);
+    }
+    .preview-highlight strong { color: var(--text); }
+    .preview-lock-note {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: .78rem;
+      color: var(--text3);
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    /* ── AXIS BREAK ── */
+    #s-break .body {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 24px 60px;
+      max-width: 500px;
+      margin: 0 auto;
+      width: 100%;
+      text-align: center;
+    }
+    .break-done-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-family: var(--mono);
+      font-size: .6rem;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: #22C55E;
+      background: rgba(34,197,94,.08);
+      border: 1px solid rgba(34,197,94,.2);
+      border-radius: 99px;
+      padding: 5px 12px;
+      margin-bottom: 28px;
+    }
+    .break-axis-letter {
+      font-size: clamp(72px, 16vw, 100px);
+      font-family: var(--mono);
+      font-weight: 700;
+      line-height: 1;
+      letter-spacing: -.04em;
+      margin-bottom: 8px;
+    }
+    .break-axis-name {
+      font-size: .85rem;
+      color: var(--text3);
+      font-family: var(--mono);
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      margin-bottom: 32px;
+    }
+    .break-score-ring {
+      position: relative;
+      width: 120px;
+      height: 120px;
+      margin: 0 auto 28px;
+    }
+    .break-score-ring svg { transform: rotate(-90deg); }
+    .break-score-val {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    .break-score-num {
+      font-family: var(--mono);
+      font-size: 28px;
+      font-weight: 700;
+      line-height: 1;
+    }
+    .break-score-pct {
+      font-size: .65rem;
+      color: var(--text3);
+      font-family: var(--mono);
+    }
+    .break-score-label {
+      font-size: .8rem;
+      color: var(--text2);
+      margin-bottom: 12px;
+    }
+    .break-next-label {
+      font-size: .72rem;
+      font-family: var(--mono);
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--text3);
+      margin-bottom: 8px;
+    }
+    .break-next-axis {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 20px;
+      background: var(--surface);
+      border: 1px solid var(--border2);
+      border-radius: 99px;
+      font-size: .88rem;
+      font-weight: 500;
+      margin-bottom: 32px;
+    }
+    .break-next-dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .break-divider {
+      width: 40px;
+      height: 1px;
+      background: var(--border2);
+      margin: 0 auto 24px;
+    }
+
+    /* ── PRINT / PDF ── */
+    @media print {
+      #s-welcome,
+      #s-question,
+      #s-break,
+      #s-preview,
+      #s-contact,
+      #s-processing { display: none !important; }
+
+      #s-results {
+        display: block !important;
+        animation: none !important;
+      }
+
+      body { background: #fff !important; color: #111 !important; }
+      .quiz-header { position: static; background: #fff; border-color: #e5e7eb; }
+      .logo { color: #2563EB; }
+
+      .score-hero,
+      .radar-wrap,
+      .analysis-wrap,
+      .recs-wrap { background: #f9fafb !important; border-color: #e5e7eb !important; }
+      .score-num { color: #111 !important; }
+      .score-desc, .analysis-text, .rec-text, .risk-text { color: #374151 !important; }
+      .section-title, .score-eyebrow, .axis-bar-key, .rec-num { color: #2563EB !important; }
+      .axis-bar-track { background: #e5e7eb !important; }
+      .axis-bar-name, .axis-bar-pct, .compare-title, .q-progress-txt { color: #6b7280 !important; }
+      .score-hero::before { display: none; }
+
+      .action-buttons { display: none !important; }
+      .paywall { display: none !important; }
+      .compare-wrap { background: #f3f4f6 !important; border-color: #e5e7eb !important; }
+
+      .risk-card { background: #fef2f2 !important; border-color: #fca5a5 !important; }
+      .risk-text { color: #374151 !important; }
+
+      @page { margin: 20mm 15mm; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════════════ WELCOME ═══════════════════════ -->
+<div id="s-welcome" class="screen active">
+  <header class="quiz-header">
+    <span class="logo">K-A-Q-S™</span>
+    <span class="header-meta">Диагностика управляемости</span>
+  </header>
+  <div class="body">
+    <div class="welcome-badge">Business Manageability Platform</div>
+    <h1 class="welcome-h1">Узнайте, где ваш бизнес<br><span>теряет управляемость</span></h1>
+    <p class="welcome-sub">24 вопроса. 15 минут. Получите Индекс управляемости, карту рисков по 4 осям и персональные рекомендации.</p>
+    <div class="axis-pills">
+      <div class="axis-pill"><span class="dot" style="background:#3B82F6"></span><span class="key">K</span><span class="name">Знания и прозрачность</span></div>
+      <div class="axis-pill"><span class="dot" style="background:#6366F1"></span><span class="key">A</span><span class="name">Автоматизация</span></div>
+      <div class="axis-pill"><span class="dot" style="background:#06B6D4"></span><span class="key">Q</span><span class="name">Качество и контроль</span></div>
+      <div class="axis-pill"><span class="dot" style="background:#8B5CF6"></span><span class="key">S</span><span class="name">Масштабируемость</span></div>
+    </div>
+    <button class="btn-primary" onclick="startQuiz()">
+      Начать диагностику
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <p class="welcome-note">Результаты сохраняются — сможете пройти повторно и увидеть прогресс</p>
+  </div>
+</div>
+
+<!-- ═══════════════════════ QUESTION ═══════════════════════ -->
+<div id="s-question" class="screen">
+  <header class="quiz-header">
+    <span class="logo">K-A-Q-S™</span>
+    <span class="header-meta" id="q-header-num">Вопрос 1 из 24</span>
+  </header>
+  <div class="body">
+    <div class="progress-wrap">
+      <div class="progress-segs" id="progress-segs"></div>
+      <div class="progress-labels">
+        <span class="prog-lbl" id="lbl-K">K</span>
+        <span class="prog-lbl" id="lbl-A">A</span>
+        <span class="prog-lbl" id="lbl-Q">Q</span>
+        <span class="prog-lbl" id="lbl-S">S</span>
+      </div>
+    </div>
+    <div class="q-axis-label">
+      <span class="q-axis-dot" id="q-axis-dot"></span>
+      <span id="q-axis-name"></span>
+    </div>
+    <p class="q-text" id="q-text"></p>
+    <div class="answers" id="answers"></div>
+    <div class="q-nav">
+      <button class="btn-back" id="btn-back" onclick="goBack()">← Назад</button>
+      <span class="q-progress-txt" id="q-nav-num"></span>
+      <div style="width:60px"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════ AXIS BREAK ═══════════════════════ -->
+<div id="s-break" class="screen">
+  <header class="quiz-header">
+    <span class="logo">K-A-Q-S™</span>
+    <span class="header-meta" id="break-step-label"></span>
+  </header>
+  <div class="body">
+    <div class="break-done-badge">
+      <svg width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="#22C55E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Раздел завершён
+    </div>
+
+    <div class="break-axis-letter" id="break-axis-letter">K</div>
+    <div class="break-axis-name" id="break-axis-name">Знания и прозрачность</div>
+
+    <div class="break-score-ring">
+      <svg width="120" height="120" viewBox="0 0 120 120">
+        <circle cx="60" cy="60" r="50" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="8"/>
+        <circle id="break-ring-fill" cx="60" cy="60" r="50" fill="none" stroke="#3B82F6" stroke-width="8"
+          stroke-linecap="round" stroke-dasharray="314" stroke-dashoffset="314"
+          style="transition: stroke-dashoffset 1s cubic-bezier(.16,1,.3,1)"/>
+      </svg>
+      <div class="break-score-val">
+        <span class="break-score-num" id="break-pct">0</span>
+        <span class="break-score-pct">%</span>
+      </div>
+    </div>
+    <p class="break-score-label" id="break-score-label">Результат по оси</p>
+
+    <div class="break-divider"></div>
+
+    <p class="break-next-label" id="break-next-label-txt">Следующий раздел</p>
+    <div class="break-next-axis" id="break-next-axis-pill" style="display:none">
+      <span class="break-next-dot" id="break-next-dot"></span>
+      <span id="break-next-name"></span>
+    </div>
+
+    <button class="btn-primary" id="break-cta" onclick="continueFromBreak()">
+      Продолжить
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+  </div>
+</div>
+
+<!-- ═══════════════════════ PREVIEW ═══════════════════════ -->
+<div id="s-preview" class="screen">
+  <header class="quiz-header">
+    <span class="logo">K-A-Q-S™</span>
+    <span class="header-meta">Предварительные результаты</span>
+  </header>
+  <div class="body">
+    <p class="preview-eyebrow">Ваш индекс управляемости</p>
+    <div class="preview-index-row">
+      <span class="preview-index-num" id="pv-index">—</span>
+      <span class="preview-index-denom">/100</span>
+    </div>
+    <div class="preview-status" id="pv-status"></div>
+
+    <div class="preview-axes">
+      <p class="preview-axes-title">Результат по осям</p>
+      <div class="preview-axis-row">
+        <span class="preview-axis-key" style="color:#3B82F6">K</span>
+        <span class="preview-axis-label">Знания</span>
+        <div class="preview-axis-track"><div class="preview-axis-fill" id="pv-bar-K"></div></div>
+        <span class="preview-axis-pct" id="pv-pct-K">—</span>
+      </div>
+      <div class="preview-axis-row">
+        <span class="preview-axis-key" style="color:#6366F1">A</span>
+        <span class="preview-axis-label">Автоматизация</span>
+        <div class="preview-axis-track"><div class="preview-axis-fill" id="pv-bar-A"></div></div>
+        <span class="preview-axis-pct" id="pv-pct-A">—</span>
+      </div>
+      <div class="preview-axis-row">
+        <span class="preview-axis-key" style="color:#06B6D4">Q</span>
+        <span class="preview-axis-label">Качество</span>
+        <div class="preview-axis-track"><div class="preview-axis-fill" id="pv-bar-Q"></div></div>
+        <span class="preview-axis-pct" id="pv-pct-Q">—</span>
+      </div>
+      <div class="preview-axis-row">
+        <span class="preview-axis-key" style="color:#8B5CF6">S</span>
+        <span class="preview-axis-label">Масштаб</span>
+        <div class="preview-axis-track"><div class="preview-axis-fill" id="pv-bar-S"></div></div>
+        <span class="preview-axis-pct" id="pv-pct-S">—</span>
+      </div>
+    </div>
+
+    <div class="preview-highlight" id="pv-highlight"></div>
+
+    <div class="preview-lock-note">
+      <svg width="13" height="14" viewBox="0 0 12 14" fill="none"><rect x="1" y="6" width="10" height="8" rx="2" stroke="#4A5568" stroke-width="1.2"/><path d="M3 6V4a3 3 0 016 0v2" stroke="#4A5568" stroke-width="1.2" stroke-linecap="round"/></svg>
+      Полный разбор, карта рисков и рекомендации — после сохранения результатов
+    </div>
+
+    <button class="btn-primary" style="width:100%;justify-content:center" onclick="showScreen('s-contact')">
+      Получить полный отчёт →
+    </button>
+    <button class="btn-skip" onclick="skipContact()" style="margin-top:12px">Посмотреть без сохранения</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════ CONTACT ═══════════════════════ -->
+<div id="s-contact" class="screen">
+  <header class="quiz-header">
+    <span class="logo">K-A-Q-S™</span>
+    <span class="header-meta">Последний шаг</span>
+  </header>
+  <div class="body">
+    <div class="contact-icon">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="1.5" stroke-linecap="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+    </div>
+    <h2 class="contact-h">Куда отправить результаты?</h2>
+    <p class="contact-sub">Сохраним ваш Индекс управляемости и разошлём красивый отчёт</p>
+
+    <div class="field-wrap">
+      <label class="field-label" for="f-name">Ваше имя или название компании (необязательно)</label>
+      <input class="field" id="f-name" type="text" placeholder="Например: Иван или ООО Ромашка" autocomplete="name">
+    </div>
+
+    <div class="toggle-wrap">
+      <button class="toggle-btn active" id="tog-email" onclick="setContactType('email')">📧 На email</button>
+      <button class="toggle-btn" id="tog-tg" onclick="setContactType('tg')">✈️ В Telegram</button>
+    </div>
+
+    <div class="field-wrap" id="contact-field-wrap">
+      <label class="field-label" id="contact-label">Email-адрес</label>
+      <input class="field" id="f-contact" type="email" placeholder="you@example.com" autocomplete="email">
+    </div>
+
+    <button class="btn-primary" style="width:100%;justify-content:center" onclick="submitContact()">
+      Получить результаты →
+    </button>
+    <button class="btn-skip" onclick="skipContact()">Посмотреть без сохранения</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════ PROCESSING ═══════════════════════ -->
+<div id="s-processing" class="screen">
+  <div class="body">
+    <p class="proc-logo">K-A-Q-S™</p>
+    <div class="proc-spinner"></div>
+    <div class="proc-steps">
+      <div class="proc-step" id="step-0">
+        <div class="step-icon">
+          <div class="dot-pulse"></div>
+          <svg class="check-svg" width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="#22C55E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <span>Анализируем 24 ответа...</span>
+      </div>
+      <div class="proc-step" id="step-1">
+        <div class="step-icon">
+          <div class="dot-pulse"></div>
+          <svg class="check-svg" width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="#22C55E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <span>Считаем Индекс управляемости...</span>
+      </div>
+      <div class="proc-step" id="step-2">
+        <div class="step-icon">
+          <div class="dot-pulse"></div>
+          <svg class="check-svg" width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="#22C55E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <span>Определяем зоны риска по осям...</span>
+      </div>
+      <div class="proc-step" id="step-3">
+        <div class="step-icon">
+          <div class="dot-pulse"></div>
+          <svg class="check-svg" width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="#22C55E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <span>Формируем персональные рекомендации...</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════ THANK YOU ═══════════════════════ -->
+<div id="s-thankyou" class="screen">
+  <div class="body" style="text-align:center;padding:48px 24px;max-width:440px;margin:0 auto">
+    <div style="width:56px;height:56px;border-radius:50%;background:rgba(99,102,241,.12);display:flex;align-items:center;justify-content:center;margin:0 auto 24px">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="#6366F1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+    <h2 style="font-size:1.4rem;font-weight:700;margin-bottom:12px">Заявка принята</h2>
+    <p id="ty-msg" style="color:var(--text2);font-size:.9rem;line-height:1.7;margin-bottom:32px">
+      Диагностика завершена. Результаты готовы — нажмите кнопку ниже, чтобы посмотреть индекс и рекомендации.
+    </p>
+    <button class="btn-primary" style="width:100%;justify-content:center" onclick="showResults()">
+      Посмотреть результаты
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <p style="margin-top:16px;font-size:.78rem;color:var(--text3)">Результаты сохранены в этой вкладке</p>
+  </div>
+</div>
+
+<!-- ═══════════════════════ RESULTS ═══════════════════════ -->
+<div id="s-results" class="screen">
+  <header class="quiz-header">
+    <span class="logo">K-A-Q-S™</span>
+    <span class="header-meta" id="res-header-date"></span>
+  </header>
+  <div class="body">
+
+    <!-- Score hero -->
+    <div class="score-hero" id="res-score-hero">
+      <p class="score-eyebrow">Индекс управляемости бизнеса</p>
+      <div class="score-num" id="res-score">—<span class="score-denom">/100</span></div>
+      <div class="score-status" id="res-status-badge"></div>
+      <p class="score-desc" id="res-status-desc"></p>
+    </div>
+
+    <!-- Radar -->
+    <div class="radar-wrap">
+      <p class="section-title">Карта управляемости</p>
+      <div class="radar-svg-wrap">
+        <svg class="radar-svg" id="radar-svg" width="240" height="240" viewBox="0 0 240 240">
+          <!-- grid lines -->
+          <g id="radar-grid"></g>
+          <!-- filled area -->
+          <polygon id="radar-fill" fill="rgba(59,130,246,.1)" stroke="#3B82F6" stroke-width="1.5" stroke-linejoin="round" points="120,120 120,120 120,120 120,120"/>
+          <!-- dots -->
+          <circle id="dot-K" cx="120" cy="120" r="4" fill="#3B82F6"/>
+          <circle id="dot-A" cx="120" cy="120" r="4" fill="#3B82F6"/>
+          <circle id="dot-Q" cx="120" cy="120" r="4" fill="#3B82F6"/>
+          <circle id="dot-S" cx="120" cy="120" r="4" fill="#3B82F6"/>
+          <!-- labels -->
+          <text x="120" y="22" text-anchor="middle" dominant-baseline="central" fill="rgba(59,130,246,.85)" font-size="11" font-family="JetBrains Mono, monospace" font-weight="600">K</text>
+          <text x="218" y="120" text-anchor="middle" dominant-baseline="central" fill="rgba(59,130,246,.85)" font-size="11" font-family="JetBrains Mono, monospace" font-weight="600">A</text>
+          <text x="120" y="218" text-anchor="middle" dominant-baseline="central" fill="rgba(59,130,246,.85)" font-size="11" font-family="JetBrains Mono, monospace" font-weight="600">Q</text>
+          <text x="22"  y="120" text-anchor="middle" dominant-baseline="central" fill="rgba(59,130,246,.85)" font-size="11" font-family="JetBrains Mono, monospace" font-weight="600">S</text>
+        </svg>
+      </div>
+      <div class="axis-bars" id="axis-bars"></div>
+    </div>
+
+    <!-- Analysis -->
+    <div class="analysis-wrap">
+      <p class="section-title">Что это значит для вашего бизнеса</p>
+      <div id="res-analysis"></div>
+    </div>
+
+    <!-- Risks -->
+    <div class="risks-wrap" id="res-risks"></div>
+
+    <!-- Recommendations -->
+    <div class="recs-wrap">
+      <p class="section-title">С чего начать прямо сейчас</p>
+      <div id="res-recs"></div>
+    </div>
+
+    <!-- Action buttons -->
+    <div class="action-buttons">
+      <button class="btn-outline" onclick="downloadPDF()">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M8 1v9M4 7l4 4 4-4"/><path d="M2 13h12"/></svg>
+        Скачать PDF
+      </button>
+      <button class="btn-outline" id="btn-email" onclick="sendEmail()">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M2 4h12v8H2z"/><path d="M2 4l6 5 6-5"/></svg>
+        На email
+      </button>
+      <button class="btn-outline" onclick="shareTelegram()">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M14.5 1.5L1 6.5l5 2 2 5 2-4 4.5 4-1-11.5z" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        В Telegram
+      </button>
+    </div>
+
+    <!-- Comparison -->
+    <div class="compare-wrap" id="res-compare" style="display:none">
+      <p class="compare-title">// Прогресс с прошлой диагностики</p>
+      <div id="compare-content"></div>
+    </div>
+
+    <!-- Paywall -->
+    <div class="paywall">
+      <p class="paywall-label">// Что делать дальше</p>
+      <div class="paywall-plans">
+
+        <!-- Plan 1: Roadmap PDF -->
+        <div class="paywall-card">
+          <div class="paywall-head" style="flex:1">
+            <h3 class="paywall-h">Roadmap на 90 дней</h3>
+            <p class="paywall-sub">Персональный план по каждой оси — что конкретно делать в месяц 1, 2 и 3</p>
+            <div class="paywall-includes">
+              <div class="paywall-item"><span class="paywall-item-dot"></span><span>72 конкретных действия по 4 осям</span></div>
+              <div class="paywall-item"><span class="paywall-item-dot"></span><span>Приоритизация под ваши результаты</span></div>
+              <div class="paywall-item"><span class="paywall-item-dot"></span><span>Чеклисты на каждый месяц</span></div>
+              <div class="paywall-item"><span class="paywall-item-dot"></span><span>Шаблоны регламентов и P&amp;L-таблицы</span></div>
+            </div>
+            <div class="paywall-price">7 990 ₽</div>
+            <p class="paywall-price-note">Единоразово · без подписки · PDF</p>
+          </div>
+
+          <!-- Blurred months -->
+          <div class="months-preview">
+            <div class="month-card">
+              <div class="month-card-title">Месяц 1</div>
+              <div class="month-card-line" style="width:80%"></div>
+              <div class="month-card-line" style="width:60%"></div>
+              <div class="month-card-line" style="width:70%"></div>
+            </div>
+            <div class="month-card">
+              <div class="month-card-title">Месяц 2</div>
+              <div class="month-card-line" style="width:75%"></div>
+              <div class="month-card-line" style="width:90%"></div>
+              <div class="month-card-line" style="width:55%"></div>
+            </div>
+            <div class="month-card">
+              <div class="month-card-title">Месяц 3</div>
+              <div class="month-card-line" style="width:65%"></div>
+              <div class="month-card-line" style="width:85%"></div>
+              <div class="month-card-line" style="width:70%"></div>
+            </div>
+            <div class="months-lock">
+              <div class="lock-icon">
+                <svg width="12" height="14" viewBox="0 0 12 14" fill="none"><rect x="1" y="6" width="10" height="8" rx="2" stroke="#8A97A8" stroke-width="1.3"/><path d="M3 6V4a3 3 0 016 0v2" stroke="#8A97A8" stroke-width="1.3" stroke-linecap="round"/></svg>
+              </div>
+              <span class="lock-text">Закрыто</span>
+            </div>
+          </div>
+
+          <div class="paywall-cta">
+            <a href="#payment" class="paywall-btn" id="paywall-cta-btn" style="background:var(--surface);color:var(--accent);border:1.5px solid var(--accent)">
+              Получить Roadmap
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </a>
+            <p class="paywall-fine">После оплаты — мгновенный доступ к PDF</p>
+          </div>
+        </div>
+
+        <!-- Plan 2: Roadmap + Platform -->
+        <div class="paywall-card featured">
+          <div class="paywall-badge">Лучший выбор</div>
+          <div class="paywall-head" style="flex:1">
+            <h3 class="paywall-h">Roadmap + Внедрение</h3>
+            <p class="paywall-sub">Roadmap PDF и 2 недели доступа к платформе — трекер задач, прогресс, сопровождение</p>
+            <div class="paywall-includes">
+              <div class="paywall-item"><span class="paywall-item-dot"></span><span>Всё из тарифа Roadmap</span></div>
+              <div class="paywall-item"><span class="paywall-item-dot"></span><span>2 недели доступа к платформе</span></div>
+              <div class="paywall-item"><span class="paywall-item-dot"></span><span>Трекер задач по месяцам — отмечаете прогресс</span></div>
+              <div class="paywall-item"><span class="paywall-item-dot"></span><span>Карта рисков и приоритетов в личном кабинете</span></div>
+            </div>
+            <div class="paywall-price">12 990 ₽</div>
+            <p class="paywall-price-note">Единоразово · 2 недели платформы включены</p>
+          </div>
+
+          <!-- Blurred months -->
+          <div class="months-preview">
+            <div class="month-card">
+              <div class="month-card-title">Месяц 1</div>
+              <div class="month-card-line" style="width:80%"></div>
+              <div class="month-card-line" style="width:60%"></div>
+              <div class="month-card-line" style="width:70%"></div>
+            </div>
+            <div class="month-card">
+              <div class="month-card-title">Месяц 2</div>
+              <div class="month-card-line" style="width:75%"></div>
+              <div class="month-card-line" style="width:90%"></div>
+              <div class="month-card-line" style="width:55%"></div>
+            </div>
+            <div class="month-card">
+              <div class="month-card-title">Месяц 3</div>
+              <div class="month-card-line" style="width:65%"></div>
+              <div class="month-card-line" style="width:85%"></div>
+              <div class="month-card-line" style="width:70%"></div>
+            </div>
+            <div class="months-lock">
+              <div class="lock-icon">
+                <svg width="12" height="14" viewBox="0 0 12 14" fill="none"><rect x="1" y="6" width="10" height="8" rx="2" stroke="#8A97A8" stroke-width="1.3"/><path d="M3 6V4a3 3 0 016 0v2" stroke="#8A97A8" stroke-width="1.3" stroke-linecap="round"/></svg>
+              </div>
+              <span class="lock-text">Закрыто</span>
+            </div>
+          </div>
+
+          <div class="paywall-cta">
+            <a href="#payment" class="paywall-btn" id="paywall-cta-btn-2">
+              Получить Roadmap + Платформу
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </a>
+            <p class="paywall-fine">После оплаты — доступ к PDF и платформе</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div><!-- /body -->
+</div><!-- /results -->
+
+<script>
+/* ══════════════════════════════════════════════
+   DATA
+══════════════════════════════════════════════ */
+const QUESTIONS = [
+  // K — Знания и прозрачность
+  { axis:'K', axisName:'Знания и прозрачность', color:'#3B82F6',
+    text:'Вы можете назвать прибыль вашего бизнеса за прошлый месяц?',
+    answers:[
+      {label:'Да — считаю каждый месяц, цифры всегда под рукой', score:4},
+      {label:'Могу назвать примерно, но точно не скажу', score:3},
+      {label:'Нужно сначала пересчитать — сразу не отвечу', score:2},
+      {label:'Не считаю прибыль отдельно от выручки', score:1},
+    ]},
+  { axis:'K', axisName:'Знания и прозрачность', color:'#3B82F6',
+    text:'Вы точно понимаете, какие продукты или услуги приносят основную прибыль?',
+    answers:[
+      {label:'Есть точный расчёт прибыльности по каждому продукту', score:4},
+      {label:'Понимаю без точных расчётов, интуитивно', score:3},
+      {label:'Скорее догадываюсь, чем знаю', score:2},
+      {label:'Не понимаю, что прибыльно, а что нет', score:1},
+    ]},
+  { axis:'K', axisName:'Знания и прозрачность', color:'#3B82F6',
+    text:'У каждого сотрудника есть чёткая зона ответственности и понятный результат работы?',
+    answers:[
+      {label:'У каждого прописана роль, KPI и зона ответственности', score:4},
+      {label:'Договорились устно, нигде не зафиксировано', score:3},
+      {label:'Распределяю задачи на ходу, чётких зон нет', score:2},
+      {label:'Все делают всё — ответственность размыта', score:1},
+    ]},
+  { axis:'K', axisName:'Знания и прозрачность', color:'#3B82F6',
+    text:'Если новый сотрудник выйдет завтра — он разберётся, как работает бизнес, за пару дней?',
+    answers:[
+      {label:'Да — есть онбординг, документация и база знаний', score:4},
+      {label:'Разберётся, но придётся долго объяснять лично', score:3},
+      {label:'Потратит недели на то, чтобы понять как что работает', score:2},
+      {label:'Без меня новый не разберётся вообще', score:1},
+    ]},
+  { axis:'K', axisName:'Знания и прозрачность', color:'#3B82F6',
+    text:'Ключевые процессы бизнеса записаны в виде регламентов или инструкций?',
+    answers:[
+      {label:'Да — все основные процессы описаны, команда ими пользуется', score:4},
+      {label:'Часть процессов описана, остальное в головах', score:3},
+      {label:'Есть кое-что, но устарело и никто не читает', score:2},
+      {label:'Ничего не записано — всё держится на людях', score:1},
+    ]},
+  { axis:'K', axisName:'Знания и прозрачность', color:'#3B82F6',
+    text:'Вы принимаете управленческие решения на основе данных и цифр?',
+    answers:[
+      {label:'Да — есть регулярные отчёты, решения принимаю на их основе', score:4},
+      {label:'Иногда смотрю данные, чаще доверяю интуиции', score:3},
+      {label:'В основном на ощущениях и опыте', score:2},
+      {label:'Данных нет — решаю исключительно на интуиции', score:1},
+    ]},
+
+  // A — Автоматизация
+  { axis:'A', axisName:'Автоматизация', color:'#6366F1',
+    text:'Повторяющиеся задачи в бизнесе выполняются по стандартной схеме без вашего вмешательства?',
+    answers:[
+      {label:'Да — есть регламенты, сотрудники делают без лишних вопросов', score:4},
+      {label:'Есть устные договорённости, но не всегда соблюдают', score:3},
+      {label:'Каждый делает по-своему — стандартной схемы нет', score:2},
+      {label:'Всё делается через меня или каждый раз заново', score:1},
+    ]},
+  { axis:'A', axisName:'Автоматизация', color:'#6366F1',
+    text:'AI-инструменты или автоматизация помогают вашей команде экономить время на рутине?',
+    answers:[
+      {label:'Да — несколько инструментов встроены в рабочий процесс', score:4},
+      {label:'Пробовали что-то, но системно не используем', score:3},
+      {label:'Единицы пользуются сами, без единой системы', score:2},
+      {label:'Не используем автоматизацию и AI вообще', score:1},
+    ]},
+  { axis:'A', axisName:'Автоматизация', color:'#6366F1',
+    text:'Ваши рабочие инструменты и сервисы связаны между собой — данные передаются автоматически?',
+    answers:[
+      {label:'Да — системы интегрированы, данные синхронизируются сами', score:4},
+      {label:'Частично — кое-что связано, остальное вручную', score:3},
+      {label:'В основном перекладываем данные вручную', score:2},
+      {label:'Всё разрознено — каждая система сама по себе', score:1},
+    ]},
+  { axis:'A', axisName:'Автоматизация', color:'#6366F1',
+    text:'Вы регулярно анализируете эффективность рекламы и отключаете то, что не работает?',
+    answers:[
+      {label:'Да — каждый месяц смотрю и оптимизирую', score:4},
+      {label:'Иногда смотрю, системы нет', score:3},
+      {label:'Редко, только если что-то явно не работает', score:2},
+      {label:'Не анализирую — запускаю и надеюсь на результат', score:1},
+    ]},
+  { axis:'A', axisName:'Автоматизация', color:'#6366F1',
+    text:'Есть ли у вас единое место, где вы видите ключевые метрики бизнеса в реальном времени?',
+    answers:[
+      {label:'Да — есть дашборд, смотрю его регулярно', score:4},
+      {label:'Собираю данные из разных источников раз в месяц', score:3},
+      {label:'Данные есть, но без системы — смотрю от случая к случаю', score:2},
+      {label:'Нет — не знаю, где смотреть нужные цифры', score:1},
+    ]},
+  { axis:'A', axisName:'Автоматизация', color:'#6366F1',
+    text:'Вы видите статус задач команды без лишних вопросов и звонков?',
+    answers:[
+      {label:'Да — есть трекер задач, вижу всё без лишних вопросов', score:4},
+      {label:'Спрашиваю у сотрудников — они отвечают', score:3},
+      {label:'Узнаю по факту — когда сделано или уже поздно', score:2},
+      {label:'Не слежу за задачами — надеюсь, что сделают', score:1},
+    ]},
+
+  // Q — Качество и контроль рисков
+  { axis:'Q', axisName:'Качество и контроль рисков', color:'#06B6D4',
+    text:'Вы заранее видите возможные финансовые проблемы — например, кассовые разрывы?',
+    answers:[
+      {label:'Да — есть финансовый прогноз, вижу проблемы за 1–2 месяца', score:4},
+      {label:'Иногда вижу заранее, но не всегда', score:3},
+      {label:'Замечаю, когда уже почти поздно что-то менять', score:2},
+      {label:'Финансовые проблемы появляются для меня неожиданно', score:1},
+    ]},
+  { axis:'Q', axisName:'Качество и контроль рисков', color:'#06B6D4',
+    text:'Вы регулярно видите ключевые финансовые показатели — выручку, расходы, прибыль?',
+    answers:[
+      {label:'Да — есть регулярные отчёты, смотрю каждую неделю', score:4},
+      {label:'Считаю иногда — систематической привычки нет', score:3},
+      {label:'Примерно понимаю, точных цифр нет', score:2},
+      {label:'Не считаю финансы регулярно', score:1},
+    ]},
+  { axis:'Q', axisName:'Качество и контроль рисков', color:'#06B6D4',
+    text:'В бизнесе есть понятные процессы — одни и те же проблемы не повторяются по кругу?',
+    answers:[
+      {label:'Да — прописаны процессы, одни ошибки не повторяются', score:4},
+      {label:'Часть есть, но много решается на ходу', score:3},
+      {label:'Процессов нет — каждый раз решаем заново', score:2},
+      {label:'Постоянный пожар, одни и те же проблемы по кругу', score:1},
+    ]},
+  { axis:'Q', axisName:'Качество и контроль рисков', color:'#06B6D4',
+    text:'Если что-то сломается в бизнесе — есть чёткий сценарий: кто что делает и за сколько исправит?',
+    answers:[
+      {label:'Да — есть регламент, роли расписаны, сроки фиксированы', score:4},
+      {label:'Разбираемся быстро, но без чёткого плана', score:3},
+      {label:'Каждый раз разбираемся с нуля', score:2},
+      {label:'Каждый сбой — хаос и поиск виноватых', score:1},
+    ]},
+  { axis:'Q', axisName:'Качество и контроль рисков', color:'#06B6D4',
+    text:'Вы точно знаете, из каких каналов приходит большинство ваших клиентов?',
+    answers:[
+      {label:'Да — веду аналитику по каждому каналу', score:4},
+      {label:'Знаю примерно, точной аналитики нет', score:3},
+      {label:'Догадываюсь, но не уверен', score:2},
+      {label:'Не знаю, откуда приходят клиенты', score:1},
+    ]},
+  { axis:'Q', axisName:'Качество и контроль рисков', color:'#06B6D4',
+    text:'Работа команды не держится только на вашем постоянном контроле?',
+    answers:[
+      {label:'Команда работает сама, я включаюсь только по необходимости', score:4},
+      {label:'В основном сами, но иногда нужно подтолкнуть', score:3},
+      {label:'Без моего контроля задачи зависают', score:2},
+      {label:'Без меня работа встаёт', score:1},
+    ]},
+
+  // S — Масштабируемость
+  { axis:'S', axisName:'Масштабируемость', color:'#8B5CF6',
+    text:'Если вас не будет неделю — команда продолжит работу без серьёзных сбоев?',
+    answers:[
+      {label:'Да — всё продолжит работать в штатном режиме', score:4},
+      {label:'Справятся, но часть решений зависнет', score:3},
+      {label:'Будут сбои — придётся разгребать по возвращении', score:2},
+      {label:'Без меня всё остановится', score:1},
+    ]},
+  { axis:'S', axisName:'Масштабируемость', color:'#8B5CF6',
+    text:'Бизнес может стабильно работать без вашего ежедневного участия?',
+    answers:[
+      {label:'Да — бизнес работает и без меня каждый день', score:4},
+      {label:'В основном да, но часть вещей держится на мне', score:3},
+      {label:'Без меня начинаются сбои уже через пару дней', score:2},
+      {label:'Без меня бизнес не работает', score:1},
+    ]},
+  { axis:'S', axisName:'Масштабируемость', color:'#8B5CF6',
+    text:'Ваш бизнес не зависит критически от одного источника клиентов?',
+    answers:[
+      {label:'Есть 3+ канала, ни один не является критичным', score:4},
+      {label:'Два канала, но один сильно доминирует', score:3},
+      {label:'По сути один канал — остальные дают единицы', score:2},
+      {label:'Всё держится на одном канале', score:1},
+    ]},
+  { axis:'S', axisName:'Масштабируемость', color:'#8B5CF6',
+    text:'Если объём работы вырастет вдвое — система справится без кризиса?',
+    answers:[
+      {label:'Да — система спроектирована с запасом, рост плановый', score:4},
+      {label:'Справимся с усилием, но будет тяжело', score:3},
+      {label:'Придётся срочно перестраиваться', score:2},
+      {label:'Уже сейчас всё перегружено', score:1},
+    ]},
+  { axis:'S', axisName:'Масштабируемость', color:'#8B5CF6',
+    text:'Вы управляете бизнесом системно — есть план, а не только реакция на проблемы?',
+    answers:[
+      {label:'Есть план и система — реагирую только на нештатное', score:4},
+      {label:'Стараюсь системно, но часто всё равно тушу пожары', score:3},
+      {label:'В основном реагирую на проблемы по мере появления', score:2},
+      {label:'Постоянно в режиме пожаротушения', score:1},
+    ]},
+  { axis:'S', axisName:'Масштабируемость', color:'#8B5CF6',
+    text:'Есть ли у вас понимание, что нужно перестроить в бизнесе, когда он вырастет в 2–3 раза?',
+    answers:[
+      {label:'Да — есть конкретный план с точками масштабирования', score:4},
+      {label:'Есть общее понимание, но без деталей', score:3},
+      {label:'Думали об этом, но ничего не зафиксировано', score:2},
+      {label:'Не думали — будем разбираться по ходу', score:1},
+    ]},
+]
+
+const ANALYSIS = {
+  K: {
+    critical: 'Бизнес работает на знаниях и интуиции ключевых людей — прежде всего вас. Процессы не задокументированы, роли размыты, финансовая картина непрозрачна. Каждый уход сотрудника — это риск. Каждое решение требует вашего участия. Масштабирование невозможно без хаоса.',
+    weak: 'Знания и процессы частично зафиксированы, но система непоследовательна. Часть критичной информации хранится в головах людей. При росте или кадровых изменениях это создаёт серьёзные риски.',
+    medium: 'База знаний и процессы есть, но требуют систематизации. Некоторые решения до сих пор принимаются на интуиции, а не на данных.',
+  },
+  A: {
+    critical: 'Большинство процессов выполняются вручную. Команда тратит время на рутину вместо роста. Нет единой картины метрик — управление происходит вслепую. Конкуренты, которые автоматизируют те же процессы, уже работают быстрее и с меньшими затратами.',
+    weak: 'Автоматизация внедряется точечно, без системы. Данные разрознены. Рекламные каналы анализируются нерегулярно — часть бюджета расходуется впустую.',
+    medium: 'Базовые инструменты есть, но потенциал автоматизации используется лишь частично. Данные для принятия решений доступны, но требуют усилий для сбора.',
+  },
+  Q: {
+    critical: 'У бизнеса нет системы контроля: ошибки обнаруживаются поздно, финансовые риски не видны заранее, одни и те же проблемы решаются снова и снова. Каждый сбой становится кризисом вместо плановой ситуации.',
+    weak: 'Контроль качества есть, но непоследователен. Финансовые показатели отслеживаются нерегулярно. При сбоях реакция есть, но без стандартного сценария.',
+    medium: 'Основные метрики отслеживаются, риски частично управляются. Есть зоны, где контроль ещё недостаточен — особенно в превентивной работе с проблемами.',
+  },
+  S: {
+    critical: 'Бизнес зависит от вашего присутствия каждый день. Если вы выпадаете — выпадает бизнес. Это не компания, которую можно масштабировать или продать — это личный проект, который работает только пока работаете вы.',
+    weak: 'Бизнес частично независим, но критичные точки держатся на вас. При росте начнутся перегрузки. Зависимость от одного-двух каналов клиентов создаёт уязвимость.',
+    medium: 'Операционная независимость частично выстроена. Бизнес выдержит краткосрочное отсутствие, но системный рост требует дополнительной подготовки.',
+  },
+}
+const RISKS = {
+  K: 'Знания хранятся в людях: уход сотрудника = потеря процессов и компетенций',
+  A: 'Решения без данных: ресурсы тратятся неэффективно, проблемы невидимы',
+  Q: 'Нет ранней диагностики: проблемы и финансовые риски обнаруживаются поздно',
+  S: 'Бизнес держится на владельце: невозможно делегировать и масштабировать',
+}
+const RECS = {
+  K: [
+    'Запишите 5 ключевых процессов — кто, что, как делает. Начните с самых частых задач команды.',
+    'Введите еженедельный P&L: выручка, расходы, прибыль — 10 минут каждую пятницу.',
+    'Пропишите зоны ответственности для каждой роли: 2–3 KPI + ожидаемый результат.',
+  ],
+  A: [
+    'Составьте список из 5 задач, которые команда делает вручную каждую неделю — это первые кандидаты на автоматизацию.',
+    'Подключите аналитику и смотрите источники клиентов еженедельно — хотя бы Яндекс.Метрику.',
+    'Введите единый трекер задач — всё, что делает команда, должно быть видно без лишних звонков.',
+  ],
+  Q: [
+    'Составьте финансовый прогноз на 3 месяца вперёд — кассовый разрыв должен быть виден заранее.',
+    'Выберите 5 ключевых метрик и начните смотреть их еженедельно — это займёт 15 минут.',
+    'Опишите сценарий реакции на 3 типичных сбоя: кто отвечает, что делает, за сколько исправляет.',
+  ],
+  S: [
+    'Выпишите все решения, которые принимаете только вы — делегируйте одно в ближайший месяц.',
+    'Добавьте второй канал привлечения клиентов — один источник это критический бизнес-риск.',
+    'Напишите, что конкретно нужно перестроить при росте ×2: люди, инструменты, процессы.',
+  ],
+}
+
+const STATUS = [
+  { max:25, label:'Критический', desc:'Бизнес уязвим. Нужны срочные изменения в нескольких зонах.', color:'#EF4444', bg:'rgba(239,68,68,.12)', bd:'rgba(239,68,68,.25)' },
+  { max:45, label:'Слабый',      desc:'Есть серьёзные пробелы. Часть бизнеса держится на интуиции.',  color:'#F97316', bg:'rgba(249,115,22,.12)', bd:'rgba(249,115,22,.25)' },
+  { max:65, label:'Средний',     desc:'Базовые вещи есть, но системности не хватает.',                  color:'#EAB308', bg:'rgba(234,179,8,.12)',  bd:'rgba(234,179,8,.25)'  },
+  { max:80, label:'Хороший',     desc:'Бизнес управляемый. Есть точки роста для следующего уровня.',    color:'#3B82F6', bg:'rgba(59,130,246,.12)', bd:'rgba(59,130,246,.25)' },
+  { max:100,label:'Сильный',     desc:'Высокая управляемость. Система работает и без вас.',              color:'#22C55E', bg:'rgba(34,197,94,.12)',  bd:'rgba(34,197,94,.25)'  },
+]
+
+/* ══════════════════════════════════════════════
+   STATE
+══════════════════════════════════════════════ */
+const S = {
+  qi: 0,
+  answers: new Array(24).fill(null),
+  name: '',
+  contact: '',
+  contactType: 'email',
+}
+
+/* ══════════════════════════════════════════════
+   SCREENS
+══════════════════════════════════════════════ */
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(el => {
+    el.classList.remove('active')
+    el.style.display = 'none'
+  })
+  const el = document.getElementById(id)
+  el.style.display = 'flex'
+  el.classList.add('active')
+  window.scrollTo(0, 0)
+}
+
+function showResults() {
+  const { index, pct } = calcScores()
+  const status = getStatus(index)
+  const data = {
+    index,
+    pct,
+    statusLabel: status.label,
+    statusDesc: status.desc,
+    date: new Date().toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' })
+  }
+  localStorage.setItem('kaqs_results', JSON.stringify(data))
+  window.location.href = 'kaqs-results.html'
+}
+
+/* ══════════════════════════════════════════════
+   WELCOME
+══════════════════════════════════════════════ */
+function startQuiz() {
+  S.qi = 0
+  S.answers = new Array(24).fill(null)
+  showScreen('s-question')
+  renderQuestion()
+}
+
+/* ══════════════════════════════════════════════
+   QUESTION
+══════════════════════════════════════════════ */
+function renderQuestion() {
+  const q = QUESTIONS[S.qi]
+  const n = S.qi + 1
+
+  document.getElementById('q-header-num').textContent = `Вопрос ${n} из 24`
+  document.getElementById('q-nav-num').textContent = `${n} / 24`
+  document.getElementById('q-text').textContent = q.text
+  document.getElementById('q-axis-name').textContent = q.axis + ' · ' + q.axisName
+  document.getElementById('q-axis-dot').style.background = q.color
+  document.getElementById('btn-back').disabled = S.qi === 0
+
+  // Progress segments
+  const segs = document.getElementById('progress-segs')
+  segs.innerHTML = ''
+  for (let i = 0; i < 24; i++) {
+    const seg = document.createElement('div')
+    seg.className = 'prog-seg'
+    const fill = document.createElement('div')
+    fill.className = 'prog-seg-fill'
+    const axis = QUESTIONS[i].axis
+    const color = QUESTIONS[i].color
+    fill.style.background = color
+    if (S.answers[i] !== null) fill.style.width = '100%'
+    else if (i === S.qi) fill.style.width = '50%'
+    seg.appendChild(fill)
+    segs.appendChild(seg)
+  }
+
+  // Axis labels
+  const axes = ['K','A','Q','S']
+  axes.forEach(a => {
+    const el = document.getElementById('lbl-' + a)
+    const axisIdx = QUESTIONS.findIndex(x => x.axis === a)
+    const lastIdx = QUESTIONS.map(x => x.axis).lastIndexOf(a)
+    if (S.qi >= axisIdx && S.qi <= lastIdx) {
+      el.className = 'prog-lbl active'
+    } else if (S.qi > lastIdx) {
+      el.className = 'prog-lbl done'
+    } else {
+      el.className = 'prog-lbl'
+    }
+  })
+
+  // Answers
+  const container = document.getElementById('answers')
+  container.innerHTML = ''
+  q.answers.forEach((a, idx) => {
+    const btn = document.createElement('button')
+    btn.className = 'answer-btn'
+    if (S.answers[S.qi] === idx) btn.classList.add('selected')
+    btn.textContent = a.label
+    btn.onclick = () => selectAnswer(idx)
+    container.appendChild(btn)
+  })
+}
+
+// Axes end at questions 5, 11, 17, 23 (0-indexed)
+const AXIS_ENDS = [5, 11, 17, 23]
+const AXES_META = [
+  { key:'K', name:'Знания и прозрачность', color:'#3B82F6' },
+  { key:'A', name:'Автоматизация',          color:'#6366F1' },
+  { key:'Q', name:'Качество и контроль',    color:'#06B6D4' },
+  { key:'S', name:'Масштабируемость',       color:'#8B5CF6' },
+]
+
+function selectAnswer(idx) {
+  S.answers[S.qi] = idx
+
+  // visual feedback
+  const btns = document.querySelectorAll('.answer-btn')
+  btns.forEach(b => b.classList.remove('selected'))
+  btns[idx].classList.add('selected')
+  btns.forEach(b => b.disabled = true)
+
+  setTimeout(() => {
+    const isAxisEnd = AXIS_ENDS.includes(S.qi)
+    if (isAxisEnd) {
+      showAxisBreak(S.qi)
+    } else if (S.qi < 23) {
+      S.qi++
+      renderQuestion()
+    }
+  }, 380)
+}
+
+function showAxisBreak(endQi) {
+  const axisIdx = AXIS_ENDS.indexOf(endQi)
+  const axis = AXES_META[axisIdx]
+  const nextAxis = AXES_META[axisIdx + 1] || null
+  const isLast = axisIdx === 3
+
+  // Calc axis score
+  const start = axisIdx * 6
+  let raw = 0
+  for (let i = start; i < start + 6; i++) {
+    const chosen = S.answers[i]
+    if (chosen !== null) raw += QUESTIONS[i].answers[chosen].score
+  }
+  const pct = Math.round((raw / 24) * 100)
+
+  // Set content
+  document.getElementById('break-step-label').textContent = `Раздел ${axisIdx + 1} из 4`
+  document.getElementById('break-axis-letter').textContent = axis.key
+  document.getElementById('break-axis-letter').style.color = axis.color
+  document.getElementById('break-axis-name').textContent = axis.name
+  document.getElementById('break-pct').textContent = pct
+
+  // Score label
+  const label = pct >= 75 ? 'Отлично по этой оси' : pct >= 50 ? 'Есть пространство для роста' : 'Зона требует внимания'
+  document.getElementById('break-score-label').textContent = label
+
+  // Ring color
+  const ringColor = pct >= 75 ? '#22C55E' : pct >= 50 ? '#3B82F6' : '#EF4444'
+  const ring = document.getElementById('break-ring-fill')
+  ring.setAttribute('stroke', ringColor)
+  ring.style.strokeDashoffset = 314 // reset
+
+  // Next axis
+  const pill = document.getElementById('break-next-axis-pill')
+  const nextLbl = document.getElementById('break-next-label-txt')
+  if (nextAxis) {
+    pill.style.display = 'inline-flex'
+    document.getElementById('break-next-dot').style.background = nextAxis.color
+    document.getElementById('break-next-name').textContent = nextAxis.key + ' · ' + nextAxis.name
+    nextLbl.textContent = 'Следующий раздел'
+  } else {
+    pill.style.display = 'none'
+    nextLbl.textContent = ''
+  }
+
+  const ctaBtn = document.getElementById('break-cta')
+  ctaBtn.innerHTML = isLast
+    ? 'Завершить диагностику <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>'
+    : 'Продолжить <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>'
+
+  S._breakAxisIdx = axisIdx
+  S._breakIsLast = isLast
+
+  showScreen('s-break')
+
+  // Animate ring after render
+  setTimeout(() => {
+    ring.style.strokeDashoffset = 314 - (314 * pct / 100)
+  }, 150)
+}
+
+function continueFromBreak() {
+  if (S._breakIsLast) {
+    renderPreview()
+    showScreen('s-preview')
+  } else {
+    S.qi++
+    showScreen('s-question')
+    renderQuestion()
+  }
+}
+
+function renderPreview() {
+  const { index, pct } = calcScores()
+  const status = getStatus(index)
+  const sorted = getSortedAxes(pct)
+  const [w1, w2] = sorted
+
+  // Index
+  const numEl = document.getElementById('pv-index')
+  numEl.textContent = index
+  numEl.style.color = status.color
+
+  // Status badge
+  const badge = document.getElementById('pv-status')
+  badge.textContent = status.label
+  badge.style.background = status.bg
+  badge.style.color = status.color
+  badge.style.border = `1px solid ${status.bd}`
+
+  // Bars
+  setTimeout(() => {
+    ;['K','A','Q','S'].forEach(a => {
+      const color = getBarColor(pct[a])
+      const fill = document.getElementById('pv-bar-' + a)
+      const pctEl = document.getElementById('pv-pct-' + a)
+      fill.style.background = color
+      fill.style.width = pct[a] + '%'
+      pctEl.textContent = pct[a] + '%'
+      pctEl.style.color = color
+    })
+  }, 150)
+
+  // Highlight — which axes are weak
+  const axisNames = { K:'знания и прозрачность', A:'автоматизация', Q:'качество и контроль', S:'масштабируемость' }
+  const weakNames = [w1, w2].map(a => axisNames[a])
+  const hlEl = document.getElementById('pv-highlight')
+
+  let hlText = ''
+  if (index <= 45) {
+    hlText = `Бизнес работает, но <strong>управляемость требует серьёзной работы</strong>. Сильнее всего просели <strong>${weakNames[0]}</strong> и <strong>${weakNames[1]}</strong> — именно здесь наибольший риск и потенциал роста.`
+    hlEl.style.background = 'rgba(239,68,68,.06)'
+    hlEl.style.border = '1px solid rgba(239,68,68,.15)'
+  } else if (index <= 65) {
+    hlText = `Базовый уровень управляемости есть. <strong>${weakNames[0]}</strong> и <strong>${weakNames[1]}</strong> — зоны, которые сдерживают рост. Устраните их в первые 90 дней.`
+    hlEl.style.background = 'rgba(234,179,8,.06)'
+    hlEl.style.border = '1px solid rgba(234,179,8,.15)'
+  } else {
+    hlText = `Хороший уровень управляемости. <strong>${weakNames[0]}</strong> и <strong>${weakNames[1]}</strong> — точки для следующего уровня. Небольшие улучшения дадут заметный результат.`
+    hlEl.style.background = 'rgba(59,130,246,.06)'
+    hlEl.style.border = '1px solid rgba(59,130,246,.15)'
+  }
+  hlEl.innerHTML = hlText
+}
+
+function goBack() {
+  if (S.qi > 0) {
+    S.qi--
+    renderQuestion()
+  }
+}
+
+/* ══════════════════════════════════════════════
+   CONTACT
+══════════════════════════════════════════════ */
+function setContactType(type) {
+  S.contactType = type
+  document.getElementById('tog-email').classList.toggle('active', type === 'email')
+  document.getElementById('tog-tg').classList.toggle('active', type === 'tg')
+  const input = document.getElementById('f-contact')
+  const label = document.getElementById('contact-label')
+  if (type === 'email') {
+    input.type = 'email'
+    input.placeholder = 'you@example.com'
+    label.textContent = 'Email-адрес'
+  } else {
+    input.type = 'text'
+    input.placeholder = '@username или +7 999 000 00 00'
+    label.textContent = 'Telegram @username или телефон'
+  }
+}
+
+function submitContact() {
+  S.name = document.getElementById('f-name').value.trim()
+  S.contact = document.getElementById('f-contact').value.trim()
+  runProcessing()
+}
+function skipContact() {
+  S.name = document.getElementById('f-name').value.trim()
+  S.contact = ''
+  runProcessing()
+}
+
+/* ══════════════════════════════════════════════
+   PROCESSING
+══════════════════════════════════════════════ */
+function showStep(i, done) {
+  const el = document.getElementById('step-' + i)
+  if (!el) return
+  el.classList.add('show')
+  if (done) el.classList.add('done')
+}
+
+async function runProcessing() {
+  showScreen('s-processing')
+
+  // Шаг 0 — сразу
+  showStep(0, false)
+  await delay(400)
+  showStep(0, true)
+
+  // Шаг 1
+  showStep(1, false)
+  await delay(300)
+  showStep(1, true)
+
+  // Шаг 2 — отправляем в Claude
+  showStep(2, false)
+
+  // Собираем ответы для API
+  const answers = QUESTIONS.map((q, i) => {
+    const chosen = S.answers[i]
+    return {
+      axis: q.axis,
+      question: q.text,
+      chosen: chosen !== null ? q.answers[chosen].label : 'Нет ответа',
+      score: chosen !== null ? q.answers[chosen].score : 0
+    }
+  })
+
+  let result = null
+  try {
+    const res = await fetch('/api/analyze', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ answers })
+    })
+    if (res.ok) {
+      result = await res.json()
+    }
+  } catch (e) {
+    console.warn('API unavailable, using local scoring', e)
+  }
+
+  // Fallback — локальный расчёт если API недоступен
+  if (!result || result.error) {
+    const { index, pct } = calcScores()
+    const status = getStatus(index)
+    result = {
+      index,
+      pct,
+      statusLabel: status.label,
+      statusDesc: status.desc,
+      date: new Date().toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' })
+    }
+  }
+
+  showStep(2, true)
+
+  // Шаг 3
+  showStep(3, false)
+  await delay(400)
+  showStep(3, true)
+
+  await delay(300)
+
+  // Сохраняем и переходим
+  result.date = result.date || new Date().toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' })
+  localStorage.setItem('kaqs_results', JSON.stringify(result))
+
+  showScreen('s-thankyou')
+}
+
+function delay(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms))
+}
+
+/* ══════════════════════════════════════════════
+   SCORING
+══════════════════════════════════════════════ */
+function calcScores() {
+  const raw = { K:0, A:0, Q:0, S:0 }
+  QUESTIONS.forEach((q, i) => {
+    const chosen = S.answers[i]
+    if (chosen !== null) raw[q.axis] += q.answers[chosen].score
+  })
+  const total = raw.K + raw.A + raw.Q + raw.S
+  const index = Math.round((total / 96) * 100)
+  const pct = {
+    K: Math.round((raw.K / 24) * 100),
+    A: Math.round((raw.A / 24) * 100),
+    Q: Math.round((raw.Q / 24) * 100),
+    S: Math.round((raw.S / 24) * 100),
+  }
+  return { raw, total, index, pct }
+}
+
+function getStatus(index) {
+  return STATUS.find(s => index <= s.max) || STATUS[STATUS.length - 1]
+}
+
+function getLevel(pct) {
+  if (pct < 42) return 'critical'
+  if (pct < 67) return 'weak'
+  return 'medium'
+}
+
+function getSortedAxes(pct) {
+  return ['K','A','Q','S'].sort((a,b) => pct[a] - pct[b])
+}
+
+function getBarColor(pct) {
+  if (pct < 40) return '#EF4444'
+  if (pct < 60) return '#F97316'
+  if (pct < 80) return '#3B82F6'
+  return '#22C55E'
+}
+
+/* ══════════════════════════════════════════════
+   RESULTS RENDER
+══════════════════════════════════════════════ */
+function renderResults() {
+  const { raw, index, pct } = calcScores()
+  const status = getStatus(index)
+  const sorted = getSortedAxes(pct)
+  const [w1, w2] = sorted
+  const now = new Date()
+
+  // Header date
+  document.getElementById('res-header-date').textContent = now.toLocaleDateString('ru-RU', { day:'numeric', month:'long', year:'numeric' })
+
+  // Score
+  document.getElementById('res-score').innerHTML = `${index}<span class="score-denom">/100</span>`
+  const badge = document.getElementById('res-status-badge')
+  badge.textContent = status.label
+  badge.style.background = status.bg
+  badge.style.color = status.color
+  badge.style.border = `1px solid ${status.bd}`
+  document.getElementById('res-status-desc').textContent = status.desc
+
+  // Radar SVG
+  renderRadar(pct)
+
+  // Axis bars
+  const barsEl = document.getElementById('axis-bars')
+  barsEl.innerHTML = ''
+  const axisNames = { K:'Знания', A:'Автоматизация', Q:'Качество', S:'Масштаб' }
+  ;['K','A','Q','S'].forEach(a => {
+    const row = document.createElement('div')
+    row.className = 'axis-bar-row'
+    const barColor = getBarColor(pct[a])
+    row.innerHTML = `
+      <span class="axis-bar-key">${a}</span>
+      <span class="axis-bar-name">${axisNames[a]}</span>
+      <div class="axis-bar-track"><div class="axis-bar-fill" id="bar-${a}" style="background:${barColor}"></div></div>
+      <span class="axis-bar-pct" style="color:${barColor}">${pct[a]}%</span>`
+    barsEl.appendChild(row)
+  })
+  // Animate bars
+  setTimeout(() => {
+    ;['K','A','Q','S'].forEach(a => {
+      document.getElementById('bar-' + a).style.width = pct[a] + '%'
+    })
+  }, 100)
+
+  // Analysis
+  const anaEl = document.getElementById('res-analysis')
+  anaEl.innerHTML = ''
+  ;[w1, w2].forEach(ax => {
+    if (!ax) return
+    const level = getLevel(pct[ax])
+    const text = ANALYSIS[ax][level]
+    if (!text) return
+    const p = document.createElement('p')
+    p.className = 'analysis-text'
+    p.innerHTML = `<strong style="color:var(--text)">${ax === w1 ? 'Главная проблема' : 'Вторая зона риска'} — ${getAxisFull(ax)}:</strong> ${text}`
+    anaEl.appendChild(p)
+  })
+
+  // Risks
+  const risksEl = document.getElementById('res-risks')
+  risksEl.innerHTML = ''
+  sorted.slice(0, 3).forEach(ax => {
+    const card = document.createElement('div')
+    card.className = 'risk-card'
+    card.innerHTML = `
+      <svg class="risk-icon" viewBox="0 0 18 18" fill="none" stroke="#EF4444" stroke-width="1.4" stroke-linecap="round">
+        <path d="M9 3L1.5 15.5h15L9 3z"/>
+        <line x1="9" y1="8" x2="9" y2="11.5"/>
+        <circle cx="9" cy="13.5" r=".5" fill="#EF4444"/>
+      </svg>
+      <span class="risk-text">${RISKS[ax]}</span>`
+    risksEl.appendChild(card)
+  })
+
+  // Recommendations
+  const recsEl = document.getElementById('res-recs')
+  recsEl.innerHTML = ''
+  let recNum = 1
+  ;[w1, w2].forEach(ax => {
+    RECS[ax].forEach(r => {
+      const item = document.createElement('div')
+      item.className = 'rec-item'
+      item.innerHTML = `<span class="rec-num">0${recNum++}</span><span class="rec-text">${r}</span>`
+      recsEl.appendChild(item)
+    })
+  })
+
+  // Email button
+  const emailBtn = document.getElementById('btn-email')
+  if (!S.contact || S.contactType !== 'email') {
+    emailBtn.textContent = 'На email'
+  }
+
+  // Save and compare
+  const result = {
+    ts: Date.now(),
+    date: now.toLocaleDateString('ru-RU'),
+    name: S.name,
+    index,
+    scores: pct,
+  }
+  const prev = getPrevResult()
+  saveResult(result)
+  if (prev) renderCompare(prev, result)
+}
+
+function getAxisFull(a) {
+  const m = { K:'Знания и прозрачность', A:'Автоматизация', Q:'Качество и контроль', S:'Масштабируемость' }
+  return m[a]
+}
+
+/* ── Radar SVG ── */
+function renderRadar(pct) {
+  const cx = 120, cy = 120, maxR = 80
+  const svg = document.getElementById('radar-svg')
+
+  // Grid
+  const grid = document.getElementById('radar-grid')
+  grid.innerHTML = ''
+  for (let lvl = 1; lvl <= 5; lvl++) {
+    const r = (maxR / 5) * lvl
+    const poly = document.createElementNS('http://www.w3.org/2000/svg', 'polygon')
+    const pts = `${cx},${cy-r} ${cx+r},${cy} ${cx},${cy+r} ${cx-r},${cy}`
+    poly.setAttribute('points', pts)
+    poly.setAttribute('fill', 'none')
+    poly.setAttribute('stroke', lvl === 5 ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.04)')
+    poly.setAttribute('stroke-width', '0.75')
+    grid.appendChild(poly)
+  }
+  // Axes
+  ;[[cx, cy-maxR],[cx+maxR, cy],[cx, cy+maxR],[cx-maxR, cy]].forEach(([x,y]) => {
+    const line = document.createElementNS('http://www.w3.org/2000/svg','line')
+    line.setAttribute('x1', cx); line.setAttribute('y1', cy)
+    line.setAttribute('x2', x);  line.setAttribute('y2', y)
+    line.setAttribute('stroke','rgba(255,255,255,0.06)')
+    line.setAttribute('stroke-width','0.75')
+    grid.appendChild(line)
+  })
+
+  // Fill polygon — pct is 0-100, map to 0-maxR
+  const kR = (pct.K / 100) * maxR
+  const aR = (pct.A / 100) * maxR
+  const qR = (pct.Q / 100) * maxR
+  const sR = (pct.S / 100) * maxR
+
+  const kPt = `${cx},${cy - kR}`
+  const aPt = `${cx + aR},${cy}`
+  const qPt = `${cx},${cy + qR}`
+  const sPt = `${cx - sR},${cy}`
+
+  setTimeout(() => {
+    document.getElementById('radar-fill').setAttribute('points', `${kPt} ${aPt} ${qPt} ${sPt}`)
+    document.getElementById('dot-K').setAttribute('cx', cx);   document.getElementById('dot-K').setAttribute('cy', cy - kR)
+    document.getElementById('dot-A').setAttribute('cx', cx+aR); document.getElementById('dot-A').setAttribute('cy', cy)
+    document.getElementById('dot-Q').setAttribute('cx', cx);   document.getElementById('dot-Q').setAttribute('cy', cy + qR)
+    document.getElementById('dot-S').setAttribute('cx', cx-sR); document.getElementById('dot-S').setAttribute('cy', cy)
+  }, 200)
+}
+
+/* ── Compare ── */
+function renderCompare(prev, curr) {
+  const wrap = document.getElementById('res-compare')
+  const content = document.getElementById('compare-content')
+  wrap.style.display = 'block'
+  content.innerHTML = ''
+
+  const row0 = document.createElement('div')
+  row0.className = 'compare-row'
+  const delta0 = curr.index - prev.index
+  row0.innerHTML = `
+    <span class="compare-key" style="width:auto;font-size:.75rem;color:var(--text2)">Индекс</span>
+    <span class="compare-val">${prev.index} → ${curr.index}</span>
+    <span class="compare-delta ${delta0 > 0 ? 'delta-up' : delta0 < 0 ? 'delta-down' : 'delta-same'}">${delta0 > 0 ? '+'+delta0 : delta0 === 0 ? '=' : delta0}</span>
+    <span style="font-size:.72rem;color:var(--text3);margin-left:4px">${prev.date}</span>`
+  content.appendChild(row0)
+
+  ;['K','A','Q','S'].forEach(a => {
+    const row = document.createElement('div')
+    row.className = 'compare-row'
+    const d = curr.scores[a] - prev.scores[a]
+    row.innerHTML = `
+      <span class="compare-key">${a}</span>
+      <span class="compare-val">${prev.scores[a]}% → ${curr.scores[a]}%</span>
+      <span class="compare-delta ${d > 0 ? 'delta-up' : d < 0 ? 'delta-down' : 'delta-same'}">${d > 0 ? '+'+d+'%' : d === 0 ? '=' : d+'%'}</span>`
+    content.appendChild(row)
+  })
+}
+
+/* ══════════════════════════════════════════════
+   LOCALSTORAGE
+══════════════════════════════════════════════ */
+function saveResult(data) {
+  const history = JSON.parse(localStorage.getItem('kaqs_results') || '[]')
+  history.unshift(data)
+  if (history.length > 10) history.pop()
+  localStorage.setItem('kaqs_results', JSON.stringify(history))
+}
+function getPrevResult() {
+  const history = JSON.parse(localStorage.getItem('kaqs_results') || '[]')
+  return history[0] || null  // before saving new one
+}
+
+/* ══════════════════════════════════════════════
+   SHARING
+══════════════════════════════════════════════ */
+function downloadPDF() {
+  window.print()
+}
+
+function sendEmail() {
+  const { index, pct } = calcScores()
+  const name = S.name ? S.name + '\n' : ''
+  const email = S.contactType === 'email' ? S.contact : ''
+  const status = getStatus(index)
+  const body = [
+    `K-A-Q-S™ — Результаты диагностики управляемости бизнеса`,
+    ``,
+    name,
+    `Индекс управляемости: ${index}/100 — ${status.label}`,
+    ``,
+    `Оси:`,
+    `K · Знания и прозрачность:  ${pct.K}%`,
+    `A · Автоматизация:           ${pct.A}%`,
+    `Q · Качество и контроль:     ${pct.Q}%`,
+    `S · Масштабируемость:        ${pct.S}%`,
+    ``,
+    `Пройдите диагностику снова через 90 дней, чтобы отследить прогресс.`,
+    ``,
+    `K-A-Q-S™ — Платформа управляемости бизнеса`,
+  ].join('\n')
+
+  const subject = encodeURIComponent(`Мой Индекс управляемости K-A-Q-S: ${index}/100`)
+  const bodyEnc = encodeURIComponent(body)
+  const to = email ? email : ''
+  window.location.href = `mailto:${to}?subject=${subject}&body=${bodyEnc}`
+}
+
+function shareTelegram() {
+  const { index, pct } = calcScores()
+  const status = getStatus(index)
+  const text = [
+    `Прошёл диагностику управляемости бизнеса K-A-Q-S™`,
+    ``,
+    `Индекс: ${index}/100 — ${status.label}`,
+    `K: ${pct.K}%  A: ${pct.A}%  Q: ${pct.Q}%  S: ${pct.S}%`,
+    ``,
+    `Пройди тест и узнай свой индекс управляемости ↓`,
+  ].join('\n')
+  window.open('https://t.me/share/url?url=&text=' + encodeURIComponent(text), '_blank')
+}
+
+/* ══════════════════════════════════════════════
+   INIT
+══════════════════════════════════════════════ */
+;(function init() {
+  // Build progress segments template
+  const segs = document.getElementById('progress-segs')
+  for (let i = 0; i < 24; i++) {
+    const seg = document.createElement('div')
+    seg.className = 'prog-seg'
+    const fill = document.createElement('div')
+    fill.className = 'prog-seg-fill'
+    seg.appendChild(fill)
+    segs.appendChild(seg)
+  }
+})()
+</script>
+</body>
+</html>

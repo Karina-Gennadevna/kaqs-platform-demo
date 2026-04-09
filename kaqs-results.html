@@ -1,0 +1,873 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>K-A-Q-S™ — Результаты диагностики</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:       #0B0F14;
+      --surface:  #0F141B;
+      --elevated: #131A22;
+      --border:   rgba(255,255,255,.07);
+      --border2:  rgba(255,255,255,.12);
+      --text:     #F0F4F8;
+      --text2:    #8A97A8;
+      --muted:    #4A5568;
+      --accent:   #3B82F6;
+      --accent-l: #2563EB;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    a { color: inherit; text-decoration: none; }
+
+    /* Header */
+    header {
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background: rgba(18,18,18,.92);
+      backdrop-filter: blur(12px);
+    }
+
+    .header-inner {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 16px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .logo {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .75rem;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      color: var(--accent-l);
+    }
+
+    .btn-text {
+      font-size: .78rem;
+      color: var(--muted);
+      background: none;
+      border: none;
+      cursor: pointer;
+      transition: color .2s;
+    }
+    .btn-text:hover { color: var(--text2); }
+
+    /* Main */
+    main {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 48px 24px 80px;
+    }
+
+    .page-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .62rem;
+      letter-spacing: .22em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    .page-title {
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin-bottom: 32px;
+    }
+
+    /* Cards */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 28px 32px;
+      margin-bottom: 12px;
+    }
+
+    .section-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .62rem;
+      letter-spacing: .22em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 16px;
+      margin-top: 28px;
+    }
+
+    /* Score hero */
+    .score-hero {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 24px;
+      flex-wrap: wrap;
+    }
+
+    .score-left {}
+
+    .score-meta {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .6rem;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 14px;
+    }
+
+    .score-value {
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+      margin-bottom: 16px;
+    }
+
+    .score-num {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 3.5rem;
+      font-weight: 600;
+      color: var(--text);
+      line-height: 1;
+    }
+
+    .score-max {
+      font-size: 1.1rem;
+      color: var(--muted);
+    }
+
+    .maturity-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border: 1px solid rgba(31,95,91,.35);
+      border-radius: 6px;
+      padding: 7px 14px;
+    }
+
+    .maturity-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--accent-l);
+    }
+
+    .maturity-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .75rem;
+      color: var(--accent-l);
+    }
+
+    .score-right {
+      min-width: 180px;
+      flex: 1;
+      max-width: 240px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      padding-top: 4px;
+    }
+
+    .score-bar-wrap {
+      width: 100%;
+      height: 4px;
+      background: var(--border2);
+      border-radius: 99px;
+      overflow: hidden;
+    }
+
+    .score-bar-fill {
+      height: 100%;
+      border-radius: 99px;
+      background: var(--accent);
+      transition: width .8s ease;
+    }
+
+    .score-pct {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .65rem;
+      color: var(--muted);
+      text-align: right;
+    }
+
+    /* Module grid */
+    .module-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .module-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px 24px;
+      transition: border-color .2s;
+    }
+    .module-card:hover { border-color: var(--border2); }
+
+    .mod-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+
+    .mod-key {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .75rem;
+      color: var(--accent-l);
+      margin-right: 8px;
+    }
+
+    .mod-name {
+      font-size: .8rem;
+      color: var(--text2);
+    }
+
+    .mod-score {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .85rem;
+      color: var(--text);
+    }
+
+    .mod-bar {
+      height: 3px;
+      background: var(--border2);
+      border-radius: 99px;
+      overflow: hidden;
+      margin-bottom: 10px;
+    }
+
+    .mod-bar-fill {
+      height: 100%;
+      border-radius: 99px;
+    }
+
+    .mod-interpretation {
+      font-size: .75rem;
+      color: var(--muted);
+      line-height: 1.55;
+    }
+
+    /* Risks */
+    .risk-list { display: flex; flex-direction: column; gap: 8px; }
+
+    .risk-item {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px 20px;
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+    }
+
+    .risk-badge {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .6rem;
+      padding: 3px 8px;
+      border-radius: 4px;
+      white-space: nowrap;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .risk-p0 { color: #EF4444; background: rgba(239,68,68,.08); border: 1px solid rgba(239,68,68,.2); }
+    .risk-p1 { color: #F59E0B; background: rgba(245,158,11,.08); border: 1px solid rgba(245,158,11,.2); }
+    .risk-p2 { color: #6B7280; background: rgba(107,114,128,.08); border: 1px solid rgba(107,114,128,.2); }
+
+    .risk-content { flex: 1; }
+
+    .risk-title {
+      font-size: .85rem;
+      font-weight: 500;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+
+    .risk-desc {
+      font-size: .75rem;
+      color: var(--text2);
+      line-height: 1.55;
+    }
+
+    .risk-module {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .6rem;
+      color: var(--muted);
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    /* Roadmap */
+    .roadmap-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+
+    .roadmap-col {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+    }
+
+    .roadmap-period {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .65rem;
+      color: var(--accent-l);
+      margin-bottom: 4px;
+    }
+
+    .roadmap-subtitle {
+      font-size: .72rem;
+      color: var(--muted);
+      margin-bottom: 14px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .roadmap-items { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+
+    .roadmap-item {
+      display: flex;
+      gap: 8px;
+      font-size: .78rem;
+      color: var(--text2);
+      line-height: 1.5;
+    }
+
+    .roadmap-arrow { color: var(--accent-l); flex-shrink: 0; margin-top: 1px; }
+
+    /* AI Layer */
+    .ai-text {
+      font-size: .88rem;
+      color: var(--text2);
+      line-height: 1.7;
+    }
+
+    /* Actions */
+    .actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 32px;
+      flex-wrap: wrap;
+    }
+
+    .btn-primary {
+      padding: 12px 28px;
+      background: var(--accent);
+      color: #fff;
+      font-weight: 500;
+      font-size: .85rem;
+      border-radius: 10px;
+      border: none;
+      cursor: pointer;
+      transition: background .2s;
+      text-decoration: none;
+    }
+    .btn-primary:hover { background: var(--accent-l); }
+
+    .btn-outline {
+      padding: 12px 24px;
+      border: 1px solid var(--border2);
+      color: var(--text2);
+      font-size: .85rem;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all .2s;
+      background: none;
+      text-decoration: none;
+    }
+    .btn-outline:hover { border-color: var(--border2); color: var(--text); }
+
+    /* Report tab toggle */
+    .view-tabs {
+      display: flex;
+      gap: 0;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+      width: fit-content;
+      margin-bottom: 28px;
+    }
+
+    .view-tab {
+      padding: 8px 20px;
+      font-size: .8rem;
+      color: var(--muted);
+      background: none;
+      border: none;
+      cursor: pointer;
+      transition: all .2s;
+    }
+
+    .view-tab.active {
+      background: var(--elevated);
+      color: var(--text);
+    }
+
+    /* Upsell */
+    .upsell-section {
+      margin-top: 48px;
+      padding-top: 40px;
+      border-top: 1px solid var(--border);
+    }
+    .upsell-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .62rem;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+    .upsell-title {
+      font-size: 1.15rem;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+    .upsell-desc {
+      font-size: .85rem;
+      color: var(--text2);
+      margin-bottom: 28px;
+      max-width: 480px;
+      line-height: 1.65;
+    }
+    .upsell-cards {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-bottom: 28px;
+    }
+    .upsell-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 18px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .upsell-card.featured { border-color: var(--accent-l); }
+    .upsell-card__tag {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .58rem;
+      color: var(--muted);
+      letter-spacing: .1em;
+      text-transform: uppercase;
+    }
+    .upsell-card.featured .upsell-card__tag { color: var(--accent-l); }
+    .upsell-card__name { font-size: .88rem; font-weight: 600; color: var(--text); }
+    .upsell-card__price {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1.15rem;
+      font-weight: 600;
+      color: var(--text);
+      letter-spacing: -.02em;
+    }
+    .upsell-card__period { font-size: .68rem; color: var(--muted); font-family: 'JetBrains Mono', monospace; }
+    .upsell-card__features {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      flex: 1;
+    }
+    .upsell-card__features li {
+      font-size: .78rem;
+      color: var(--text2);
+      display: flex;
+      gap: 6px;
+      align-items: flex-start;
+      line-height: 1.4;
+    }
+    .upsell-card__features li::before {
+      content: '—';
+      color: var(--muted);
+      flex-shrink: 0;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .68rem;
+      margin-top: 1px;
+    }
+    .upsell-card__cta {
+      display: block;
+      text-align: center;
+      padding: 9px 12px;
+      background: var(--accent);
+      color: #fff;
+      font-size: .78rem;
+      font-weight: 500;
+      border-radius: 7px;
+      transition: background .2s;
+    }
+    .upsell-card__cta:hover { background: var(--accent-l); }
+    .upsell-card__oferta {
+      display: block;
+      text-align: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .58rem;
+      color: var(--muted);
+      letter-spacing: .04em;
+    }
+    .upsell-card__oferta:hover { color: var(--text2); }
+    .upsell-sub-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .6rem;
+      color: var(--muted);
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .upsell-sub-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+    .upsell-cards-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      max-width: 600px;
+    }
+
+    @media (max-width: 680px) {
+      .module-grid { grid-template-columns: 1fr; }
+      .roadmap-grid { grid-template-columns: 1fr; }
+      .score-right { max-width: 100%; }
+      .upsell-cards { grid-template-columns: 1fr; }
+      .upsell-cards-2 { grid-template-columns: 1fr; max-width: 100%; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header>
+    <div class="header-inner">
+      <span class="logo">K-A-Q-S™</span>
+      <a href="kaqs-quiz.html" class="btn-text">← Диагностика</a>
+    </div>
+  </header>
+
+  <!-- Main -->
+  <main>
+    <p class="page-label">// Результаты диагностики</p>
+    <h1 class="page-title">Индекс зрелости AI-систем</h1>
+
+    <!-- View toggle -->
+    <div class="view-tabs">
+      <button class="view-tab active" onclick="setView('results', this)">Результаты</button>
+      <button class="view-tab" onclick="setView('report', this)">Полный отчёт</button>
+    </div>
+
+    <!-- Results view -->
+    <div id="view-results">
+
+      <!-- Score hero -->
+      <div class="card">
+        <div class="score-hero">
+          <div class="score-left">
+            <p class="score-meta">Общий индекс</p>
+            <div class="score-value">
+              <span class="score-num" id="score-animated">0</span>
+              <span class="score-max">/120</span>
+            </div>
+            <div class="maturity-badge">
+              <span class="maturity-dot"></span>
+              <span class="maturity-label">Управляемая</span>
+            </div>
+          </div>
+          <div class="score-right">
+            <div class="score-bar-wrap">
+              <div class="score-bar-fill" id="score-bar" style="width:0%"></div>
+            </div>
+            <p class="score-pct">56% от максимума</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modules -->
+      <p class="section-label">// Разрез по блокам K/A/Q/S</p>
+      <div class="module-grid" id="module-grid"></div>
+
+      <!-- Executive Summary -->
+      <p class="section-label">// Резюме</p>
+      <div class="card">
+        <p id="summary-text" style="font-size:.88rem;color:var(--text2);line-height:1.7;"></p>
+      </div>
+
+      <!-- Risks -->
+      <p class="section-label">// Карта рисков</p>
+      <div class="risk-list" id="risk-list"></div>
+
+      <!-- Roadmap -->
+      <p class="section-label">// Дорожная карта</p>
+      <div class="roadmap-grid">
+        <div class="roadmap-col">
+          <p class="roadmap-period">Next 14 days</p>
+          <p class="roadmap-subtitle">Первоочередные действия</p>
+          <ul class="roadmap-items">
+            <li class="roadmap-item"><span class="roadmap-arrow">→</span>Устранить: Silent fail в AI-процессах (Q-блок)</li>
+            <li class="roadmap-item"><span class="roadmap-arrow">→</span>Устранить: AI без стратегии (A-блок)</li>
+            <li class="roadmap-item"><span class="roadmap-arrow">→</span>Устранить: Хаос данных (K-блок)</li>
+          </ul>
+        </div>
+        <div class="roadmap-col">
+          <p class="roadmap-period">Next 60 days</p>
+          <p class="roadmap-subtitle">Среднесрочные задачи</p>
+          <ul class="roadmap-items">
+            <li class="roadmap-item"><span class="roadmap-arrow">→</span>Закрыть: Нет стратегии роста</li>
+            <li class="roadmap-item"><span class="roadmap-arrow">→</span>Закрыть: Нет метрик устойчивости</li>
+            <li class="roadmap-item"><span class="roadmap-arrow">→</span>Внедрить базовый мониторинг AI-процессов</li>
+          </ul>
+        </div>
+        <div class="roadmap-col">
+          <p class="roadmap-period">Next 6 months</p>
+          <p class="roadmap-subtitle">Стратегические направления</p>
+          <ul class="roadmap-items">
+            <li class="roadmap-item"><span class="roadmap-arrow">→</span>Заложить архитектурную базу: документация, роли, данные</li>
+            <li class="roadmap-item"><span class="roadmap-arrow">→</span>Разработать AI-стратегию с чёткими зонами применения</li>
+            <li class="roadmap-item"><span class="roadmap-arrow">→</span>Построить систему мониторинга и контроля качества</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- AI Layer -->
+      <p class="section-label">// AI-слой: рекомендации</p>
+      <div class="card">
+        <p class="ai-text">
+          AI уместен в задачах с понятным входом и выходом: генерация текстов, классификация, простая автоматизация. Блок AI Design (50%) требует укрепления перед расширением AI на критические бизнес-процессы. Избегать: AI для принятия решений без человека в контуре управления.
+        </p>
+      </div>
+
+    </div>
+
+    <!-- Report view (hidden by default) -->
+    <div id="view-report" style="display:none;">
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;">
+
+        <!-- Report header -->
+        <div style="border-bottom:1px solid var(--border);padding:32px;">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:16px;">
+            <div>
+              <p style="font-family:'JetBrains Mono',monospace;font-size:.65rem;letter-spacing:.2em;color:var(--accent-l);text-transform:uppercase;margin-bottom:8px;">K-A-Q-S™ PLATFORM</p>
+              <h2 style="font-size:1.4rem;font-weight:600;color:var(--text);margin-bottom:6px;">AI Systems Maturity Report</h2>
+              <p style="font-size:.82rem;color:var(--muted);">Архитектурная диагностика зрелости AI-систем</p>
+            </div>
+            <div style="text-align:right;">
+              <p style="font-family:'JetBrains Mono',monospace;font-size:.65rem;color:var(--muted);">14 февраля 2025</p>
+              <p style="font-family:'JetBrains Mono',monospace;font-size:.65rem;color:var(--muted);margin-top:4px;">ID: a1b2c3d4</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sections -->
+        <div style="padding:32px;border-bottom:1px solid var(--border);">
+          <p style="font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-bottom:16px;">01 / Executive Summary</p>
+          <p style="font-size:.88rem;color:var(--text2);line-height:1.7;margin-bottom:24px;">
+            Индекс зрелости AI-систем составил <strong style="color:var(--text)">67 из 120 (56%)</strong>. Уровень: «Управляемая». Наиболее сильный блок — Scalability Framework (67%). Наибольший дефицит — Quality & Risk Control (47%). Выявлено 4 критических риска (P0), требующих немедленного внимания. Основные процессы под контролем. AI можно масштабировать при условии закрытия архитектурных разрывов.
+          </p>
+          <div style="display:flex;align-items:center;gap:32px;">
+            <div>
+              <p style="font-family:'JetBrains Mono',monospace;font-size:2.6rem;font-weight:600;color:var(--text);line-height:1;">67</p>
+              <p style="font-size:.75rem;color:var(--muted);margin-top:4px;">из 120 баллов</p>
+            </div>
+            <div style="border:1px solid rgba(31,95,91,.35);border-radius:6px;padding:8px 16px;display:inline-flex;align-items:center;gap:8px;">
+              <span style="width:6px;height:6px;border-radius:50%;background:var(--accent-l);display:block;"></span>
+              <span style="font-family:'JetBrains Mono',monospace;font-size:.8rem;color:var(--accent-l);">Управляемая</span>
+            </div>
+          </div>
+        </div>
+
+        <div style="padding:32px;border-bottom:1px solid var(--border);">
+          <p style="font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-bottom:24px;">02 / Разрез по блокам</p>
+          <div style="display:flex;flex-direction:column;gap:20px;">
+            ${[
+              {m:'K',name:'Knowledge Architecture',score:18,max:30,pct:60,color:'#EAB308'},
+              {m:'A',name:'AI System Design',score:15,max:30,pct:50,color:'#EF4444'},
+              {m:'Q',name:'Quality & Risk Control',score:14,max:30,pct:47,color:'#EF4444'},
+              {m:'S',name:'Scalability Framework',score:20,max:30,pct:67,color:'#3B82F6'},
+            ].map(x => `
+              <div>
+                <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
+                  <div><span style="font-family:'JetBrains Mono',monospace;font-size:.78rem;color:var(--accent-l);margin-right:8px;">${x.m}</span><span style="font-size:.85rem;color:var(--text);">${x.name}</span></div>
+                  <span style="font-family:'JetBrains Mono',monospace;font-size:.85rem;color:var(--text);">${x.score}/${x.max}</span>
+                </div>
+                <div style="height:3px;background:var(--border2);border-radius:99px;overflow:hidden;">
+                  <div style="height:100%;width:${x.pct}%;background:${x.color};border-radius:99px;"></div>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+
+        <div style="padding:32px;border-bottom:1px solid var(--border);">
+          <p style="font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-bottom:16px;">03 / Дорожная карта (3-уровневая)</p>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px;">
+            <div>
+              <p style="font-family:'JetBrains Mono',monospace;font-size:.65rem;color:var(--accent-l);margin-bottom:4px;">Next 14 days</p>
+              <p style="font-size:.72rem;color:var(--muted);margin-bottom:12px;padding-bottom:12px;border-bottom:1px solid var(--border);">Первоочередные действия</p>
+              <ul style="list-style:none;display:flex;flex-direction:column;gap:8px;">
+                <li style="display:flex;gap:6px;font-size:.78rem;color:var(--text2);line-height:1.5;"><span style="color:var(--accent-l);">→</span>Устранить: Silent fail (Q)</li>
+                <li style="display:flex;gap:6px;font-size:.78rem;color:var(--text2);line-height:1.5;"><span style="color:var(--accent-l);">→</span>Устранить: AI без стратегии (A)</li>
+                <li style="display:flex;gap:6px;font-size:.78rem;color:var(--text2);line-height:1.5;"><span style="color:var(--accent-l);">→</span>Устранить: Хаос данных (K)</li>
+              </ul>
+            </div>
+            <div>
+              <p style="font-family:'JetBrains Mono',monospace;font-size:.65rem;color:var(--accent-l);margin-bottom:4px;">Next 60 days</p>
+              <p style="font-size:.72rem;color:var(--muted);margin-bottom:12px;padding-bottom:12px;border-bottom:1px solid var(--border);">Среднесрочные задачи</p>
+              <ul style="list-style:none;display:flex;flex-direction:column;gap:8px;">
+                <li style="display:flex;gap:6px;font-size:.78rem;color:var(--text2);line-height:1.5;"><span style="color:var(--accent-l);">→</span>Закрыть риск стратегии роста</li>
+                <li style="display:flex;gap:6px;font-size:.78rem;color:var(--text2);line-height:1.5;"><span style="color:var(--accent-l);">→</span>Внедрить мониторинг AI</li>
+                <li style="display:flex;gap:6px;font-size:.78rem;color:var(--text2);line-height:1.5;"><span style="color:var(--accent-l);">→</span>Закрыть метрики устойчивости</li>
+              </ul>
+            </div>
+            <div>
+              <p style="font-family:'JetBrains Mono',monospace;font-size:.65rem;color:var(--accent-l);margin-bottom:4px;">Next 6 months</p>
+              <p style="font-size:.72rem;color:var(--muted);margin-bottom:12px;padding-bottom:12px;border-bottom:1px solid var(--border);">Стратегические направления</p>
+              <ul style="list-style:none;display:flex;flex-direction:column;gap:8px;">
+                <li style="display:flex;gap:6px;font-size:.78rem;color:var(--text2);line-height:1.5;"><span style="color:var(--accent-l);">→</span>Архитектурная база</li>
+                <li style="display:flex;gap:6px;font-size:.78rem;color:var(--text2);line-height:1.5;"><span style="color:var(--accent-l);">→</span>AI-стратегия</li>
+                <li style="display:flex;gap:6px;font-size:.78rem;color:var(--text2);line-height:1.5;"><span style="color:var(--accent-l);">→</span>Система контроля качества</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div style="padding:32px;border-bottom:1px solid var(--border);">
+          <p style="font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-bottom:16px;">04 / AI-слой: рекомендации</p>
+          <p style="font-size:.88rem;color:var(--text2);line-height:1.7;">
+            AI уместен в задачах с понятным входом и выходом: генерация текстов, классификация, простая автоматизация. Блок AI Design (50%) требует укрепления перед расширением AI на критические бизнес-процессы. Избегать: AI для принятия решений без человека в контуре управления.
+          </p>
+        </div>
+
+        <div style="padding:24px 32px;display:flex;justify-content:space-between;align-items:center;">
+          <span style="font-family:'JetBrains Mono',monospace;font-size:.65rem;color:var(--muted);">K-A-Q-S™ Platform · Karina AI Systems Architect</span>
+          <span style="font-family:'JetBrains Mono',monospace;font-size:.65rem;color:var(--muted);">14 февраля 2025</span>
+        </div>
+
+      </div>
+    </div>
+
+
+    <!-- Actions -->
+    <div class="actions">
+      <a href="kaqs-platform.html" class="btn-primary">Перейти в платформу →</a>
+      <a href="#" onclick="window.print();return false;" class="btn-outline">Скачать PDF</a>
+    </div>
+
+  </main>
+
+  <script>
+    const saved = JSON.parse(localStorage.getItem('kaqs_results') || '{}')
+    const target      = saved.index      || 67
+    const pct         = saved.pct        || { K: 60, A: 50, Q: 47, S: 67 }
+    const statusLabel = saved.statusLabel || 'Управляемая'
+    const insights    = saved.insights   || {}
+    const risks       = saved.risks      || []
+    const summary     = saved.summary    || ''
+
+    const axisNames = { K: 'Знания и прозрачность', A: 'Автоматизация', Q: 'Качество и контроль', S: 'Масштабируемость' }
+
+    function barColor(p) {
+      return p < 40 ? '#EF4444' : p < 60 ? '#F97316' : p < 75 ? '#EAB308' : '#3B82F6'
+    }
+
+    // Maturity label
+    const maturityEl = document.querySelector('.maturity-label')
+    if (maturityEl) maturityEl.textContent = statusLabel
+
+    // Score % text
+    const pctEl = document.querySelector('.score-pct')
+    if (pctEl) pctEl.textContent = target + '% от максимума'
+
+    // /100
+    const maxEl = document.querySelector('.score-max')
+    if (maxEl) maxEl.textContent = '/100'
+
+    // Score animation
+    const el = document.getElementById('score-animated')
+    const bar = document.getElementById('score-bar')
+    let current = 0
+    const step = Math.ceil(target / 60)
+    const interval = setInterval(() => {
+      current = Math.min(current + step, target)
+      el.textContent = current
+      bar.style.width = current + '%'
+      if (current >= target) clearInterval(interval)
+    }, 16)
+
+    // Modules — от Claude или fallback
+    const moduleGrid = document.getElementById('module-grid')
+    if (moduleGrid) {
+      moduleGrid.innerHTML = ['K','A','Q','S'].map(axis => {
+        const p = pct[axis] || 50
+        const color = barColor(p)
+        const insight = insights[axis] || `Уровень ${p}%.`
+        return `
+          <div class="module-card">
+            <div class="mod-head">
+              <div><span class="mod-key">${axis}</span><span class="mod-name">${axisNames[axis]}</span></div>
+              <span class="mod-score">${p}%</span>
+            </div>
+            <div class="mod-bar">
+              <div class="mod-bar-fill" style="width:${p}%;background:${color};"></div>
+            </div>
+            <p class="mod-interpretation">${insight}</p>
+          </div>`
+      }).join('')
+    }
+
+    // Summary — от Claude или fallback
+    const summaryEl = document.getElementById('summary-text')
+    if (summaryEl) {
+      summaryEl.innerHTML = summary ||
+        `Индекс управляемости составил <strong style="color:var(--text)">${target}/100</strong>. Уровень: «${statusLabel}».`
+    }
+
+    // Risks — от Claude или fallback
+    const riskList = document.getElementById('risk-list')
+    if (riskList) {
+      const riskData = risks.length ? risks : [
+        { level:'P0', title:'Нет данных для анализа', desc:'Пройдите диагностику, чтобы увидеть персональные риски.', axis:'K' }
+      ]
+      riskList.innerHTML = riskData.map(r => {
+        const cls = r.level === 'P0' ? 'risk-p0' : r.level === 'P1' ? 'risk-p1' : 'risk-p2'
+        return `
+          <div class="risk-item">
+            <span class="risk-badge ${cls}">${r.level}</span>
+            <div class="risk-content">
+              <p class="risk-title">${r.title}</p>
+              <p class="risk-desc">${r.desc}</p>
+            </div>
+            <span class="risk-module">${r.axis}</span>
+          </div>`
+      }).join('')
+    }
+
+    // View tabs
+    function setView(view, btn) {
+      document.querySelectorAll('.view-tab').forEach(t => t.classList.remove('active'))
+      btn.classList.add('active')
+      document.getElementById('view-results').style.display = view === 'results' ? 'block' : 'none'
+      document.getElementById('view-report').style.display = view === 'report' ? 'block' : 'none'
+    }
+  </script>
+
+</body>
+</html>

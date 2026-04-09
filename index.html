@@ -1,0 +1,3813 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>K-A-Q-S™ — Платформа управляемости бизнеса</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    /* ─── Reset ─────────────────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: #0B0F14;
+      color: #F0F4F8;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      line-height: 1.5;
+    }
+    a { color: inherit; text-decoration: none; }
+    button { cursor: pointer; border: none; background: none; font: inherit; }
+    ul { list-style: none; }
+
+    /* ─── Tokens ─────────────────────────────────────────────────────────── */
+    :root {
+      --bg-base:     #0B0F14;
+      --bg-surface:  #0F141B;
+      --bg-elevated: #131A22;
+      --bg-overlay:  #1A2230;
+      --text-primary:   #F0F4F8;
+      --text-secondary: #8A97A8;
+      --text-muted:     #4A5568;
+      --text-accent:    #3B82F6;
+      --accent-primary: #3B82F6;
+      --accent-hover:   #2563EB;
+      --border-subtle:   rgba(255,255,255,0.05);
+      --border-default:  rgba(255,255,255,0.08);
+      --border-emphasis: rgba(255,255,255,0.14);
+      --border-accent:   rgba(59,130,246,0.35);
+      --font-mono: 'IBM Plex Mono', 'Courier New', monospace;
+      --side: clamp(20px, 5vw, 80px);
+    }
+
+    /* ─── Layout ─────────────────────────────────────────────────────────── */
+    .container         { width: 100%; max-width: 1100px; margin-inline: auto; padding-inline: var(--side); }
+    .container--narrow { max-width: 900px; }
+    .section      { padding-top: 80px; padding-bottom: 80px; }
+    .section--lg   { padding-top: 120px; padding-bottom: 120px; }
+    .section--dense { background: var(--bg-surface); }
+
+    /* ─── Grid ───────────────────────────────────────────────────────────── */
+    .g2     { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .g3     { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; }
+    .g4     { display: grid; grid-template-columns: repeat(4,1fr); gap: 16px; }
+    .g-2col { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: start; }
+    @media(max-width:1023px){ .g4{grid-template-columns:1fr 1fr} .g3{grid-template-columns:1fr 1fr} }
+    @media(max-width:639px){ .g4,.g3,.g2,.g-2col{grid-template-columns:1fr; gap:24px} }
+
+    /* ─── Type helpers ───────────────────────────────────────────────────── */
+    .mono      { font-family: var(--font-mono); }
+    .idx       { font-family: var(--font-mono); font-size:11px; color:var(--text-muted); letter-spacing:.12em; text-transform:uppercase; margin-bottom:20px; }
+    .sec-title { font-size: clamp(28px,4vw,44px); font-weight:700; line-height:1.08; letter-spacing:-0.025em; color:var(--text-primary); margin-bottom:20px; max-width:640px; }
+    .sec-sub   { font-size:17px; color:var(--text-secondary); line-height:1.65; max-width:560px; }
+
+    /* ─── Nav ────────────────────────────────────────────────────────────── */
+    .nav {
+      position:fixed; top:0; left:0; right:0; z-index:50; height:64px;
+      display:flex; align-items:center;
+      background:rgba(11,15,20,0.92);
+      backdrop-filter:blur(16px) saturate(1.5);
+      -webkit-backdrop-filter:blur(16px) saturate(1.5);
+      border-bottom:1px solid var(--border-subtle);
+    }
+    .nav__inner {
+      width:100%; max-width:1280px; margin-inline:auto; padding-inline:var(--side);
+      display:flex; align-items:center; justify-content:space-between; gap:32px;
+    }
+    .nav__logo {
+      font-family:var(--font-mono); font-size:15px; font-weight:600; color:var(--text-primary);
+      letter-spacing:-0.02em; transition:letter-spacing 300ms ease-out;
+    }
+    .nav__logo:hover { letter-spacing:.06em; }
+    .nav__logo sup { font-size:.6em; vertical-align:super; color:var(--text-muted); }
+    .nav__links { display:flex; gap:32px; }
+    .nav__link  { font-size:14px; font-weight:500; color:var(--text-secondary); position:relative; padding-bottom:2px; transition:color 150ms; }
+    .nav__link::after { content:''; position:absolute; bottom:0; left:0; width:0; height:1px; background:var(--accent-primary); transition:width 200ms ease-out; }
+    .nav__link:hover { color:var(--text-primary); }
+    .nav__link:hover::after { width:100%; }
+    @media(max-width:767px){ .nav__links { display:none; } }
+
+    /* ─── Buttons ────────────────────────────────────────────────────────── */
+    .btn { display:inline-flex; align-items:center; justify-content:center; gap:8px; font-weight:600; border-radius:6px; cursor:pointer; transition:background 150ms ease-out, border-color 150ms ease-out, box-shadow 150ms ease-out; }
+    .btn-lg { padding:16px 32px; font-size:16px; }
+    .btn-md { padding:14px 28px; font-size:15px; }
+    .btn-sm { padding:10px 20px; font-size:13px; }
+    .btn-primary  { background:var(--accent-primary); color:#fff; box-shadow:0 0 20px rgba(59,130,246,.25); }
+    .btn-primary:hover  { background:var(--accent-hover); box-shadow:0 0 32px rgba(59,130,246,.4); }
+    .btn-secondary { background:transparent; color:var(--text-primary); border:1px solid var(--border-default); }
+    .btn-secondary:hover { border-color:var(--border-emphasis); background:rgba(255,255,255,.03); }
+
+    /* ─── Badge ──────────────────────────────────────────────────────────── */
+    .badge { display:inline-flex; align-items:center; padding:4px 10px; border-radius:4px; font-family:var(--font-mono); font-size:11px; font-weight:600; letter-spacing:.08em; text-transform:uppercase; }
+    .badge-accent  { background:rgba(59,130,246,.1); border:1px solid rgba(59,130,246,.2); color:var(--text-accent); }
+    .badge-neutral { background:var(--bg-elevated); border:1px solid var(--border-subtle); color:var(--text-muted); }
+
+    /* ─── Cards ──────────────────────────────────────────────────────────── */
+    .card { background:rgba(19,26,34,0.85); border:1px solid rgba(255,255,255,0.06); border-radius:12px; padding:28px; transition:border-color 250ms, background 250ms, box-shadow 250ms; }
+    .card:hover { border-color:var(--border-emphasis); background:var(--bg-overlay); box-shadow:0 4px 24px rgba(0,0,0,.6); }
+    .card--axis { border-top:2px solid var(--border-accent); }
+    .card--axis:hover { box-shadow:0 4px 24px rgba(0,0,0,.6), 0 0 40px rgba(59,130,246,.08); }
+    .card__letter { font-family:var(--font-mono); font-size:48px; font-weight:600; color:var(--text-accent); line-height:1; margin-bottom:20px; opacity:.9; transition:opacity 200ms, font-size 200ms; }
+    .card--axis:hover .card__letter { opacity:1; font-size:52px; }
+    .card__tag   { font-family:var(--font-mono); font-size:10px; color:var(--text-muted); letter-spacing:.1em; text-transform:uppercase; margin-bottom:8px; }
+    .card__title { font-size:16px; font-weight:600; color:var(--text-primary); margin-bottom:12px; letter-spacing:-0.01em; }
+    .card__body  { font-size:14px; color:var(--text-secondary); line-height:1.6; }
+    .card__quote { font-size:13px; color:var(--text-muted); font-style:italic; line-height:1.5; border-top:1px solid var(--border-subtle); padding-top:16px; margin-top:16px; }
+
+    /* ─── Steps ──────────────────────────────────────────────────────────── */
+    .step-n { font-family:var(--font-mono); font-size:11px; color:var(--text-muted); letter-spacing:.12em; text-transform:uppercase; margin-bottom:16px; display:flex; align-items:center; gap:12px; }
+    .step-n::before { content:''; display:inline-block; width:24px; height:1px; background:rgba(59,130,246,.5); }
+
+    /* ─── Pricing ────────────────────────────────────────────────────────── */
+    .card--price { display:flex; flex-direction:column; gap:24px; }
+    .card--price.featured { border-color:var(--border-accent); background:rgba(59,130,246,.04); }
+    .price-amt { font-family:var(--font-mono); font-size:28px; font-weight:600; color:var(--text-primary); letter-spacing:-0.02em; }
+    .price-per { font-family:var(--font-mono); font-size:13px; color:var(--text-muted); }
+    .price-list { display:flex; flex-direction:column; gap:10px; }
+    .price-list li { font-size:14px; color:var(--text-secondary); display:flex; align-items:flex-start; gap:8px; }
+    .price-list li::before { content:'—'; color:var(--text-muted); flex-shrink:0; font-family:var(--font-mono); }
+
+    /* ─── Audience ───────────────────────────────────────────────────────── */
+    .aud-list { display:flex; flex-direction:column; gap:14px; }
+    .aud-item { display:flex; gap:12px; font-size:15px; color:var(--text-secondary); line-height:1.55; }
+    .aud-icon { flex-shrink:0; font-family:var(--font-mono); font-size:13px; color:var(--text-muted); margin-top:1px; }
+    .aud-item--yes .aud-icon { color:var(--accent-primary); }
+
+    /* ─── Report mockup ──────────────────────────────────────────────────── */
+    .report-mock { background:var(--bg-surface); border:1px solid var(--border-default); border-radius:10px; padding:28px; font-family:var(--font-mono); }
+    .bar-track { height:3px; background:var(--bg-elevated); border-radius:2px; margin-top:6px; }
+    .bar-fill  { height:100%; border-radius:2px; background:var(--accent-primary); }
+    .bar-crit  { background:#EF4444; }
+
+    /* ─── Scroll reveal ──────────────────────────────────────────────────── */
+    .reveal { opacity:0; transform:translateY(20px); transition:opacity 500ms ease-out, transform 500ms ease-out; }
+    .reveal.visible { opacity:1; transform:translateY(0); }
+    .d1 { transition-delay:80ms; }
+    .d2 { transition-delay:160ms; }
+    .d3 { transition-delay:240ms; }
+
+    /* ─── Hero new ───────────────────────────────────────────────────────── */
+    .hero-grid { display:grid; grid-template-columns:1fr 1.18fr; gap:64px; align-items:center; }
+    @media(max-width:1023px){ .hero-grid { grid-template-columns:1fr; gap:48px; } }
+
+    .hero-title-main { font-size:clamp(52px,6vw,80px); font-weight:700; line-height:1; letter-spacing:-0.04em; color:#F0F4F8; }
+    .hero-title-sub  { font-size:clamp(20px,2.4vw,28px); font-weight:300; letter-spacing:-0.02em; color:#6B7A8A; margin-top:8px; }
+
+    .hero-right {
+      background:rgba(15,20,27,0.94);
+      border:1px solid rgba(255,255,255,0.07);
+      border-radius:16px;
+      padding:28px;
+      box-shadow:0 0 100px rgba(59,130,246,0.07), 0 0 40px rgba(59,130,246,0.04), inset 0 1px 0 rgba(255,255,255,0.05);
+      position: relative;
+    }
+    .hero-right__hdr { display:flex; align-items:center; justify-content:space-between; margin-bottom:20px; }
+
+    /* ─── Hero background ────────────────────────────────────────────────── */
+    .hero-section { position:relative; overflow:hidden; }
+    .hero-bg-grid {
+      position:absolute; inset:0; pointer-events:none;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.022) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.022) 1px, transparent 1px);
+      background-size: 56px 56px;
+      -webkit-mask-image: radial-gradient(ellipse 90% 80% at 65% 40%, black 20%, transparent 75%);
+      mask-image: radial-gradient(ellipse 90% 80% at 65% 40%, black 20%, transparent 75%);
+    }
+    .hero-bg-glow {
+      position:absolute; top:-120px; right:-80px;
+      width:700px; height:600px; pointer-events:none;
+      background: radial-gradient(ellipse at center, rgba(59,130,246,0.09) 0%, transparent 68%);
+    }
+
+    /* ─── Hero buttons ───────────────────────────────────────────────────── */
+    .btn-hero-primary {
+      display:inline-flex; align-items:center; gap:8px;
+      padding:14px 28px; border-radius:6px;
+      font-family:'Inter',sans-serif; font-size:15px; font-weight:600;
+      background:#3B82F6; color:#fff; text-decoration:none;
+      box-shadow:0 0 24px rgba(59,130,246,0.32);
+      transition:background 150ms, box-shadow 150ms;
+      white-space:nowrap;
+    }
+    .btn-hero-primary:hover { background:#2563EB; box-shadow:0 0 40px rgba(59,130,246,0.48); }
+    .btn-hero-secondary {
+      display:inline-flex; align-items:center; gap:6px;
+      padding:14px 22px; border-radius:6px;
+      font-family:'Inter',sans-serif; font-size:14px; font-weight:500;
+      color:rgba(255,255,255,0.45); border:1px solid rgba(255,255,255,0.09);
+      background:transparent; text-decoration:none;
+      transition:color 150ms, border-color 150ms;
+      white-space:nowrap;
+    }
+    .btn-hero-secondary:hover { color:rgba(255,255,255,0.78); border-color:rgba(255,255,255,0.18); }
+
+    .mgmt-card {
+      background:rgba(19,26,34,0.9);
+      border:1px solid rgba(255,255,255,0.07);
+      border-radius:10px;
+      padding:16px 20px;
+      margin-top:20px;
+    }
+    .mgmt-index { display:flex; align-items:baseline; gap:8px; margin-bottom:16px; }
+    .mgmt-num   { font-family:var(--font-mono); font-size:40px; font-weight:600; line-height:1; color:#3B82F6; }
+    .mgmt-denom { font-family:var(--font-mono); font-size:15px; color:#8A97A8; }
+    .mgmt-label { margin-left:auto; font-family:var(--font-mono); font-size:10px; text-transform:uppercase; letter-spacing:.1em; color:rgba(255,255,255,0.25); }
+
+    .axis-rows { display:flex; flex-direction:column; gap:10px; }
+    .axis-row  { display:flex; align-items:center; gap:12px; }
+    .axis-key  { font-family:var(--font-mono); font-size:11px; font-weight:600; width:14px; flex-shrink:0; }
+    .axis-key--normal { color:#3B82F6; }
+    .axis-key--crit   { color:#22D3EE; }
+    .axis-track { flex:1; height:3px; border-radius:2px; background:rgba(255,255,255,0.06); }
+    .axis-fill  { height:100%; border-radius:2px; transition:width 1.2s ease; }
+    .axis-fill--normal { background:rgba(59,130,246,0.6); }
+    .axis-fill--crit   { background:rgba(34,211,238,0.7); }
+    .axis-val  { font-family:var(--font-mono); font-size:11px; width:20px; text-align:right; flex-shrink:0; }
+    .axis-val--normal { color:#7A90A8; }
+    .axis-val--crit   { color:rgba(34,211,238,0.75); }
+
+    .mgmt-note { display:flex; align-items:center; gap:8px; margin-top:14px; padding-top:12px; border-top:1px solid rgba(255,255,255,0.05); }
+    .mgmt-dot  { width:6px; height:6px; border-radius:50%; background:#3B82F6; flex-shrink:0; }
+
+    /* ─── CTA button ────────────────────────────────────────────────────── */
+    .cta-btn-main {
+      display: inline-flex; align-items: center; gap: 10px;
+      height: 56px; padding: 16px 32px; border-radius: 10px;
+      font-size: 16px; font-weight: 600; letter-spacing: .01em;
+      background: var(--accent-primary); color: #fff; text-decoration: none; border: none;
+      box-shadow: 0 0 32px rgba(59,130,246,0.40), 0 0 64px rgba(59,130,246,0.14);
+      transition: background .25s ease, box-shadow .25s ease, transform .25s ease;
+    }
+    .cta-btn-main:hover {
+      background: var(--accent-hover);
+      box-shadow: 0 0 48px rgba(59,130,246,0.60), 0 0 90px rgba(59,130,246,0.22), 0 4px 20px rgba(0,0,0,0.4);
+      transform: translateY(-3px);
+    }
+    .cta-btn-main:active { transform: translateY(-1px); }
+    .cta-btn-main .cta-arrow {
+      display: inline-block;
+      transition: transform .25s ease;
+    }
+    .cta-btn-main:hover .cta-arrow { transform: translateX(6px); }
+    .cta-trust {
+      margin-top: 18px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      letter-spacing: .06em;
+      color: rgba(255,255,255,0.38);
+    }
+
+    /* ─── Footer ─────────────────────────────────────────────────────────── */
+    .footer { border-top:1px solid rgba(255,255,255,0.07); padding-top:72px; padding-bottom:56px; }
+    .footer__inner { display:flex; flex-direction:column; gap:28px; }
+    .footer__logo { font-family:var(--font-mono); font-size:13px; font-weight:600; color:rgba(255,255,255,0.3); letter-spacing:.04em; }
+    .footer__links { display:flex; flex-wrap:wrap; gap:28px; }
+    .footer__link { font-size:13px; color:var(--text-muted); transition:color 150ms; }
+    .footer__link:hover { color:var(--text-secondary); }
+
+    /* ─── Global ─────────────────────────────────────────────────────────── */
+    ::-webkit-scrollbar { width:4px; }
+    ::-webkit-scrollbar-track { background:var(--bg-base); }
+    ::-webkit-scrollbar-thumb { background:rgba(255,255,255,.1); border-radius:2px; }
+    ::-webkit-scrollbar-thumb:hover { background:rgba(59,130,246,.4); }
+    ::selection { background:rgba(59,130,246,.2); color:var(--text-primary); }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="nav__inner">
+    <a href="#" class="nav__logo">K-A-Q-S<sup>™</sup></a>
+    <div class="nav__links">
+      <a href="#architecture"   class="nav__link">Система</a>
+      <a href="#how-works"      class="nav__link">Диагностика</a>
+      <a href="#report-example" class="nav__link">Отчёт</a>
+    </div>
+    <a href="kaqs-quiz.html" class="btn btn-secondary btn-sm">Пройти диагностику</a>
+  </div>
+</nav>
+
+<!-- 01 HERO -->
+<section class="section section--lg hero-section" style="padding-top:calc(96px + 64px)">
+  <div class="hero-bg-grid" aria-hidden="true"></div>
+  <div class="hero-bg-glow"  aria-hidden="true"></div>
+  <div style="position:relative;width:100%;max-width:1400px;margin-inline:auto;padding-inline:var(--side)">
+    <div class="hero-grid">
+
+      <!-- LEFT -->
+      <div style="display:flex;flex-direction:column;gap:28px;max-width:520px">
+
+        <!-- Eyebrow -->
+        <div style="display:inline-flex;align-items:center;gap:8px">
+          <span style="width:5px;height:5px;border-radius:50%;background:#3B82F6;opacity:0.7;flex-shrink:0;display:inline-block"></span>
+          <span style="font-family:var(--font-mono);font-size:11px;text-transform:uppercase;letter-spacing:.14em;color:rgba(59,130,246,0.7)">
+            Business Manageability Platform
+          </span>
+        </div>
+
+        <!-- Title block -->
+        <div style="display:flex;flex-direction:column;gap:4px">
+          <h1 class="hero-title-main">K-A-Q-S<sup style="font-size:.38em;vertical-align:super;color:#3B82F6;opacity:0.65;font-weight:400">™</sup></h1>
+          <p class="hero-title-sub">Индекс управляемости бизнеса</p>
+          <p style="font-family:var(--font-mono);font-size:11px;letter-spacing:.05em;color:rgba(255,255,255,0.2);margin-top:4px">
+            Платформа диагностики и архитектуры управляемого бизнеса.
+          </p>
+        </div>
+
+        <!-- Body -->
+        <p style="font-size:17px;color:#7A8A9A;line-height:1.72;max-width:430px">
+          <span style="white-space:nowrap">K&#8209;A&#8209;Q&#8209;S</span> показывает,
+          где бизнес теряет управляемость,
+          какие риски уже встроены в процессы
+          и какие изменения нужны для устойчивого роста.
+        </p>
+
+        <!-- CTAs -->
+        <div style="display:flex;flex-direction:column;gap:14px">
+          <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+            <a href="kaqs-quiz.html" class="btn-hero-primary">
+              Пройти диагностику
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </a>
+            <a href="#report-example" class="btn-hero-secondary">
+              Посмотреть пример отчёта
+            </a>
+          </div>
+          <p style="font-family:var(--font-mono);font-size:11px;color:rgba(255,255,255,0.18)">
+            24 вопроса · индекс управляемости · карта рисков · дорожная карта действий
+          </p>
+        </div>
+
+      </div>
+
+      <!-- RIGHT: 3D System Architecture -->
+      <div class="hero-right" style="padding:22px 24px">
+        <div class="hero-right__hdr">
+          <span style="font-family:var(--font-mono);font-size:10px;text-transform:uppercase;letter-spacing:.12em;color:rgba(255,255,255,0.22)">K-A-Q-S™ System Model</span>
+          <span style="font-family:var(--font-mono);font-size:10px;color:rgba(255,255,255,0.14)">v2.1 · live</span>
+        </div>
+
+        <!-- 3D arch SVG -->
+        <div id="arch-wrap" style="position:relative">
+          <svg id="arch-svg" viewBox="0 0 440 340" style="width:100%;height:auto;overflow:visible" role="img" aria-label="K-A-Q-S system architecture diagram">
+            <defs>
+              <filter id="node-glow" x="-100%" y="-100%" width="300%" height="300%">
+                <feGaussianBlur stdDeviation="5" result="blur"/>
+                <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+              </filter>
+              <filter id="node-glow-hot" x="-100%" y="-100%" width="300%" height="300%">
+                <feGaussianBlur stdDeviation="9" result="blur"/>
+                <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+              </filter>
+              <filter id="core-glow" x="-100%" y="-100%" width="300%" height="300%">
+                <feGaussianBlur stdDeviation="11" result="blur"/>
+                <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+              </filter>
+              <filter id="line-glow" x="-20%" y="-500%" width="140%" height="1100%">
+                <feGaussianBlur stdDeviation="2.5" result="blur"/>
+                <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+              </filter>
+            </defs>
+            <g id="arch-edges"></g>
+            <g id="arch-nodes"></g>
+          </svg>
+
+          <!-- Info card: shown on node hover -->
+          <div id="arch-card" style="
+            position:absolute; bottom:8px; left:0; right:0;
+            margin-inline:auto; width:calc(100% - 24px);
+            display:none; pointer-events:none;
+            background:rgba(9,12,18,0.97);
+            border:1px solid rgba(59,130,246,0.25);
+            border-radius:8px; padding:14px 16px;
+            transition:opacity 180ms ease-out;
+            z-index:10;
+          ">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+              <div style="display:flex;align-items:center;gap:8px">
+                <span id="arch-card-letter" style="font-family:'IBM Plex Mono',monospace;font-size:18px;font-weight:600;line-height:1"></span>
+                <span id="arch-card-title"  style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:rgba(255,255,255,0.45)"></span>
+              </div>
+              <span id="arch-card-score" style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:rgba(255,255,255,0.28)"></span>
+            </div>
+            <p id="arch-card-desc" style="font-size:12px;color:rgba(255,255,255,0.45);line-height:1.6;margin:0"></p>
+          </div>
+        </div>
+
+        <!-- Legend -->
+        <div style="display:flex;gap:20px;margin-top:10px;padding-top:14px;border-top:1px solid rgba(255,255,255,0.05)">
+          <div style="display:flex;align-items:center;gap:6px">
+            <svg width="8" height="8" viewBox="0 0 8 8"><circle cx="4" cy="4" r="3.5" fill="rgba(59,130,246,0.7)"/></svg>
+            <span style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:rgba(255,255,255,0.2)">Core</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:6px">
+            <svg width="16" height="2" viewBox="0 0 16 2"><line x1="0" y1="1" x2="16" y2="1" stroke="rgba(59,130,246,0.55)" stroke-width="1.5"/></svg>
+            <span style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:rgba(255,255,255,0.2)">Primary link</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:6px">
+            <svg width="16" height="2" viewBox="0 0 16 2"><line x1="0" y1="1" x2="16" y2="1" stroke="rgba(59,130,246,0.3)" stroke-width="1" stroke-dasharray="3,3"/></svg>
+            <span style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:rgba(255,255,255,0.2)">Cross-link</span>
+          </div>
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:rgba(255,255,255,0.12);margin-left:auto">hover to explore</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<script>
+(function(){
+  var W=440, H=340;
+  var cx=W/2, cy=H/2+7;
+  var ns='http://www.w3.org/2000/svg';
+
+  var NODES=[
+    {id:'core',letter:'CORE', label:'Manageability Core',    desc:'Центральный движок платформы. Агрегирует показатели K, A, Q, S и вычисляет Индекс управляемости.',           score:'',      x:0,    y:0,    z:0,    r:22, main:true,  crit:false},
+    {id:'K',   letter:'K',    label:'Knowledge Architecture',desc:'Насколько знания и процессы зафиксированы независимо от конкретных людей.',                                   score:'62/100', x:0,    y:-116, z:34,   r:14, main:false, crit:false},
+    {id:'A',   letter:'A',    label:'Automation Readiness',  desc:'Готовы ли процессы к автоматизации. Автоматизация неописанного хаоса только ускоряет деградацию.',           score:'41/100', x:116,  y:18,   z:-46,  r:14, main:false, crit:true },
+    {id:'Q',   letter:'Q',    label:'Quality & Risk Control',desc:'Операционные ошибки фиксируются и разбираются. Есть превентивный контроль, а не только реакция.',            score:'55/100', x:0,    y:104,  z:-34,  r:14, main:false, crit:false},
+    {id:'S',   letter:'S',    label:'Scalability',           desc:'Масштаб компании не создаёт трение. Рост команды ведёт к росту результата, а не к росту хаоса.',             score:'38/100', x:-116, y:18,   z:46,   r:14, main:false, crit:true },
+  ];
+
+  var EDGES=[
+    {a:'core',b:'K', type:'primary'},
+    {a:'core',b:'A', type:'primary'},
+    {a:'core',b:'Q', type:'primary'},
+    {a:'core',b:'S', type:'primary'},
+    {a:'K',   b:'A', type:'ring'  },
+    {a:'A',   b:'Q', type:'ring'  },
+    {a:'Q',   b:'S', type:'ring'  },
+    {a:'S',   b:'K', type:'ring'  },
+    {a:'K',   b:'Q', type:'cross' },
+    {a:'A',   b:'S', type:'cross' },
+  ];
+
+  var svg    = document.getElementById('arch-svg');
+  var edgesG = document.getElementById('arch-edges');
+  var nodesG = document.getElementById('arch-nodes');
+  var card   = document.getElementById('arch-card');
+  var cardLetter = document.getElementById('arch-card-letter');
+  var cardTitle  = document.getElementById('arch-card-title');
+  var cardScore  = document.getElementById('arch-card-score');
+  var cardDesc   = document.getElementById('arch-card-desc');
+  var wrap   = document.getElementById('arch-wrap');
+
+  var rotY = 0;
+  var rotX = 0.2;
+  var hovId = null;
+  var cardTimer = null;
+
+  /* ── Scroll-reactive state ── */
+  var degradeAmt = 0;   // A & S тускнеют при прокрутке к Problem
+  var recoverAmt = 0;   // все узлы ярче при Framework
+  var morphAmt   = 0;   // размеры узлов по баллам при Diagnostic
+  var rotSpeed   = 0.0025;
+
+  var DIAG_R = { K: 10 + 62*0.068, A: 10 + 41*0.068, Q: 10 + 55*0.068, S: 10 + 38*0.068 };
+  var AXIS_COL = { core:'59,130,246', K:'59,130,246', A:'34,211,238', Q:'99,102,241', S:'16,185,129' };
+  function lerp(a,b,t){ return a + (b-a)*t; }
+
+  var _pRatio=0, _fRatio=0, _dRatio=0;
+  function readScroll(){
+    function ratio(id){
+      var el=document.getElementById(id); if(!el) return 0;
+      var rect=el.getBoundingClientRect();
+      var vh=window.innerHeight||document.documentElement.clientHeight;
+      return Math.max(0, Math.min(1, (vh - rect.top) / vh));
+    }
+    _pRatio = ratio('problem');
+    _fRatio = ratio('system');
+    _dRatio = ratio('how-works');
+  }
+  window.addEventListener('scroll', readScroll, { passive:true });
+  requestAnimationFrame(readScroll);
+
+  /* ── Pre-create glowing edge pairs (glow layer + crisp layer) ── */
+  var edgeEls = EDGES.map(function(){
+    var glow = document.createElementNS(ns,'line');
+    glow.setAttribute('filter','url(#line-glow)');
+    edgesG.appendChild(glow);
+    var line = document.createElementNS(ns,'line');
+    edgesG.appendChild(line);
+    return {glow: glow, line: line};
+  });
+
+  /* ── Pre-create node groups ── */
+  var nodeEls = NODES.map(function(n){
+    var g = document.createElementNS(ns,'g');
+    g.style.cursor = 'pointer';
+
+    // outer pulse halo (extra large, very soft)
+    var pulse = document.createElementNS(ns,'circle');
+    var _nc = AXIS_COL[n.id] || '59,130,246';
+    pulse.setAttribute('fill', 'rgba('+_nc+',0.06)');
+    pulse.setAttribute('stroke','none');
+    g.appendChild(pulse);
+
+    // glow halo
+    var halo = document.createElementNS(ns,'circle');
+    halo.setAttribute('fill','none');
+    halo.setAttribute('stroke', 'rgba('+_nc+',0.25)');
+    halo.setAttribute('stroke-width','1');
+    halo.setAttribute('filter', n.main ? 'url(#core-glow)' : 'url(#node-glow)');
+    g.appendChild(halo);
+
+    // main circle
+    var circle = document.createElementNS(ns,'circle');
+    circle.setAttribute('stroke-width','1');
+    g.appendChild(circle);
+
+    // letter
+    var letter = document.createElementNS(ns,'text');
+    letter.setAttribute('text-anchor','middle');
+    letter.setAttribute('dominant-baseline','central');
+    letter.setAttribute('font-family',"'IBM Plex Mono',monospace");
+    letter.setAttribute('font-weight','600');
+    letter.textContent = n.letter;
+    g.appendChild(letter);
+
+    // sub-label
+    var sub = document.createElementNS(ns,'text');
+    sub.setAttribute('text-anchor','middle');
+    sub.setAttribute('font-family',"'IBM Plex Mono',monospace");
+    g.appendChild(sub);
+
+    nodesG.appendChild(g);
+    return {g:g, pulse:pulse, halo:halo, circle:circle, letter:letter, sub:sub};
+  });
+
+  /* ── Projection ── */
+  function project(nx, ny, nz){
+    var cosX=Math.cos(rotX), sinX=Math.sin(rotX);
+    var y1 = ny*cosX - nz*sinX;
+    var z1 = ny*sinX + nz*cosX;
+    var cosY=Math.cos(rotY), sinY=Math.sin(rotY);
+    var x2 =  nx*cosY + z1*sinY;
+    var z2 = -nx*sinY + z1*cosY;
+    var fov = 320;
+    var s = fov / (fov + z2);
+    return { px: cx + x2*s, py: cy + y1*s, s: s, z: z2 };
+  }
+
+  /* ── Render ── */
+  function render(){
+    var projs = {};
+    NODES.forEach(function(n){ projs[n.id] = project(n.x, n.y, n.z); });
+
+    // ── Edges
+    var eSort = EDGES.map(function(e,i){
+      return {e:e, i:i, mz:(projs[e.a].z + projs[e.b].z)/2};
+    }).sort(function(a,b){ return b.mz - a.mz; });
+
+    eSort.forEach(function(item){
+      var e=item.e, els=edgeEls[item.i];
+      var pa=projs[e.a], pb=projs[e.b];
+      var hov = hovId && (e.a===hovId || e.b===hovId || hovId==='core');
+      var isConn = hovId==='core' ? true : (e.a===hovId||e.b===hovId);
+
+      var BASE = { primary:'rgba(59,130,246,0.48)', ring:'rgba(59,130,246,0.22)', cross:'rgba(59,130,246,0.12)' };
+      var HOV  = { primary:'rgba(59,130,246,0.88)', ring:'rgba(59,130,246,0.60)', cross:'rgba(59,130,246,0.42)' };
+      var isCoreA = (e.a==='core'&&e.b==='A')||(e.a==='A'&&e.b==='core');
+      var baseColor = isCoreA ? 'rgba(59,130,246,0.68)' : BASE[e.type];
+      var color = (hov && isConn) ? HOV[e.type] : baseColor;
+      var width = (hov && isConn) ? (e.type==='primary'?2.2:1.4) : (isCoreA ? 1.9 : (e.type==='primary'?1.5:0.9));
+      var dash  = e.type==='cross' ? '3,5' : 'none';
+
+      [els.glow, els.line].forEach(function(l){
+        l.setAttribute('x1', pa.px.toFixed(1)); l.setAttribute('y1', pa.py.toFixed(1));
+        l.setAttribute('x2', pb.px.toFixed(1)); l.setAttribute('y2', pb.py.toFixed(1));
+        l.setAttribute('stroke-dasharray', dash);
+      });
+      els.line.setAttribute('stroke', color);
+      els.line.setAttribute('stroke-width', width);
+      // glow line: same color, thicker, filtered
+      els.glow.setAttribute('stroke', color);
+      els.glow.setAttribute('stroke-width', width * 2.5);
+      els.glow.setAttribute('opacity', (hov && isConn) ? '0.42' : (isCoreA ? '0.30' : '0.20'));
+
+      edgesG.appendChild(els.glow);
+      edgesG.appendChild(els.line);
+    });
+
+    // ── Nodes
+    var nSort = NODES.map(function(n){ return {n:n, p:projs[n.id]}; })
+                     .sort(function(a,b){ return b.p.z - a.p.z; });
+
+    nSort.forEach(function(item){
+      var n=item.n, p=item.p;
+      var idx=NODES.indexOf(n);
+      var el=nodeEls[idx];
+      var ds  = Math.max(0.6, Math.min(1.3, p.s));
+      var hov = hovId === n.id;
+      var targetR = n.main ? n.r : lerp(n.r, DIAG_R[n.id] || n.r, morphAmt);
+      var r = targetR * ds;
+      var baseDim = 0.35 + p.s * 0.65;
+      var critFade = (n.id==='A'||n.id==='S') ? (1 - degradeAmt*0.65) : 1;
+      var brightBoost = 1 + recoverAmt * 0.25;
+      var modifier = lerp(critFade, brightBoost, recoverAmt);
+      var effectiveDim = Math.max(0.08, Math.min(1.0, baseDim * modifier));
+      var dim = (hov ? baseDim : effectiveDim).toFixed(2);
+      var nc = AXIS_COL[n.id] || '59,130,246';
+      var c = 'rgba('+nc+',';
+
+      // pulse
+      el.pulse.setAttribute('cx', p.px.toFixed(1)); el.pulse.setAttribute('cy', p.py.toFixed(1));
+      el.pulse.setAttribute('r', (r * (hov ? 4 : 2.5)).toFixed(1));
+      el.pulse.setAttribute('opacity', hov ? '1' : '0');
+
+      // halo
+      el.halo.setAttribute('cx', p.px.toFixed(1)); el.halo.setAttribute('cy', p.py.toFixed(1));
+      el.halo.setAttribute('r', (r * (hov ? 2.2 : 1.7)).toFixed(1));
+      el.halo.setAttribute('stroke-width', hov ? '2' : '1');
+      el.halo.setAttribute('opacity', hov ? '1' : (n.main ? '0.72' : '0.50'));
+      el.halo.setAttribute('filter', hov ? 'url(#node-glow-hot)' : (n.main ? 'url(#core-glow)' : 'url(#node-glow)'));
+
+      // circle fill & stroke
+      var fillColor = n.main ? c+'0.38)' : (hov ? c+'0.22)' : c+'0.1)');
+      var strokeColor = hov ? c+'0.9)' : (n.main ? c+'0.82)' : c+'0.65)');
+      el.circle.setAttribute('cx', p.px.toFixed(1)); el.circle.setAttribute('cy', p.py.toFixed(1));
+      el.circle.setAttribute('r', r.toFixed(1));
+      el.circle.setAttribute('fill', fillColor);
+      el.circle.setAttribute('stroke', strokeColor);
+      el.circle.setAttribute('stroke-width', hov ? '1.5' : '1');
+      el.circle.setAttribute('opacity', hov ? '1' : dim);
+
+      // letter
+      var letterColor = n.main ? 'rgba(255,255,255,0.9)' : (hov ? c+'1)' : c+'0.9)');
+      el.letter.setAttribute('x', p.px.toFixed(1)); el.letter.setAttribute('y', p.py.toFixed(1));
+      el.letter.setAttribute('font-size', n.main ? (9.5*ds).toFixed(1) : (12*ds).toFixed(1));
+      el.letter.setAttribute('fill', letterColor);
+      el.letter.setAttribute('opacity', hov ? '1' : dim);
+
+      // sub-label
+      el.sub.setAttribute('x', p.px.toFixed(1));
+      el.sub.setAttribute('y', (p.py + r + 12).toFixed(1));
+      el.sub.setAttribute('font-size', (8*ds).toFixed(1));
+      el.sub.textContent = n.main ? 'Manageability Core' : n.letter;
+      el.sub.setAttribute('fill', hov ? 'rgba(255,255,255,0.65)' : (n.main ? 'rgba(255,255,255,0.32)' : 'rgba(255,255,255,0.18)'));
+
+      nodesG.appendChild(el.g);
+    });
+  }
+
+  /* ── Info card ── */
+  function showCard(n){
+    var isCrit = n.crit;
+    cardLetter.textContent = n.main ? '◈' : n.letter;
+    var _c = 'rgba('+(AXIS_COL[n.id]||'59,130,246')+',';
+    cardLetter.style.color = n.main ? '#fff' : (_c+'0.95)');
+    cardTitle.textContent  = n.label;
+    cardScore.textContent  = n.score;
+    cardScore.style.color  = 'rgba(255,255,255,0.28)';
+    cardDesc.textContent   = n.desc;
+    card.style.borderColor = _c+'0.25)';
+    card.style.display     = 'block';
+  }
+
+  function hideCard(){
+    card.style.display = 'none';
+  }
+
+  /* ── Hover ── */
+  var cachedRect = null;
+  svg.addEventListener('mousemove', function(evt){
+    cachedRect = cachedRect || wrap.getBoundingClientRect();
+    var mx = (evt.clientX - cachedRect.left) * (W / cachedRect.width);
+    var my = (evt.clientY - cachedRect.top)  * (H / cachedRect.height);
+
+    var projs = {};
+    NODES.forEach(function(n){ projs[n.id] = project(n.x, n.y, n.z); });
+
+    var hit=null, best=9999;
+    NODES.forEach(function(n){
+      var p=projs[n.id];
+      var ds=Math.max(0.6,Math.min(1.3,p.s));
+      var dx=mx-p.px, dy=my-p.py;
+      var d=Math.sqrt(dx*dx+dy*dy);
+      var hitR = n.r*ds*2.2;
+      if(d<hitR && d<best){ best=d; hit=n; }
+    });
+
+    var newId = hit ? hit.id : null;
+    if(newId !== hovId){
+      hovId = newId;
+      clearTimeout(cardTimer);
+      if(hit){
+        cardTimer = setTimeout(function(){ showCard(hit); }, 80);
+      } else {
+        hideCard();
+      }
+    }
+  });
+
+  svg.addEventListener('mouseleave', function(){
+    hovId = null;
+    clearTimeout(cardTimer);
+    hideCard();
+    cachedRect = null;
+  });
+
+  /* ── Animation loop ── */
+  function loop(){
+    var tDegrade = (_pRatio > 0.25 && _fRatio < 0.25) ? 1 : 0;
+    var tRecover = _fRatio > 0.25 ? 1 : 0;
+    var tMorph   = _dRatio > 0.25 ? 1 : 0;
+    degradeAmt = lerp(degradeAmt, tDegrade, 0.028);
+    recoverAmt = lerp(recoverAmt, tRecover, 0.028);
+    morphAmt   = lerp(morphAmt,   tMorph,   0.022);
+    var targetSpeed = lerp(lerp(0.0025, 0.001, degradeAmt), 0.002, recoverAmt);
+    rotSpeed = lerp(rotSpeed, targetSpeed, 0.02);
+    rotY += rotSpeed;
+    render();
+    requestAnimationFrame(loop);
+  }
+  loop();
+})();
+</script>
+
+<!-- ══ STORY TRACK: Problem → Architecture → Framework ══ -->
+<div class="story-track"><div class="story-left">
+
+<!-- 02 PROBLEM -->
+<section class="section" id="problem" style="border-top:1px solid var(--border-subtle)">
+  <div style="width:100%;max-width:1200px;margin-inline:auto;padding-inline:var(--side)">
+
+    <!-- Header -->
+    <div class="reveal prob-hdr-row" style="margin-bottom:56px">
+      <div style="flex:1;max-width:460px">
+        <p class="idx">02</p>
+        <h2 style="font-size:clamp(28px,3.8vw,46px);font-weight:700;line-height:1.07;letter-spacing:-0.03em;color:var(--text-primary);margin-bottom:18px">
+          Как бизнес теряет управляемость
+        </h2>
+        <p style="font-size:16px;color:var(--text-secondary);line-height:1.7">
+          Когда компания растёт быстрее системы управления,<br>возникает системная деградация.
+        </p>
+      </div>
+
+      <!-- Analytics panel -->
+      <div class="prob-vis-panel" id="prob-analytics-panel">
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:8.5px;text-transform:uppercase;letter-spacing:.12em;color:rgba(255,255,255,0.22);margin-bottom:14px;display:flex;align-items:center;gap:6px">
+          <span style="width:4px;height:4px;border-radius:50%;background:rgba(59,130,246,0.7);display:inline-block;flex-shrink:0"></span>
+          System Analytics
+        </div>
+
+        <!-- Index -->
+        <div style="padding-bottom:14px;margin-bottom:14px;border-bottom:1px solid rgba(255,255,255,0.05)">
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:8px;letter-spacing:.08em;color:rgba(255,255,255,0.22);text-transform:uppercase;margin-bottom:6px">Manageability Index</div>
+          <div style="display:flex;align-items:baseline;gap:4px">
+            <span style="font-family:'IBM Plex Mono',monospace;font-size:44px;font-weight:700;letter-spacing:-0.03em;color:rgba(59,130,246,1);line-height:1;text-shadow:0 0 18px rgba(59,130,246,0.5),0 0 40px rgba(59,130,246,0.22)">49</span>
+            <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:rgba(255,255,255,0.22);font-weight:400">/ 100</span>
+          </div>
+        </div>
+
+        <!-- K / A / Q / S -->
+        <div style="display:flex;flex-direction:column;gap:9px">
+          <div id="pap-row-k" style="transition:opacity 200ms">
+            <div style="display:flex;align-items:center;gap:8px">
+              <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:700;color:rgba(59,130,246,0.85);width:10px;flex-shrink:0">K</span>
+              <div style="flex:1;height:3px;background:rgba(255,255,255,0.06);border-radius:2px;overflow:hidden">
+                <div style="width:62%;height:100%;background:rgba(59,130,246,0.62);border-radius:2px"></div>
+              </div>
+              <span style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:rgba(255,255,255,0.3);width:18px;text-align:right;flex-shrink:0">62</span>
+            </div>
+          </div>
+          <div id="pap-row-a" style="transition:opacity 200ms">
+            <div style="display:flex;align-items:center;gap:8px">
+              <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:700;color:rgba(34,211,238,0.85);width:10px;flex-shrink:0">A</span>
+              <div style="flex:1;height:3px;background:rgba(255,255,255,0.06);border-radius:2px;overflow:hidden">
+                <div style="width:41%;height:100%;background:rgba(34,211,238,0.55);border-radius:2px"></div>
+              </div>
+              <span style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:rgba(255,255,255,0.3);width:18px;text-align:right;flex-shrink:0">41</span>
+            </div>
+          </div>
+          <div id="pap-row-q" style="transition:opacity 200ms">
+            <div style="display:flex;align-items:center;gap:8px">
+              <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:700;color:rgba(99,102,241,0.85);width:10px;flex-shrink:0">Q</span>
+              <div style="flex:1;height:3px;background:rgba(255,255,255,0.06);border-radius:2px;overflow:hidden">
+                <div style="width:55%;height:100%;background:rgba(99,102,241,0.55);border-radius:2px"></div>
+              </div>
+              <span style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:rgba(255,255,255,0.3);width:18px;text-align:right;flex-shrink:0">55</span>
+            </div>
+          </div>
+          <div id="pap-row-s" style="transition:opacity 200ms">
+            <div style="display:flex;align-items:center;gap:8px">
+              <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:700;color:rgba(16,185,129,0.85);width:10px;flex-shrink:0">S</span>
+              <div style="flex:1;height:3px;background:rgba(255,255,255,0.06);border-radius:2px;overflow:hidden">
+                <div style="width:38%;height:100%;background:rgba(16,185,129,0.55);border-radius:2px"></div>
+              </div>
+              <span style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:rgba(255,255,255,0.3);width:18px;text-align:right;flex-shrink:0">38</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Status -->
+        <div id="pap-status" style="margin-top:14px;padding-top:12px;border-top:1px solid rgba(255,255,255,0.05);font-family:'IBM Plex Mono',monospace;font-size:8px;letter-spacing:.08em;color:rgba(239,68,68,0.4);text-transform:uppercase;transition:color 200ms">СИСТЕМА ДЕГРАДИРУЕТ</div>
+      </div>
+    </div>
+
+    <!-- Degradation indicator -->
+    <div class="reveal" style="margin-bottom:28px">
+      <!-- Label row -->
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+        <span style="font-family:var(--font-mono);font-size:10px;text-transform:uppercase;letter-spacing:.14em;color:rgba(255,255,255,0.2)">Как бизнес теряет управляемость</span>
+        <span style="font-family:var(--font-mono);font-size:10px;letter-spacing:.06em;color:rgba(239,68,68,0.5)">Уровень управляемости ↓</span>
+      </div>
+      <!-- Gradient bar: cold → warning -->
+      <div class="prob-degradation-bar reveal"></div>
+      <!-- Axis labels -->
+      <div style="display:flex;justify-content:space-between;margin-top:5px">
+        <span style="font-family:var(--font-mono);font-size:9px;color:rgba(59,130,246,0.5);letter-spacing:.04em">Высокая управляемость</span>
+        <span style="font-family:var(--font-mono);font-size:9px;color:rgba(220,38,38,0.55);letter-spacing:.04em">Системная деградация</span>
+      </div>
+    </div>
+
+    <!-- Bars + right indicator -->
+    <div style="display:flex;gap:0;align-items:stretch">
+
+      <!-- Bar stack -->
+      <div class="prob-bars">
+
+        <!-- 01 -->
+        <div class="prob-bar-row" data-prob-idx="0">
+          <div class="prob-bar-track">
+            <div class="prob-bar-fill" style="--bw:100%"></div>
+            <div class="prob-bar-label">
+              <span class="prob-bar-num">01</span>
+              <div class="prob-bar-content">
+                <span class="prob-bar-name">Хаос процессов</span>
+                <p class="prob-bar-desc">Нет единого стандарта выполнения. Каждый делает по-своему — результат непредсказуем и невоспроизводим.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 02 -->
+        <div class="prob-bar-row" data-prob-idx="1">
+          <div class="prob-bar-track">
+            <div class="prob-bar-fill" style="--bw:82%"></div>
+            <div class="prob-bar-label">
+              <span class="prob-bar-num">02</span>
+              <div class="prob-bar-content">
+                <span class="prob-bar-name">Знание в головах</span>
+                <p class="prob-bar-desc">Ключевые процессы не зафиксированы. Уходит человек — уходит часть системы.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 03 -->
+        <div class="prob-bar-row" data-prob-idx="2">
+          <div class="prob-bar-track">
+            <div class="prob-bar-fill" style="--bw:64%"></div>
+            <div class="prob-bar-label">
+              <span class="prob-bar-num">03</span>
+              <div class="prob-bar-content">
+                <span class="prob-bar-name">Слепые зоны управления</span>
+                <p class="prob-bar-desc">Нет видимости операций в реальном времени. Решения принимаются по ощущениям, а не по данным.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 04 -->
+        <div class="prob-bar-row" data-prob-idx="3">
+          <div class="prob-bar-track">
+            <div class="prob-bar-fill" style="--bw:46%"></div>
+            <div class="prob-bar-label">
+              <span class="prob-bar-num">04</span>
+              <div class="prob-bar-content">
+                <span class="prob-bar-name">Повторяющиеся сбои</span>
+                <p class="prob-bar-desc">Инциденты не разбираются и повторяются. Система не накапливает опыт и не учится на ошибках.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 05 -->
+        <div class="prob-bar-row" data-prob-idx="4">
+          <div class="prob-bar-track" style="background:rgba(220,38,38,0.05)">
+            <div class="prob-bar-fill" style="--bw:30%"></div>
+            <div class="prob-bar-label">
+              <span class="prob-bar-num prob-bar-num--crit">05</span>
+              <div class="prob-bar-content">
+                <span class="prob-bar-name" style="color:#F0F4F8">Автоматизация хаоса</span>
+                <p class="prob-bar-desc prob-bar-desc--crit">Инструменты внедряют поверх неописанных процессов. Технологии ускоряют проблему, а не решают её.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Right indicator -->
+      <div class="prob-right-ind">
+        <div class="prob-right-ind__line"></div>
+        <span class="prob-right-ind__lbl">Уровень управляемости ↓</span>
+      </div>
+
+    </div>
+
+    <!-- Transition block -->
+    <div class="prob-transition prob-reveal" style="transition-delay:0ms">
+      <div class="prob-transition__line"></div>
+      <div class="prob-transition__body">
+        <p class="prob-transition__text">
+          Большинство компаний пытаются лечить симптомы.
+        </p>
+        <p class="prob-transition__accent">
+          K-A-Q-S показывает системную причину деградации управления.
+        </p>
+      </div>
+      <a href="#system" class="prob-transition__cta">
+        Посмотреть систему
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+          <path d="M6 2v8M2 6l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </a>
+    </div>
+
+  </div>
+</section>
+
+<style>
+  /* Progressive reveal for problem cards */
+  .prob-reveal {
+    opacity: 0;
+    transform: translateY(36px);
+    transition: opacity 750ms cubic-bezier(0.16,1,0.3,1),
+                transform 750ms cubic-bezier(0.16,1,0.3,1);
+  }
+  .prob-reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* ── Bar rows ── */
+  .prob-bars {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+
+  .prob-bar-row {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    opacity: 0;
+    cursor: default;
+  }
+  .prob-bar-row.visible {
+    opacity: 1;
+    transition: opacity 250ms ease-out;
+  }
+
+  .prob-bar-track {
+    position: relative;
+    height: 80px;
+    background: rgba(255,255,255,0.025);
+    overflow: hidden;
+  }
+
+  .prob-bar-fill {
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 0;
+  }
+  .prob-bar-row.visible .prob-bar-fill {
+    width: var(--bw);
+    transition: width 800ms cubic-bezier(0.16,1,0.3,1);
+    transition-delay: 80ms;
+  }
+
+  [data-prob-idx="0"] .prob-bar-fill { background: rgba(59,130,246,0.18);  border-right: 2px solid rgba(59,130,246,0.6); }
+  [data-prob-idx="1"] .prob-bar-fill { background: rgba(34,211,238,0.14);  border-right: 2px solid rgba(34,211,238,0.5); }
+  [data-prob-idx="2"] .prob-bar-fill { background: rgba(249,115,22,0.14);  border-right: 2px solid rgba(249,115,22,0.55); }
+  [data-prob-idx="3"] .prob-bar-fill { background: rgba(239,68,68,0.14);   border-right: 2px solid rgba(239,68,68,0.55); }
+  [data-prob-idx="4"] .prob-bar-fill { background: rgba(220,38,38,0.2);    border-right: 2px solid rgba(220,38,38,0.72); }
+
+  .prob-bar-label {
+    position: absolute;
+    left: 20px; top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    z-index: 1;
+    pointer-events: none;
+    right: 16px;
+  }
+
+  .prob-bar-num {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: rgba(255,255,255,0.22);
+    letter-spacing: .14em;
+    flex-shrink: 0;
+  }
+  .prob-bar-num--crit { color: rgba(239,68,68,0.45); }
+
+  .prob-bar-content {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+  }
+
+  .prob-bar-name {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-primary);
+    letter-spacing: -0.01em;
+    line-height: 1.2;
+  }
+
+  .prob-bar-desc {
+    font-size: 12px;
+    color: rgba(255,255,255,0.38);
+    line-height: 1.5;
+    font-family: var(--font-mono);
+    letter-spacing: .01em;
+  }
+  .prob-bar-desc--crit { color: rgba(239,68,68,0.5); }
+
+  .prob-dot {
+    width: 4px; height: 4px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    display: inline-block;
+  }
+
+  /* ── Right indicator ── */
+  .prob-right-ind {
+    width: 52px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0 0 8px;
+    gap: 10px;
+    flex-shrink: 0;
+  }
+
+  .prob-right-ind__line {
+    flex: 1;
+    width: 2px;
+    border-radius: 2px;
+    background: linear-gradient(
+      to bottom,
+      rgba(59,130,246,0.6),
+      rgba(34,211,238,0.5),
+      rgba(249,115,22,0.55),
+      rgba(239,68,68,0.55),
+      rgba(220,38,38,0.8)
+    );
+    box-shadow: 0 0 6px rgba(220,38,38,0.18), 0 0 14px rgba(220,38,38,0.08);
+    position: relative;
+  }
+  .prob-right-ind__line::after {
+    content: '↓';
+    position: absolute;
+    bottom: -18px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 14px;
+    font-weight: 700;
+    color: rgba(220,38,38,0.75);
+    line-height: 1;
+    text-shadow: 0 0 8px rgba(220,38,38,0.45);
+  }
+
+  .prob-right-ind__lbl {
+    font-family: var(--font-mono);
+    font-size: 8px;
+    text-transform: uppercase;
+    letter-spacing: .07em;
+    color: rgba(255,255,255,0.18);
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+    line-height: 1.5;
+    text-align: center;
+    margin-top: 20px;
+  }
+
+  /* ── Degradation indicator ── */
+  .prob-degradation-bar {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin-bottom: 20px;
+    height: 2px;
+    border-radius: 2px;
+    overflow: hidden;
+    background: linear-gradient(
+      to right,
+      rgba(59,130,246,0.7)  0%,
+      rgba(34,211,238,0.6)  25%,
+      rgba(249,115,22,0.72)  50%,
+      rgba(239,68,68,0.8)   75%,
+      rgba(220,38,38,0.9)   100%
+    );
+    opacity: 0;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: opacity 600ms ease-out, transform 900ms cubic-bezier(0.16,1,0.3,1);
+  }
+  .prob-degradation-bar.visible {
+    opacity: 1;
+    transform: scaleX(1);
+  }
+
+  /* Transition */
+  .prob-transition {
+    margin-top: 56px;
+    padding: 40px 40px;
+    display: flex;
+    align-items: center;
+    gap: 40px;
+    flex-wrap: wrap;
+    border: 1px solid rgba(255,255,255,0.05);
+    position: relative;
+    overflow: hidden;
+  }
+  .prob-transition::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 2px;
+    background: linear-gradient(to bottom, transparent, rgba(59,130,246,0.4), transparent);
+  }
+  .prob-transition__line {
+    display: none;
+  }
+  .prob-transition__body { flex: 1; min-width: 240px; display:flex; flex-direction:column; gap:6px; }
+  .prob-transition__text {
+    font-size: 14px;
+    color: rgba(255,255,255,0.35);
+    line-height: 1.6;
+    font-family: var(--font-mono);
+    letter-spacing: .01em;
+  }
+  .prob-transition__accent {
+    font-size: 16px;
+    font-weight: 600;
+    color: rgba(255,255,255,0.75);
+    letter-spacing: -0.01em;
+  }
+  .prob-transition__cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: .1em;
+    color: rgba(59,130,246,0.7);
+    text-decoration: none;
+    flex-shrink: 0;
+    transition: color 150ms;
+  }
+  .prob-transition__cta:hover { color: rgba(59,130,246,1); }
+
+  @media(max-width:767px){
+    .prob-bar-track { height: 72px; }
+    .prob-bar-name { font-size: 13px; }
+    .prob-bar-desc { font-size: 11px; }
+    .prob-right-ind { width: 28px; }
+    .prob-right-ind__lbl { display: none; }
+    .prob-transition { padding: 28px 24px; gap: 24px; }
+  }
+
+  /* Problem header 2-col with degraded graph */
+  .prob-hdr-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 28px;
+  }
+  .prob-vis-panel {
+    flex-shrink: 0;
+    width: 232px;
+    padding: 20px 22px;
+    background: rgba(8,10,14,0.85);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 12px;
+    margin-top: 8px;
+    transition: border-color 250ms ease, box-shadow 250ms ease;
+  }
+  @media(max-width:899px) { .prob-vis-panel { display: none; } }
+</style>
+<script>
+(function(){
+  var panel = document.getElementById('prob-analytics-panel');
+  if(!panel) return;
+  // Per-bar: [glow color rgb, axis to highlight]
+  var barMap = [
+    {c:'59,130,246',  ax:'k'},
+    {c:'34,211,238',  ax:'k'},
+    {c:'249,115,22',  ax:'q'},
+    {c:'239,68,68',   ax:'q'},
+    {c:'220,38,38',   ax:'a'},
+  ];
+  var axes = ['k','a','q','s'];
+  var rows = document.querySelectorAll('.prob-bar-row');
+  rows.forEach(function(row, i){
+    var map = barMap[i] || barMap[0];
+    row.addEventListener('mouseenter', function(){
+      panel.style.borderColor  = 'rgba('+map.c+',0.38)';
+      panel.style.boxShadow    = '0 0 22px rgba('+map.c+',0.09)';
+      axes.forEach(function(id){
+        var el = document.getElementById('pap-row-'+id);
+        if(el) el.style.opacity = (id === map.ax) ? '1' : '0.28';
+      });
+    });
+    row.addEventListener('mouseleave', function(){
+      panel.style.borderColor = '';
+      panel.style.boxShadow   = '';
+      axes.forEach(function(id){
+        var el = document.getElementById('pap-row-'+id);
+        if(el) el.style.opacity = '1';
+      });
+    });
+  });
+})();
+</script>
+
+<!-- 02.5 QUICK CHECK -->
+<section class="section" id="quick-check" style="border-top:1px solid var(--border-subtle)">
+  <div class="container qc-wrap">
+    <div class="reveal" style="margin-bottom:56px;max-width:640px">
+      <p class="idx">02.5</p>
+      <h2>Проверьте управляемость<br>бизнеса за 30 секунд</h2>
+      <p style="margin-top:16px;font-size:17px;color:var(--text-secondary);line-height:1.65">
+        Три вопроса — и вы увидите, где ваша система даёт трещину.
+      </p>
+    </div>
+
+    <div class="reveal qc-panel" id="qc-panel">
+      <div class="qc-prog-row">
+        <div class="qc-prog"><div class="qc-prog__fill" id="qc-prog-fill"></div></div>
+        <span class="qc-prog-pct" id="qc-prog-pct">0%</span>
+      </div>
+
+      <!-- Q1: Процессы (K axis) -->
+      <div class="qc-step qc-step--active" id="qc-step-1">
+        <div class="qc-step-label">Вопрос 1 из 3 · K — Контроль процессов</div>
+        <div class="qc-q-text">Ваши ключевые бизнес-процессы зафиксированы в регламентах?</div>
+        <div class="qc-opts">
+          <button class="qc-opt qc-opt--k" onclick="qcAnswer(1,3,this)">Да — всё задокументировано, команда работает по инструкциям</button>
+          <button class="qc-opt qc-opt--k" onclick="qcAnswer(1,2,this)">Частично — ключевые процессы есть, остальное — «в головах»</button>
+          <button class="qc-opt qc-opt--k" onclick="qcAnswer(1,1,this)">Почти нет — работаем по договорённостям, без письменных правил</button>
+          <button class="qc-opt qc-opt--k" onclick="qcAnswer(1,0,this)">Нет — каждый делает как считает нужным</button>
+        </div>
+        <div class="qc-reaction" id="qc-reaction-1"></div>
+        <button class="qc-next-btn" id="qc-next-1" onclick="qcNext(1)">Следующий вопрос <span>→</span></button>
+      </div>
+
+      <!-- Q2: Решения (Q axis) -->
+      <div class="qc-step" id="qc-step-2">
+        <div class="qc-step-label">Вопрос 2 из 3 · Q — Качество решений</div>
+        <div class="qc-q-text">Что происходит с операционными решениями, когда вас нет рядом?</div>
+        <div class="qc-opts">
+          <button class="qc-opt qc-opt--q" onclick="qcAnswer(2,3,this)">Команда решает сама — есть критерии, полномочия и ответственность</button>
+          <button class="qc-opt qc-opt--q" onclick="qcAnswer(2,2,this)">Большинство решают, но сложные вопросы ждут меня</button>
+          <button class="qc-opt qc-opt--q" onclick="qcAnswer(2,1,this)">Решения откладываются или принимаются кое-как</button>
+          <button class="qc-opt qc-opt--q" onclick="qcAnswer(2,0,this)">Всё стопорится — без меня ничего не двигается</button>
+        </div>
+        <div class="qc-reaction" id="qc-reaction-2"></div>
+        <button class="qc-next-btn" id="qc-next-2" onclick="qcNext(2)">Следующий вопрос <span>→</span></button>
+      </div>
+
+      <!-- Q3: Масштабирование (S axis) -->
+      <div class="qc-step" id="qc-step-3">
+        <div class="qc-step-label">Вопрос 3 из 3 · S — Масштабируемость</div>
+        <div class="qc-q-text">Что произойдёт, если команда вырастет вдвое за три месяца?</div>
+        <div class="qc-opts">
+          <button class="qc-opt qc-opt--s" onclick="qcAnswer(3,3,this)">Справимся — есть онбординг, структура и прописанные роли</button>
+          <button class="qc-opt qc-opt--s" onclick="qcAnswer(3,2,this)">Справимся, но с напряжением — придётся многое переделывать</button>
+          <button class="qc-opt qc-opt--s" onclick="qcAnswer(3,1,this)">Скорее всего будет хаос — система к этому не готова</button>
+          <button class="qc-opt qc-opt--s" onclick="qcAnswer(3,0,this)">Полный хаос — мы с трудом держим нынешний размер</button>
+        </div>
+        <div class="qc-reaction" id="qc-reaction-3"></div>
+        <button class="qc-next-btn" id="qc-next-3" onclick="qcNext(3)">Посмотреть результат <span>→</span></button>
+      </div>
+
+      <!-- Result -->
+      <div class="qc-res" id="qc-res">
+        <div class="qc-res-top">
+          <div class="qc-index-block">
+            <div class="qc-index-num" id="qc-idx-num">—</div>
+            <div class="qc-index-label">Manageability<br>Index</div>
+          </div>
+          <div class="qc-hint" id="qc-hint"></div>
+        </div>
+
+        <div class="qc-axes">
+          <div class="qc-axis">
+            <div class="qc-axis-hd">
+              <span class="qc-axis-name" style="color:rgba(59,130,246,0.85)">K — Kontrol</span>
+              <span class="qc-axis-val" id="qc-val-k">0</span>
+            </div>
+            <div class="qc-axis-track"><div class="qc-axis-fill" id="qc-fill-k" style="background:rgba(59,130,246,0.75)"></div></div>
+          </div>
+          <div class="qc-axis">
+            <div class="qc-axis-hd">
+              <span class="qc-axis-name" style="color:rgba(34,211,238,0.85)">A — Analytics</span>
+              <span class="qc-axis-val" id="qc-val-a">0</span>
+            </div>
+            <div class="qc-axis-track"><div class="qc-axis-fill" id="qc-fill-a" style="background:rgba(34,211,238,0.75)"></div></div>
+          </div>
+          <div class="qc-axis">
+            <div class="qc-axis-hd">
+              <span class="qc-axis-name" style="color:rgba(99,102,241,0.85)">Q — Quality</span>
+              <span class="qc-axis-val" id="qc-val-q">0</span>
+            </div>
+            <div class="qc-axis-track"><div class="qc-axis-fill" id="qc-fill-q" style="background:rgba(99,102,241,0.75)"></div></div>
+          </div>
+          <div class="qc-axis">
+            <div class="qc-axis-hd">
+              <span class="qc-axis-name" style="color:rgba(16,185,129,0.85)">S — Scale</span>
+              <span class="qc-axis-val" id="qc-val-s">0</span>
+            </div>
+            <div class="qc-axis-track"><div class="qc-axis-fill" id="qc-fill-s" style="background:rgba(16,185,129,0.75)"></div></div>
+          </div>
+        </div>
+
+        <!-- Mini diamond graph -->
+        <div class="qc-graph-row">
+          <svg id="qc-graph-svg" width="140" height="140" viewBox="0 0 140 140" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <filter id="qcgw" x="-60%" y="-60%" width="220%" height="220%">
+                <feGaussianBlur stdDeviation="4" result="blur"/>
+                <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+              </filter>
+            </defs>
+            <!-- Grid -->
+            <polygon points="70,18 118,70 70,122 22,70" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="1"/>
+            <polygon points="70,34 102,70 70,106 38,70" fill="none" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+            <line x1="70" y1="18" x2="70" y2="122" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+            <line x1="22" y1="70" x2="118" y2="70" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+            <!-- Score polygon -->
+            <polygon id="qcgp" points="70,70 70,70 70,70 70,70" fill="rgba(59,130,246,0.06)" stroke="rgba(59,130,246,0.35)" stroke-width="1.5" style="transition:points 0.9s cubic-bezier(0.4,0,0.2,1)"/>
+            <!-- Axis lines -->
+            <line id="qcgl-k" x1="70" y1="70" x2="70" y2="70" stroke="rgba(59,130,246,0.5)" stroke-width="1.5" style="transition:all 0.9s"/>
+            <line id="qcgl-a" x1="70" y1="70" x2="70" y2="70" stroke="rgba(34,211,238,0.5)" stroke-width="1.5" style="transition:all 0.9s"/>
+            <line id="qcgl-q" x1="70" y1="70" x2="70" y2="70" stroke="rgba(99,102,241,0.5)" stroke-width="1.5" style="transition:all 0.9s"/>
+            <line id="qcgl-s" x1="70" y1="70" x2="70" y2="70" stroke="rgba(16,185,129,0.5)" stroke-width="1.5" style="transition:all 0.9s"/>
+            <!-- Nodes -->
+            <circle id="qcgn-k" cx="70" cy="70" r="0" fill="rgba(59,130,246,0.9)" style="transition:all 0.9s 0.2s"/>
+            <circle id="qcgn-a" cx="70" cy="70" r="0" fill="rgba(34,211,238,0.9)" style="transition:all 0.9s 0.3s"/>
+            <circle id="qcgn-q" cx="70" cy="70" r="0" fill="rgba(99,102,241,0.9)" style="transition:all 0.9s 0.4s"/>
+            <circle id="qcgn-s" cx="70" cy="70" r="0" fill="rgba(16,185,129,0.9)" style="transition:all 0.9s 0.5s"/>
+            <!-- Labels -->
+            <text x="70" y="10" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="9" fill="rgba(59,130,246,0.7)">K</text>
+            <text x="128" y="73" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="9" fill="rgba(34,211,238,0.7)">A</text>
+            <text x="70" y="137" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="9" fill="rgba(99,102,241,0.7)">Q</text>
+            <text x="12" y="73" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="9" fill="rgba(16,185,129,0.7)">S</text>
+            <!-- CORE -->
+            <text x="70" y="67" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="8" fill="rgba(255,255,255,0.3)">CORE</text>
+            <text id="qcg-idx" x="70" y="78" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="11" font-weight="700" fill="rgba(255,255,255,0.7)">—</text>
+          </svg>
+          <div class="qc-graph-legend">
+            <div class="qc-graph-legend-item"><div class="qc-graph-legend-dot" style="background:rgba(59,130,246,0.9)"></div>K — Kontrol</div>
+            <div class="qc-graph-legend-item"><div class="qc-graph-legend-dot" style="background:rgba(34,211,238,0.9)"></div>A — Analytics</div>
+            <div class="qc-graph-legend-item"><div class="qc-graph-legend-dot" style="background:rgba(99,102,241,0.9)"></div>Q — Quality</div>
+            <div class="qc-graph-legend-item"><div class="qc-graph-legend-dot" style="background:rgba(16,185,129,0.9)"></div>S — Scale</div>
+          </div>
+        </div>
+
+        <div class="qc-cta-row">
+          <a href="#cta" class="qc-cta-btn">Пройти полную диагностику →</a>
+          <button class="qc-restart" onclick="qcReset()">← Пройти ещё раз</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+(function(){
+  var answers = {};
+
+  function calcScores(a1, a2, a3) {
+    var K  = Math.round([22,42,62,78][a1] * 0.8 + [15,25,38,48][a3] * 0.2);
+    var A  = Math.round([18,35,52,68][a1] * 0.4 + [15,32,52,68][a2] * 0.6);
+    var Q  = [20,40,60,76][a2];
+    var S  = Math.round([18,35,52,70][a3] * 0.75 + [12,22,32,42][a1] * 0.25);
+    var idx = Math.round((K + A + Q + S) / 4);
+    return { K: K, A: A, Q: Q, S: S, idx: idx };
+  }
+
+  function hintText(idx) {
+    if (idx < 30) return 'Бизнес плохо управляем. Без системной работы рост будет генерировать только хаос.';
+    if (idx < 45) return 'Ниже нормы. Есть отдельные процессы, но система не работает как единое целое.';
+    if (idx < 60) return 'Средняя управляемость. Основа есть, но слабые оси тянут всё вниз.';
+    return 'Хорошая база. Система управляема — но есть точки, где рост обнажит слабости.';
+  }
+
+  function countUp(el, target, delay, dur) {
+    setTimeout(function(){
+      var start = null;
+      var from = 0;
+      function step(ts) {
+        if (!start) start = ts;
+        var p = Math.min((ts - start) / dur, 1);
+        var ease = 1 - Math.pow(1 - p, 3);
+        el.textContent = Math.round(from + (target - from) * ease);
+        if (p < 1) requestAnimationFrame(step);
+      }
+      requestAnimationFrame(step);
+    }, delay);
+  }
+
+  function animateBar(fillId, valId, score, delay) {
+    setTimeout(function(){
+      document.getElementById(fillId).style.width = score + '%';
+      var el = document.getElementById(valId);
+      var start = null;
+      function step(ts) {
+        if (!start) start = ts;
+        var p = Math.min((ts - start) / 700, 1);
+        var ease = 1 - Math.pow(1 - p, 3);
+        el.textContent = Math.round(score * ease);
+        if (p < 1) requestAnimationFrame(step);
+      }
+      requestAnimationFrame(step);
+    }, delay);
+  }
+
+  function updateGraph(sc) {
+    var cx = 70, cy = 70, r = 52; // max radius to diamond edge
+    var kS  = sc.K  / 100;
+    var aS  = sc.A  / 100;
+    var qS  = sc.Q  / 100;
+    var sS  = sc.S  / 100;
+    var kY  = cy - r * kS; // K top
+    var aX  = cx + r * aS; // A right
+    var qY  = cy + r * qS; // Q bottom
+    var sX  = cx - r * sS; // S left
+
+    setTimeout(function(){
+      var poly = document.getElementById('qcgp');
+      poly.setAttribute('points', cx+','+kY+' '+aX+','+cy+' '+cx+','+qY+' '+sX+','+cy);
+
+      document.getElementById('qcgl-k').setAttribute('x2', cx); document.getElementById('qcgl-k').setAttribute('y2', kY);
+      document.getElementById('qcgl-a').setAttribute('x2', aX); document.getElementById('qcgl-a').setAttribute('y2', cy);
+      document.getElementById('qcgl-q').setAttribute('x2', cx); document.getElementById('qcgl-q').setAttribute('y2', qY);
+      document.getElementById('qcgl-s').setAttribute('x2', sX); document.getElementById('qcgl-s').setAttribute('y2', cy);
+
+      var nr = function(v){ return 3 + v * 7; };
+      var nk = document.getElementById('qcgn-k'); nk.setAttribute('cx', cx); nk.setAttribute('cy', kY); nk.setAttribute('r', nr(kS));
+      var na = document.getElementById('qcgn-a'); na.setAttribute('cx', aX); na.setAttribute('cy', cy); na.setAttribute('r', nr(aS));
+      var nq = document.getElementById('qcgn-q'); nq.setAttribute('cx', cx); nq.setAttribute('cy', qY); nq.setAttribute('r', nr(qS));
+      var ns = document.getElementById('qcgn-s'); ns.setAttribute('cx', sX); ns.setAttribute('cy', cy); ns.setAttribute('r', nr(sS));
+
+      document.getElementById('qcg-idx').textContent = sc.idx;
+    }, 300);
+  }
+
+  function showResult(sc) {
+    document.getElementById('qc-hint').textContent = hintText(sc.idx);
+    ['k','a','q','s'].forEach(function(ax){ document.getElementById('qc-fill-'+ax).style.width = '0%'; });
+
+    var res = document.getElementById('qc-res');
+    res.classList.add('qc-res--active');
+
+    var idxEl = document.getElementById('qc-idx-num');
+    idxEl.textContent = '0';
+    countUp(idxEl, sc.idx, 200, 1000);
+
+    animateBar('qc-fill-k','qc-val-k', sc.K, 350);
+    animateBar('qc-fill-a','qc-val-a', sc.A, 500);
+    animateBar('qc-fill-q','qc-val-q', sc.Q, 650);
+    animateBar('qc-fill-s','qc-val-s', sc.S, 800);
+
+    updateGraph(sc);
+  }
+
+  var reactions = {
+    1: [
+      { type:'crit', text:'✖ Критическая зона — нет системы знаний' },
+      { type:'warn', text:'⚠ Риск потери знаний при смене кадров' },
+      { type:'warn', text:'⚠ Знания частично зафиксированы' },
+      { type:'ok',   text:'✔ Хорошая структура знаний' },
+    ],
+    2: [
+      { type:'crit', text:'✖ Критическая зона — всё на одном человеке' },
+      { type:'warn', text:'⚠ Решения блокируются — низкая скорость' },
+      { type:'warn', text:'⚠ Частичная зависимость от руководителя' },
+      { type:'ok',   text:'✔ Высокая автономность команды' },
+    ],
+    3: [
+      { type:'crit', text:'✖ Критическая зона — масштабирование невозможно' },
+      { type:'warn', text:'⚠ Текущая система не выдержит роста' },
+      { type:'warn', text:'⚠ Масштабирование возможно, но болезненно' },
+      { type:'ok',   text:'✔ Система готова к масштабированию' },
+    ],
+  };
+
+  function setPct(n) {
+    var el = document.getElementById('qc-prog-pct');
+    if(el) el.textContent = n + '%';
+  }
+
+  window.qcAnswer = function(q, val, btn) {
+    answers[q] = val;
+
+    // Disable all options, highlight selected
+    var step = document.getElementById('qc-step-' + q);
+    step.querySelectorAll('.qc-opt').forEach(function(opt) {
+      opt.style.opacity = '0.32';
+      opt.style.pointerEvents = 'none';
+      opt.classList.remove('qc-opt--selected');
+    });
+    if(btn) {
+      btn.style.opacity = '1';
+      btn.classList.add('qc-opt--selected');
+    }
+
+    // Update progress
+    var pct = Math.round(q * 33.33);
+    document.getElementById('qc-prog-fill').style.width = pct + '%';
+    setPct(pct);
+
+    // Show reaction
+    var rx = reactions[q][val];
+    var rxEl = document.getElementById('qc-reaction-' + q);
+    if(rxEl && rx) {
+      rxEl.textContent = rx.text;
+      rxEl.className = 'qc-reaction qc-reaction--' + rx.type + ' qc-reaction--visible';
+    }
+
+    // Show next button
+    var nextBtn = document.getElementById('qc-next-' + q);
+    if(nextBtn) nextBtn.classList.add('qc-next-btn--visible');
+  };
+
+  window.qcNext = function(q) {
+    if(q < 3) {
+      document.getElementById('qc-step-' + q).classList.remove('qc-step--active');
+      var next = document.getElementById('qc-step-' + (q+1));
+      next.classList.add('qc-step--active');
+      next.style.opacity = '0'; next.style.transform = 'translateX(20px)';
+      requestAnimationFrame(function(){
+        next.style.transition = 'opacity 0.35s ease, transform 0.35s ease';
+        next.style.opacity = '1'; next.style.transform = 'translateX(0)';
+      });
+    } else {
+      document.getElementById('qc-prog-fill').style.width = '100%';
+      setPct(100);
+      document.getElementById('qc-step-3').classList.remove('qc-step--active');
+      var sc = calcScores(answers[1], answers[2], answers[3]);
+      showResult(sc);
+    }
+  };
+
+  window.qcReset = function() {
+    answers = {};
+    document.getElementById('qc-prog-fill').style.width = '0%';
+    setPct(0);
+    document.getElementById('qc-res').classList.remove('qc-res--active');
+    document.getElementById('qc-idx-num').textContent = '—';
+    document.getElementById('qcg-idx').textContent = '—';
+    ['k','a','q','s'].forEach(function(ax){
+      document.getElementById('qc-fill-'+ax).style.width = '0%';
+      document.getElementById('qc-val-'+ax).textContent = '0';
+      var n = document.getElementById('qcgn-'+ax); n.setAttribute('r','0');
+    });
+    document.getElementById('qcgp').setAttribute('points','70,70 70,70 70,70 70,70');
+    ['k','a','q','s'].forEach(function(ax){
+      var l = document.getElementById('qcgl-'+ax);
+      l.setAttribute('x2','70'); l.setAttribute('y2','70');
+    });
+    for(var i=1; i<=3; i++) {
+      var s = document.getElementById('qc-step-'+i);
+      s.classList.remove('qc-step--active');
+      s.querySelectorAll('.qc-opt').forEach(function(opt){
+        opt.style.opacity = '';
+        opt.style.pointerEvents = '';
+        opt.classList.remove('qc-opt--selected');
+      });
+      var rx = document.getElementById('qc-reaction-'+i);
+      if(rx) rx.className = 'qc-reaction';
+      var nb = document.getElementById('qc-next-'+i);
+      if(nb) nb.classList.remove('qc-next-btn--visible');
+    }
+    var s1 = document.getElementById('qc-step-1');
+    s1.classList.add('qc-step--active');
+    s1.style.transition = ''; s1.style.opacity = ''; s1.style.transform = '';
+  };
+})();
+</script>
+
+
+<!-- 03 ARCHITECTURE -->
+<section class="section section--dense" id="architecture" style="border-top:1px solid var(--border-subtle)">
+  <div style="width:100%;max-width:1300px;margin-inline:auto;padding-inline:var(--side)">
+
+    <!-- Header -->
+    <div class="reveal" style="margin-bottom:56px;max-width:640px">
+      <p class="idx">03</p>
+      <h2 style="font-size:clamp(28px,3.8vw,46px);font-weight:700;line-height:1.07;letter-spacing:-0.03em;color:var(--text-primary);margin-bottom:16px">
+        Архитектура управляемого бизнеса
+      </h2>
+      <p style="font-size:16px;color:var(--text-secondary);line-height:1.7">
+        K-A-Q-S анализирует компанию по четырём ключевым блокам системы управления.
+      </p>
+    </div>
+
+    <!-- Diagram + Cards -->
+    <div class="arch-layout reveal">
+
+      <!-- Left: system diagram panel -->
+      <div class="arch-diagram-panel">
+        <div class="arch-diagram-hdr">
+          <span style="font-family:var(--font-mono);font-size:10px;text-transform:uppercase;letter-spacing:.12em;color:rgba(255,255,255,0.22)">K-A-Q-S™ System Architecture</span>
+          <span style="font-family:var(--font-mono);font-size:10px;color:rgba(255,255,255,0.14)">v2.1</span>
+        </div>
+
+        <svg viewBox="25 18 430 304" style="width:100%;height:auto" role="img" aria-label="Диаграмма системы K-A-Q-S">
+          <defs>
+            <filter id="sng" x="-80%" y="-80%" width="260%" height="260%">
+              <feGaussianBlur stdDeviation="5" result="blur"/>
+              <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+            <filter id="scg" x="-120%" y="-120%" width="340%" height="340%">
+              <feGaussianBlur stdDeviation="14" result="blur"/>
+              <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+            <filter id="slg" x="-300%" y="-300%" width="700%" height="700%">
+              <feGaussianBlur stdDeviation="2.5" result="blur"/>
+              <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+          </defs>
+
+          <!-- Cross links (dashed, very faint) -->
+          <line x1="240" y1="84" x2="240" y2="290" stroke="rgba(59,130,246,0.12)" stroke-width="0.9" stroke-dasharray="4,6"/>
+          <line x1="366" y1="187" x2="114" y2="187" stroke="rgba(59,130,246,0.12)" stroke-width="0.9" stroke-dasharray="4,6"/>
+
+          <!-- Ring links -->
+          <line x1="240" y1="84"  x2="366" y2="187" stroke="rgba(59,130,246,0.22)" stroke-width="1.2"/>
+          <line x1="366" y1="187" x2="240" y2="290" stroke="rgba(59,130,246,0.22)" stroke-width="1.2"/>
+          <line x1="240" y1="290" x2="114" y2="187" stroke="rgba(59,130,246,0.22)" stroke-width="1.2"/>
+          <line x1="114" y1="187" x2="240" y2="84"  stroke="rgba(59,130,246,0.22)" stroke-width="1.2"/>
+
+          <!-- Primary links: CORE → K A Q S -->
+          <line id="arch-line-k" x1="240" y1="187" x2="240" y2="84"  stroke="rgba(59,130,246,0.50)" stroke-width="1.5" filter="url(#slg)" style="transition:stroke 200ms,stroke-width 200ms"/>
+          <line id="arch-line-a" x1="240" y1="187" x2="366" y2="187" stroke="rgba(34,211,238,0.42)" stroke-width="1.5" filter="url(#slg)" style="transition:stroke 200ms,stroke-width 200ms"/>
+          <line id="arch-line-q" x1="240" y1="187" x2="240" y2="290" stroke="rgba(37,99,235,0.50)"  stroke-width="1.5" filter="url(#slg)" style="transition:stroke 200ms,stroke-width 200ms"/>
+          <line id="arch-line-s" x1="240" y1="187" x2="114" y2="187" stroke="rgba(45,212,191,0.42)" stroke-width="1.5" filter="url(#slg)" style="transition:stroke 200ms,stroke-width 200ms"/>
+
+          <!-- CORE -->
+          <circle cx="240" cy="187" r="26" fill="rgba(59,130,246,0.22)" stroke="rgba(59,130,246,0.72)" stroke-width="1.5" filter="url(#scg)"/>
+          <text x="240" y="183" text-anchor="middle" dominant-baseline="central" font-family="'IBM Plex Mono',monospace" font-size="7.5" font-weight="600" fill="rgba(255,255,255,0.75)" letter-spacing="1.5">CORE</text>
+          <text x="240" y="194" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="6" fill="rgba(255,255,255,0.38)" letter-spacing="0.4">Manageability Core</text>
+
+          <!-- K — top -->
+          <circle id="arch-node-k" cx="240" cy="84" r="16" fill="rgba(59,130,246,0.14)" stroke="rgba(59,130,246,0.65)" stroke-width="1.2" filter="url(#sng)" style="transition:fill 200ms,stroke 200ms,stroke-width 200ms"/>
+          <text x="240" y="84" text-anchor="middle" dominant-baseline="central" font-family="'IBM Plex Mono',monospace" font-size="13" font-weight="600" fill="rgba(59,130,246,0.95)">K</text>
+          <text x="240" y="57" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="8.5" fill="rgba(255,255,255,0.28)">Knowledge</text>
+
+          <!-- A — right -->
+          <circle id="arch-node-a" cx="366" cy="187" r="16" fill="rgba(34,211,238,0.12)" stroke="rgba(34,211,238,0.62)" stroke-width="1.2" filter="url(#sng)" style="transition:fill 200ms,stroke 200ms,stroke-width 200ms"/>
+          <text x="366" y="187" text-anchor="middle" dominant-baseline="central" font-family="'IBM Plex Mono',monospace" font-size="13" font-weight="600" fill="rgba(34,211,238,0.95)">A</text>
+          <text x="388" y="187" text-anchor="start" dominant-baseline="central" font-family="'IBM Plex Mono',monospace" font-size="8.5" fill="rgba(255,255,255,0.28)">Automation</text>
+
+          <!-- Q — bottom -->
+          <circle id="arch-node-q" cx="240" cy="290" r="16" fill="rgba(37,99,235,0.14)" stroke="rgba(37,99,235,0.65)" stroke-width="1.2" filter="url(#sng)" style="transition:fill 200ms,stroke 200ms,stroke-width 200ms"/>
+          <text x="240" y="290" text-anchor="middle" dominant-baseline="central" font-family="'IBM Plex Mono',monospace" font-size="13" font-weight="600" fill="rgba(37,99,235,0.95)">Q</text>
+          <text x="240" y="316" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="8.5" fill="rgba(255,255,255,0.28)">Quality</text>
+
+          <!-- S — left -->
+          <circle id="arch-node-s" cx="114" cy="187" r="16" fill="rgba(45,212,191,0.12)" stroke="rgba(45,212,191,0.62)" stroke-width="1.2" filter="url(#sng)" style="transition:fill 200ms,stroke 200ms,stroke-width 200ms"/>
+          <text x="114" y="187" text-anchor="middle" dominant-baseline="central" font-family="'IBM Plex Mono',monospace" font-size="13" font-weight="600" fill="rgba(45,212,191,0.95)">S</text>
+          <text x="92" y="187" text-anchor="end" dominant-baseline="central" font-family="'IBM Plex Mono',monospace" font-size="8.5" fill="rgba(255,255,255,0.28)">Scalability</text>
+        </svg>
+
+        <div style="display:flex;gap:20px;padding-top:14px;border-top:1px solid rgba(255,255,255,0.05);margin-top:4px">
+          <div style="display:flex;align-items:center;gap:6px">
+            <span style="width:7px;height:7px;border-radius:50%;background:rgba(59,130,246,0.65);flex-shrink:0;display:inline-block"></span>
+            <span style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:rgba(255,255,255,0.2)">K и Q — архитектура и контроль системы</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:6px">
+            <span style="width:7px;height:7px;border-radius:50%;background:rgba(34,211,238,0.65);flex-shrink:0;display:inline-block"></span>
+            <span style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:rgba(255,255,255,0.2)">A и S — операционная готовность к росту</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: 2×2 cards -->
+      <div class="arch-cards">
+
+        <div class="arch-card" data-arch-axis="k">
+          <div class="arch-card__letter arch-card__letter--k">K</div>
+          <p class="arch-card__axis">Knowledge Architecture</p>
+          <p class="arch-card__main">Структура процессов и знаний компании.</p>
+          <p class="arch-card__body">Процессы описаны.<br>Роли понятны.<br>Правила работы зафиксированы.</p>
+        </div>
+
+        <div class="arch-card arch-card--a" data-arch-axis="a">
+          <div class="arch-card__letter arch-card__letter--a">A</div>
+          <p class="arch-card__axis arch-card__axis--a">Automation Readiness</p>
+          <p class="arch-card__main">Готовность процессов к автоматизации и AI.</p>
+          <p class="arch-card__body">Процессы готовы к автоматизации.<br>Есть архитектура данных<br>и интеграций.</p>
+        </div>
+
+        <div class="arch-card arch-card--q" data-arch-axis="q">
+          <div class="arch-card__letter arch-card__letter--q">Q</div>
+          <p class="arch-card__axis arch-card__axis--q">Quality & Risk Control</p>
+          <p class="arch-card__main">Контроль операций и управление рисками.</p>
+          <p class="arch-card__body">Ошибки фиксируются.<br>Инциденты разбираются.<br>Проблемы не повторяются.</p>
+        </div>
+
+        <div class="arch-card arch-card--s" data-arch-axis="s">
+          <div class="arch-card__letter arch-card__letter--s">S</div>
+          <p class="arch-card__axis arch-card__axis--s">Scalability</p>
+          <p class="arch-card__main">Масштабирование без потери управляемости.</p>
+          <p class="arch-card__body">Рост команды увеличивает результат,<br>а не масштабирует хаос.</p>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- Bottom bridge -->
+    <div class="reveal" style="margin-top:56px;padding-top:32px;border-top:1px solid rgba(255,255,255,0.05);text-align:center">
+      <p style="font-family:var(--font-mono);font-size:13px;color:rgba(255,255,255,0.5);letter-spacing:.04em;line-height:1.6;font-weight:500">
+        Когда эти четыре элемента сбалансированы — бизнес становится управляемым.
+      </p>
+    </div>
+
+  </div>
+</section>
+
+<style>
+  /* ── Section 03: Architecture ── */
+  .arch-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 48px;
+    align-items: start;
+  }
+  @media(max-width:1023px) { .arch-layout { grid-template-columns: 1fr; gap: 48px; } }
+
+  .arch-diagram-panel {
+    background: rgba(19,26,34,0.92);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 0 80px rgba(59,130,246,0.05), inset 0 1px 0 rgba(255,255,255,0.04);
+    position: sticky;
+    top: 88px;
+  }
+
+  .arch-diagram-hdr {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+  }
+
+  .arch-cards {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    align-items: start;
+  }
+  /* Stagger: правая колонка опускается */
+  .arch-card:nth-child(2) { margin-top: 28px; }
+  .arch-card:nth-child(4) { margin-top: 28px; }
+  @media(max-width:599px) {
+    .arch-cards { grid-template-columns: 1fr; }
+    .arch-card:nth-child(2), .arch-card:nth-child(4) { margin-top: 0; }
+  }
+
+  .arch-card {
+    background: rgba(19,26,34,0.85);
+    border: 1px solid rgba(59,130,246,0.10);
+    border-radius: 12px;
+    padding: 20px 22px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    position: relative;
+    overflow: hidden;
+    transition: transform 250ms ease, box-shadow 250ms ease, border-color 250ms ease;
+  }
+  .arch-card--a { border-color: rgba(34,211,238,0.10); }
+  .arch-card--q { border-color: rgba(37,99,235,0.10); }
+  .arch-card--s { border-color: rgba(45,212,191,0.10); }
+
+  .arch-card::before {
+    content: '';
+    position: absolute;
+    top: 22px; left: 22px;
+    width: 0; height: 2px; border-radius: 2px;
+    background: rgba(59,130,246,0.45);
+    transition: width 1.0s cubic-bezier(0.4,0,0.2,1), background 250ms;
+  }
+  .arch-card--a::before { background: rgba(34,211,238,0.45); }
+  .arch-card--q::before { background: rgba(37,99,235,0.45); }
+  .arch-card--s::before { background: rgba(45,212,191,0.45); }
+
+  /* Indicator grows when section scrolls into view */
+  .arch-layout.visible .arch-card::before { width: 72px; }
+  .arch-layout.visible .arch-card:nth-child(1)::before { transition-delay: 0.05s; }
+  .arch-layout.visible .arch-card:nth-child(2)::before { transition-delay: 0.22s; }
+  .arch-layout.visible .arch-card:nth-child(3)::before { transition-delay: 0.38s; }
+  .arch-layout.visible .arch-card:nth-child(4)::before { transition-delay: 0.54s; }
+
+  /* Letter fade-in staggered */
+  @keyframes archLetterIn {
+    from { opacity: 0; transform: translateY(7px); }
+    to   { opacity: 0.88; transform: translateY(0); }
+  }
+  .arch-card__letter { opacity: 0; }
+  .arch-layout.visible .arch-card:nth-child(1) .arch-card__letter { animation: archLetterIn 0.8s ease forwards 0.08s; }
+  .arch-layout.visible .arch-card:nth-child(2) .arch-card__letter { animation: archLetterIn 0.8s ease forwards 0.26s; }
+  .arch-layout.visible .arch-card:nth-child(3) .arch-card__letter { animation: archLetterIn 0.8s ease forwards 0.44s; }
+  .arch-layout.visible .arch-card:nth-child(4) .arch-card__letter { animation: archLetterIn 0.8s ease forwards 0.62s; }
+
+  .arch-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(59,130,246,0.28);
+    box-shadow: 0 10px 36px rgba(0,0,0,0.45), 0 0 24px rgba(59,130,246,0.10);
+  }
+  .arch-card--a:hover { border-color: rgba(34,211,238,0.28); box-shadow: 0 10px 36px rgba(0,0,0,0.45), 0 0 24px rgba(34,211,238,0.10); }
+  .arch-card--q:hover { border-color: rgba(37,99,235,0.28);  box-shadow: 0 10px 36px rgba(0,0,0,0.45), 0 0 24px rgba(37,99,235,0.10); }
+  .arch-card--s:hover { border-color: rgba(45,212,191,0.28); box-shadow: 0 10px 36px rgba(0,0,0,0.45), 0 0 24px rgba(45,212,191,0.10); }
+
+  .arch-card:hover::before     { background: rgba(59,130,246,0.82); }
+  .arch-card--a:hover::before  { background: rgba(34,211,238,0.82); }
+  .arch-card--q:hover::before  { background: rgba(37,99,235,0.82); }
+  .arch-card--s:hover::before  { background: rgba(45,212,191,0.82); }
+
+  .arch-card__letter {
+    font-family: var(--font-mono);
+    font-size: 34px;
+    font-weight: 600;
+    line-height: 1;
+    letter-spacing: -0.02em;
+    margin-bottom: 2px;
+    opacity: 0.88;
+  }
+  .arch-card__letter--k { color: #60A5FA; }
+  .arch-card__letter--a { color: #22D3EE; }
+  .arch-card__letter--q { color: #3B82F6; }
+  .arch-card__letter--s { color: #2DD4BF; }
+
+  .arch-card__axis {
+    font-family: var(--font-mono);
+    font-size: 9.5px;
+    text-transform: uppercase;
+    letter-spacing: .1em;
+    color: rgba(96,165,250,0.65);
+    line-height: 1.4;
+  }
+  .arch-card__axis--a { color: rgba(34,211,238,0.65); }
+  .arch-card__axis--q { color: rgba(37,99,235,0.65); }
+  .arch-card__axis--s { color: rgba(45,212,191,0.65); }
+
+  .arch-card__main {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-primary);
+    letter-spacing: -0.01em;
+    line-height: 1.4;
+    margin-top: 4px;
+  }
+
+  .arch-card__body {
+    font-size: 12px;
+    color: var(--text-muted);
+    line-height: 1.6;
+    opacity: 0.85;
+  }
+</style>
+
+<!-- 03 FRAMEWORK -->
+<section class="section section--dense" id="system" style="border-top:1px solid var(--border-subtle)">
+  <div style="width:100%;max-width:1200px;margin-inline:auto;padding-inline:var(--side)">
+
+    <!-- Header -->
+    <div class="reveal" style="display:flex;align-items:flex-end;justify-content:space-between;gap:32px;margin-bottom:56px;flex-wrap:wrap">
+      <div>
+        <p class="idx">03</p>
+        <h2 style="font-size:clamp(28px,3.8vw,46px);font-weight:700;line-height:1.07;letter-spacing:-0.03em;color:var(--text-primary);max-width:540px">
+          Оценка бизнеса по четырём осям K-A-Q-S
+        </h2>
+        <p style="font-size:15px;color:var(--text-secondary);line-height:1.65;max-width:480px;margin-top:16px">
+          Каждая ось показывает состояние ключевых элементов системы управления.
+        </p>
+      </div>
+    </div>
+
+    <!-- 4 blocks -->
+    <div class="fw-grid">
+
+      <!-- K -->
+      <div class="fw-card reveal">
+        <div class="fw-card__top">
+          <div class="fw-letter">K</div>
+          <div class="fw-score-bar">
+            <div class="fw-score-fill" style="width:0%" data-w="62"></div>
+          </div>
+          <span class="fw-score-val">62 / 100</span>
+        </div>
+        <div class="fw-card__body">
+          <p class="fw-axis-name">Knowledge Architecture</p>
+          <p class="fw-axis-ru">Архитектура знаний</p>
+          <p class="fw-desc">
+            Насколько бизнес-процессы зафиксированы независимо от людей.
+            Есть ли база знаний, регламенты, операционные стандарты.
+          </p>
+        </div>
+        <div class="fw-signals">
+          <div class="fw-signal">Документированность процессов</div>
+          <div class="fw-signal">Независимость от ключевых сотрудников</div>
+          <div class="fw-signal">Передача знаний при онбординге</div>
+        </div>
+      </div>
+
+      <!-- A -->
+      <div class="fw-card fw-card--a reveal d1">
+        <div class="fw-card__top">
+          <div class="fw-letter fw-letter--a">A</div>
+          <div class="fw-score-bar">
+            <div class="fw-score-fill fw-score-fill--a" style="width:0%" data-w="41"></div>
+          </div>
+          <span class="fw-score-val fw-score-val--a">41 / 100</span>
+        </div>
+        <div class="fw-card__body">
+          <p class="fw-axis-name fw-axis-name--a">Automation Readiness</p>
+          <p class="fw-axis-ru">Готовность к автоматизации</p>
+          <p class="fw-desc">
+            Готовы ли процессы к автоматизации. Не автоматизирован ли хаос.
+            Есть ли архитектура данных под инструменты.
+          </p>
+        </div>
+        <div class="fw-signals">
+          <div class="fw-signal">Описанность процессов до автоматизации</div>
+          <div class="fw-signal">Качество данных и интеграций</div>
+          <div class="fw-signal fw-signal--warn">⚠ Критическая зона — требует действий</div>
+        </div>
+      </div>
+
+      <!-- Q -->
+      <div class="fw-card fw-card--q reveal d1">
+        <div class="fw-card__top">
+          <div class="fw-letter fw-letter--q">Q</div>
+          <div class="fw-score-bar">
+            <div class="fw-score-fill fw-score-fill--q" style="width:0%" data-w="55"></div>
+          </div>
+          <span class="fw-score-val">55 / 100</span>
+        </div>
+        <div class="fw-card__body">
+          <p class="fw-axis-name fw-axis-name--q">Quality & Risk Control</p>
+          <p class="fw-axis-ru">Качество и контроль рисков</p>
+          <p class="fw-desc">
+            Насколько операционные ошибки фиксируются и разбираются.
+            Есть ли система предотвращения, а не только реакции.
+          </p>
+        </div>
+        <div class="fw-signals">
+          <div class="fw-signal">Операционные метрики и SLA</div>
+          <div class="fw-signal">Разбор инцидентов и root cause</div>
+          <div class="fw-signal">Превентивный контроль качества</div>
+        </div>
+      </div>
+
+      <!-- S -->
+      <div class="fw-card fw-card--s reveal d2">
+        <div class="fw-card__top">
+          <div class="fw-letter fw-letter--s">S</div>
+          <div class="fw-score-bar">
+            <div class="fw-score-fill fw-score-fill--s" style="width:0%" data-w="38"></div>
+          </div>
+          <span class="fw-score-val fw-score-val--s">38 / 100</span>
+        </div>
+        <div class="fw-card__body">
+          <p class="fw-axis-name fw-axis-name--s">Scalability</p>
+          <p class="fw-axis-ru">Масштабируемость</p>
+          <p class="fw-desc">
+            Растёт ли эффективность вместе с командой или только трение.
+            Можно ли удвоить объём без удвоения хаоса.
+          </p>
+        </div>
+        <div class="fw-signals">
+          <div class="fw-signal">Линейность роста без деградации</div>
+          <div class="fw-signal">Делегируемость операций</div>
+          <div class="fw-signal fw-signal--warn">⚠ Критическая зона — требует действий</div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- System connector line -->
+    <div class="reveal" style="margin-top:48px;display:flex;flex-direction:column;align-items:center;gap:16px">
+      <p style="font-size:14px;color:var(--text-secondary);text-align:center;line-height:1.6">
+        Индекс управляемости — это баланс этих четырёх элементов системы.
+      </p>
+      <div style="width:100%;display:flex;align-items:center;gap:0">
+        <div style="flex:1;height:1px;background:var(--border-subtle)"></div>
+        <div style="padding:0 24px;font-family:var(--font-mono);font-size:11px;color:var(--text-muted);letter-spacing:.1em;white-space:nowrap">
+          K · A · Q · S = Индекс управляемости
+        </div>
+        <div style="flex:1;height:1px;background:var(--border-subtle)"></div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+</div><!-- /story-left -->
+
+<!-- ── Sticky system visual ── -->
+<div class="story-right">
+  <div class="kaqs-sticky">
+    <div class="kaqs-panel">
+
+      <!-- Topbar -->
+      <div class="kaqs-panel__hdr">
+        <div style="display:flex;align-items:center;gap:9px">
+          <span class="kaqs-panel__dot" id="sv-dot"></span>
+          <span style="font-family:var(--font-mono);font-size:10px;letter-spacing:.1em;color:rgba(255,255,255,0.28);text-transform:uppercase">K&#8209;A&#8209;Q&#8209;S™ System</span>
+        </div>
+        <span id="sv-badge" style="font-family:var(--font-mono);font-size:8px;letter-spacing:.14em;color:rgba(59,130,246,0.55);border:1px solid rgba(59,130,246,0.18);padding:2px 7px;border-radius:2px;transition:color 600ms,border-color 600ms">LIVE</span>
+      </div>
+
+      <!-- SVG Visualization -->
+      <svg id="story-vis" viewBox="0 0 300 310" style="width:100%;display:block;padding:4px 0" role="img" aria-label="K-A-Q-S system state">
+        <defs>
+          <filter id="sv-glow" x="-60%" y="-60%" width="220%" height="220%">
+            <feGaussianBlur stdDeviation="5" result="b"/>
+            <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+        </defs>
+        <g id="sv-edges"></g>
+        <g id="sv-nodes"></g>
+        <!-- State label -->
+        <text id="sv-state" x="150" y="282"
+          text-anchor="middle"
+          font-family="'IBM Plex Mono',monospace"
+          font-size="9"
+          letter-spacing="0.1em"
+          fill="rgba(255,255,255,0.22)">K · A · Q · S</text>
+        <!-- Index number (visible in measurement state) -->
+        <text id="sv-index" x="150" y="305"
+          text-anchor="middle"
+          font-family="'IBM Plex Mono',monospace"
+          font-size="26"
+          font-weight="700"
+          letter-spacing="-0.04em"
+          fill="rgba(255,255,255,0.88)"
+          opacity="0">49</text>
+      </svg>
+
+      <!-- Footer metrics -->
+      <div style="padding:11px 18px;border-top:1px solid rgba(255,255,255,0.05);display:flex;align-items:center;justify-content:center;gap:16px;background:rgba(255,255,255,0.015)">
+        <span style="font-family:var(--font-mono);font-size:11px;font-weight:600;color:rgba(59,130,246,0.88)">K&thinsp;62</span>
+        <span style="font-family:var(--font-mono);font-size:11px;font-weight:600;color:rgba(34,211,238,0.88)">A&thinsp;41</span>
+        <span style="font-family:var(--font-mono);font-size:11px;font-weight:600;color:rgba(99,102,241,0.88)">Q&thinsp;55</span>
+        <span style="font-family:var(--font-mono);font-size:11px;font-weight:600;color:rgba(16,185,129,0.88)">S&thinsp;38</span>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+</div><!-- /story-track -->
+
+<style>
+  /* ── Story Track Layout ── */
+  .story-track {
+    display: flex;
+    align-items: flex-start;
+  }
+  .story-left {
+    flex: 1;
+    min-width: 0;
+  }
+  .story-right {
+    width: 318px;
+    flex-shrink: 0;
+  }
+  .kaqs-sticky {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    padding: 24px 20px 24px 0;
+    box-sizing: border-box;
+  }
+  .kaqs-panel {
+    width: 100%;
+    background: rgba(8,10,14,0.97);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 2px 48px rgba(0,0,0,0.5), 0 0 80px rgba(59,130,246,0.04);
+  }
+  .kaqs-panel__hdr {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 18px;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    background: rgba(255,255,255,0.018);
+  }
+  .kaqs-panel__dot {
+    display: inline-block;
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: rgba(59,130,246,0.8);
+    box-shadow: 0 0 8px rgba(59,130,246,0.7);
+    transition: background 600ms, box-shadow 600ms;
+  }
+  @media(max-width:1100px) { .story-right { display: none; } }
+</style>
+
+<script>
+(function(){
+  var ns = 'http://www.w3.org/2000/svg';
+  var svg = document.getElementById('story-vis');
+  if(!svg) return;
+
+  var CX=150, CY=145;
+  var NODES = [
+    {id:'core', x:CX,  y:CY,  r:24, main:true},
+    {id:'K',    x:CX,  y:57,  r:18, score:62, crit:false},
+    {id:'A',    x:238, y:CY,  r:18, score:41, crit:true},
+    {id:'Q',    x:CX,  y:233, r:18, score:55, crit:false},
+    {id:'S',    x:62,  y:CY,  r:18, score:38, crit:true},
+  ];
+  var EDGES = [
+    {a:'core',b:'K',p:true}, {a:'core',b:'A',p:true},
+    {a:'core',b:'Q',p:true}, {a:'core',b:'S',p:true},
+    {a:'K',b:'A',p:false},   {a:'A',b:'Q',p:false},
+    {a:'Q',b:'S',p:false},   {a:'S',b:'K',p:false},
+  ];
+  function scoredR(s){ return 9 + s * 0.13; }
+  function lerp(a,b,t){ return a + (b-a)*t; }
+  var NC = {core:'59,130,246', K:'59,130,246', A:'34,211,238', Q:'99,102,241', S:'16,185,129'};
+
+  var degrade=0, measure=0, tDegrade=0, tMeasure=0;
+
+  function readScroll(){
+    function inView(id){
+      var el=document.getElementById(id); if(!el) return 0;
+      var r=el.getBoundingClientRect(), vh=window.innerHeight;
+      return Math.max(0, Math.min(1, (vh*0.62 - r.top) / (vh*0.5)));
+    }
+    var pIn=inView('problem'), sIn=inView('system');
+    tDegrade = Math.max(0, Math.min(1, pIn - sIn*1.6));
+    tMeasure = sIn;
+  }
+  window.addEventListener('scroll', readScroll, {passive:true});
+  readScroll();
+
+  var edgesG = document.getElementById('sv-edges');
+  var nodesG = document.getElementById('sv-nodes');
+  var stateTxt = document.getElementById('sv-state');
+  var indexTxt = document.getElementById('sv-index');
+  var dotEl    = document.getElementById('sv-dot');
+  var badgeEl  = document.getElementById('sv-badge');
+
+  var edgeEls = EDGES.map(function(){
+    var l = document.createElementNS(ns,'line');
+    edgesG.appendChild(l);
+    return l;
+  });
+
+  var nodeMap = {};
+  NODES.forEach(function(n){
+    var g     = document.createElementNS(ns,'g');
+    var halo  = document.createElementNS(ns,'circle');
+    var circ  = document.createElementNS(ns,'circle');
+    var txt   = document.createElementNS(ns,'text');
+    var scoreT= document.createElementNS(ns,'text');
+    txt.setAttribute('text-anchor','middle');
+    txt.setAttribute('dominant-baseline','central');
+    txt.setAttribute('font-family',"'IBM Plex Mono',monospace");
+    txt.setAttribute('font-weight','600');
+    txt.textContent = n.main ? '\u25C8' : n.id;
+    scoreT.setAttribute('text-anchor','middle');
+    scoreT.setAttribute('font-family',"'IBM Plex Mono',monospace");
+    scoreT.setAttribute('font-size','9');
+    scoreT.setAttribute('letter-spacing','0.04em');
+    if(!n.main) scoreT.textContent = n.score;
+    g.appendChild(halo); g.appendChild(circ); g.appendChild(txt); g.appendChild(scoreT);
+    nodesG.appendChild(g);
+    nodeMap[n.id] = {halo:halo, circ:circ, txt:txt, scoreT:scoreT};
+  });
+
+  function getNode(id){ return NODES.find(function(n){ return n.id===id; }); }
+
+  function render(){
+    var d=degrade, m=measure;
+
+    NODES.forEach(function(n){
+      var el=nodeMap[n.id]; if(!el) return;
+      var degR  = n.main ? 20 : (n.crit ? 8 : (n.id==='K' ? 13 : 11));
+      var msR   = n.main ? n.r : scoredR(n.score);
+      var r     = lerp(lerp(n.r, degR, d), lerp(msR, degR, d), m);
+      var degOp = n.main ? 0.18 : (n.crit ? 0.12 : 0.38);
+      var op    = lerp(n.main ? 1.0 : 0.88, degOp, d);
+
+      var c = 'rgba('+(NC[n.id]||'59,130,246')+',';
+      var fA, sA, tA;
+      if(n.main){
+        fA = c+lerp(0.18,0.04,d).toFixed(2)+')';
+        sA = c+lerp(0.72,0.12,d).toFixed(2)+')';
+        tA = 'rgba(255,255,255,'+lerp(0.9,0.18,d).toFixed(2)+')';
+      } else {
+        fA = c+lerp(0.12,0.04,d).toFixed(2)+')';
+        sA = c+lerp(0.62,0.18,d).toFixed(2)+')';
+        tA = c+lerp(0.88,0.28,d).toFixed(2)+')';
+      }
+      var hS = c+lerp(n.main?0.14:0.1, n.main?0.03:0.02, d).toFixed(2)+')';
+
+      el.halo.setAttribute('cx',n.x); el.halo.setAttribute('cy',n.y);
+      el.halo.setAttribute('r',(r*1.85).toFixed(1));
+      el.halo.setAttribute('fill','none');
+      el.halo.setAttribute('stroke',hS);
+      el.halo.setAttribute('stroke-width','1');
+
+      el.circ.setAttribute('cx',n.x); el.circ.setAttribute('cy',n.y);
+      el.circ.setAttribute('r',r.toFixed(1));
+      el.circ.setAttribute('fill',fA); el.circ.setAttribute('stroke',sA);
+      el.circ.setAttribute('stroke-width',n.main?'1.5':'1');
+      el.circ.setAttribute('opacity',op.toFixed(2));
+
+      el.txt.setAttribute('x',n.x); el.txt.setAttribute('y',n.y);
+      el.txt.setAttribute('font-size',n.main?'12':(8+r*0.38).toFixed(1));
+      el.txt.setAttribute('fill',tA); el.txt.setAttribute('opacity',op.toFixed(2));
+
+      if(!n.main){
+        el.scoreT.setAttribute('x',n.x);
+        el.scoreT.setAttribute('y',(n.y + r + 14).toFixed(1));
+        el.scoreT.setAttribute('fill','rgba('+(NC[n.id]||'59,130,246')+',0.75)');
+        el.scoreT.setAttribute('opacity',m.toFixed(2));
+      }
+    });
+
+    var eOp=lerp(0.38,0.06,d), eW=lerp(1.0,0.35,d);
+    EDGES.forEach(function(e,i){
+      var na=getNode(e.a), nb=getNode(e.b), el=edgeEls[i];
+      el.setAttribute('x1',na.x); el.setAttribute('y1',na.y);
+      el.setAttribute('x2',nb.x); el.setAttribute('y2',nb.y);
+      el.setAttribute('stroke','rgba(59,130,246,'+(e.p?eOp:eOp*0.45).toFixed(2)+')');
+      el.setAttribute('stroke-width',(e.p?eW:eW*0.55).toFixed(1));
+      if(!e.p) el.setAttribute('stroke-dasharray','3,6');
+    });
+
+    // State label + dot color
+    var lbl, lClr, iOp=0;
+    if(d > 0.5){
+      lbl='СИСТЕМА ДЕГРАДИРУЕТ'; lClr='rgba(239,68,68,0.6)';
+      if(dotEl){ dotEl.style.background='rgba(239,68,68,0.8)'; dotEl.style.boxShadow='0 0 8px rgba(239,68,68,0.7)'; }
+      if(badgeEl){ badgeEl.style.color='rgba(239,68,68,0.55)'; badgeEl.style.borderColor='rgba(239,68,68,0.2)'; }
+    } else if(m > 0.5){
+      lbl='ИНДЕКС УПРАВЛЯЕМОСТИ'; lClr='rgba(59,130,246,0.52)';
+      iOp = Math.min(1, (m-0.5)*2);
+      if(dotEl){ dotEl.style.background='rgba(59,130,246,0.8)'; dotEl.style.boxShadow='0 0 8px rgba(59,130,246,0.7)'; }
+      if(badgeEl){ badgeEl.style.color='rgba(59,130,246,0.55)'; badgeEl.style.borderColor='rgba(59,130,246,0.18)'; }
+    } else {
+      lbl='K · A · Q · S'; lClr='rgba(255,255,255,0.2)';
+      if(dotEl){ dotEl.style.background='rgba(59,130,246,0.8)'; dotEl.style.boxShadow='0 0 8px rgba(59,130,246,0.7)'; }
+      if(badgeEl){ badgeEl.style.color='rgba(59,130,246,0.55)'; badgeEl.style.borderColor='rgba(59,130,246,0.18)'; }
+    }
+    stateTxt.textContent = lbl;
+    stateTxt.setAttribute('fill', lClr);
+    indexTxt.setAttribute('opacity', iOp.toFixed(2));
+  }
+
+  function loop(){
+    degrade = lerp(degrade, tDegrade, 0.045);
+    measure = lerp(measure, tMeasure, 0.045);
+    render();
+    requestAnimationFrame(loop);
+  }
+  loop();
+})();
+</script>
+
+<style>
+  .fw-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+    align-items: start;
+    margin-top: 80px;
+    margin-bottom: 80px;
+  }
+  /* Stagger волна: 0 → 20 → 8 → 32 */
+  .fw-card:nth-child(2) { margin-top: 20px; }
+  .fw-card:nth-child(3) { margin-top: 8px; }
+  .fw-card:nth-child(4) { margin-top: 32px; }
+  @media(max-width:1023px){ .fw-grid { grid-template-columns: repeat(2,1fr); gap: 16px; margin-top: 48px; margin-bottom: 48px; } }
+  @media(max-width:599px){
+    .fw-grid { grid-template-columns: 1fr; gap: 12px; }
+    .fw-card:nth-child(2), .fw-card:nth-child(3), .fw-card:nth-child(4) { margin-top: 0; }
+  }
+
+  .fw-card {
+    background: rgba(19,26,34,0.85);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 12px;
+    padding: 28px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    position: relative;
+    overflow: hidden;
+    transition: all .25s ease;
+  }
+  .fw-card::before {
+    content: '';
+    position: absolute;
+    top: 22px; left: 22px;
+    width: 0; height: 2px; border-radius: 2px;
+    background: rgba(59,130,246,0.45);
+    transition: width 1.0s cubic-bezier(0.4,0,0.2,1), background 260ms;
+  }
+  .fw-card--a::before { background: rgba(34,211,238,0.45); }
+  .fw-card--q::before { background: rgba(99,102,241,0.45); }
+  .fw-card--s::before { background: rgba(16,185,129,0.45); }
+
+  .fw-card.visible::before { width: 72px; }
+
+  .fw-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(255,255,255,0.12);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.5), 0 0 28px rgba(59,130,246,0.1);
+  }
+  .fw-card--a:hover { box-shadow: 0 12px 40px rgba(0,0,0,0.5), 0 0 28px rgba(34,211,238,0.1); }
+  .fw-card--q:hover { box-shadow: 0 12px 40px rgba(0,0,0,0.5), 0 0 28px rgba(99,102,241,0.1); }
+  .fw-card--s:hover { box-shadow: 0 12px 40px rgba(0,0,0,0.5), 0 0 28px rgba(16,185,129,0.1); }
+
+  .fw-card:hover::before     { background: rgba(59,130,246,0.82); }
+  .fw-card--a:hover::before  { background: rgba(34,211,238,0.82); }
+  .fw-card--q:hover::before  { background: rgba(99,102,241,0.82); }
+  .fw-card--s:hover::before  { background: rgba(16,185,129,0.82); }
+
+  .fw-card__top { display:flex; flex-direction:column; gap:12px; }
+
+  .fw-letter {
+    font-family: var(--font-mono);
+    font-size: 52px;
+    font-weight: 600;
+    line-height: 1;
+    color: #3B82F6;
+    opacity: 0.9;
+    letter-spacing: -0.02em;
+    transition: opacity 200ms;
+  }
+  .fw-letter--a { color: #22D3EE; }
+  .fw-letter--q { color: #6366F1; }
+  .fw-letter--s { color: #10B981; }
+  .fw-card:hover .fw-letter { opacity: 1; }
+
+  .fw-score-bar {
+    height: 5px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .fw-score-fill {
+    height: 100%;
+    border-radius: 3px;
+    background: rgba(59,130,246,0.72);
+    box-shadow: 0 0 10px rgba(59,130,246,0.50), 0 0 20px rgba(59,130,246,0.18);
+    transition: width 1.2s ease;
+  }
+  .fw-score-fill--a { background: rgba(34,211,238,0.62); box-shadow: 0 0 10px rgba(34,211,238,0.40), 0 0 20px rgba(34,211,238,0.14); }
+  .fw-score-fill--q { background: rgba(99,102,241,0.72); box-shadow: 0 0 10px rgba(99,102,241,0.50), 0 0 20px rgba(99,102,241,0.18); }
+  .fw-score-fill--s { background: rgba(16,185,129,0.62); box-shadow: 0 0 10px rgba(16,185,129,0.40), 0 0 20px rgba(16,185,129,0.14); }
+
+  .fw-score-val {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    font-weight: 500;
+    color: rgba(59,130,246,0.82);
+    letter-spacing: .04em;
+  }
+  .fw-card--q .fw-score-val { color: rgba(99,102,241,0.82); }
+  .fw-score-val--a { color: rgba(34,211,238,0.82); }
+  .fw-score-val--s { color: rgba(16,185,129,0.82); }
+
+  .fw-card__body { display:flex; flex-direction:column; gap:6px; flex:1; }
+  .fw-axis-name  { font-family:var(--font-mono); font-size:11px; color:rgba(59,130,246,0.8); letter-spacing:.06em; }
+  .fw-axis-name--a { color:rgba(34,211,238,0.8); }
+  .fw-axis-name--q { color:rgba(99,102,241,0.8); }
+  .fw-axis-name--s { color:rgba(16,185,129,0.8); }
+  .fw-axis-ru    { font-size:15px; font-weight:600; color:var(--text-primary); letter-spacing:-0.01em; }
+  .fw-desc       { font-size:12px; color:var(--text-muted); line-height:1.6; margin-top:4px; opacity:0.85; }
+
+  .fw-signals { display:flex; flex-direction:column; gap:5px; padding-top:14px; border-top:1px solid var(--border-subtle); opacity:0.65; }
+  .fw-signal {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--text-muted);
+    letter-spacing: .04em;
+    padding-left: 10px;
+    position: relative;
+    line-height: 1.5;
+  }
+  .fw-signal::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 6px;
+    width: 3px;
+    height: 3px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.15);
+  }
+  .fw-signal--warn { color: rgba(248,113,113,0.72); }
+  .fw-signal--warn::before { background: rgba(239,68,68,0.55); }
+
+  /* S — критическая зона */
+  .fw-card--s {
+    border-color: rgba(239,68,68,0.14);
+    box-shadow: 0 0 28px rgba(239,68,68,0.05);
+  }
+  .fw-card--s .fw-signal--warn {
+    color: rgba(248,113,113,0.88);
+    background: rgba(239,68,68,0.07);
+    border-radius: 3px;
+    padding: 3px 10px;
+    margin-left: -10px;
+    border-left: 2px solid rgba(239,68,68,0.35);
+  }
+  .fw-card--s .fw-signal--warn::before { display: none; }
+</style>
+
+<script>
+(function(){
+  function animateFwBars(){
+    document.querySelectorAll('.fw-score-fill[data-w]').forEach(function(el){
+      el.style.width = el.getAttribute('data-w') + '%';
+    });
+  }
+  var fwSection = document.getElementById('system');
+  if(!fwSection){ animateFwBars(); return; }
+  var obs = new IntersectionObserver(function(entries){
+    if(entries[0].isIntersecting){ animateFwBars(); obs.disconnect(); }
+  }, { threshold: 0.1 });
+  obs.observe(fwSection);
+})();
+</script>
+
+<!-- 04 HOW IT WORKS -->
+<section class="section" id="how-works" style="border-top:1px solid var(--border-subtle)">
+  <div style="width:100%;max-width:1000px;margin-inline:auto;padding-inline:var(--side)">
+
+    <!-- Header -->
+    <div class="reveal" style="margin-bottom:56px;max-width:640px">
+      <p class="idx">04</p>
+      <h2 style="font-size:clamp(28px,3.8vw,46px);font-weight:700;line-height:1.07;letter-spacing:-0.03em;color:var(--text-primary);margin-bottom:16px">
+        Как работает диагностика <span style="white-space:nowrap">K&#8209;A&#8209;Q&#8209;S</span>
+      </h2>
+      <p style="font-size:16px;color:var(--text-secondary);line-height:1.7">
+        Диагностика занимает 15–20 минут и показывает реальное состояние системы управления компании.
+      </p>
+    </div>
+
+    <!-- Steps grid -->
+    <div class="diag-steps reveal">
+
+      <!-- 01 -->
+      <div class="diag-step diag-step--first">
+        <div class="diag-step__top">
+          <div class="diag-node diag-node--first">
+            <span class="diag-node__n">01</span>
+          </div>
+          <div class="diag-conn" aria-hidden="true"></div>
+        </div>
+        <div class="diag-step__body">
+          <p class="diag-step__label">Шаг 01</p>
+          <p class="diag-step__title">Диагностика</p>
+          <p class="diag-step__desc">24 вопроса о процессах<br>и системе управления.</p>
+          <span class="diag-step__time">~10 минут</span>
+        </div>
+      </div>
+
+      <!-- 02 -->
+      <div class="diag-step">
+        <div class="diag-step__top">
+          <div class="diag-node">
+            <span class="diag-node__n">02</span>
+          </div>
+          <div class="diag-conn" aria-hidden="true"></div>
+        </div>
+        <div class="diag-step__body">
+          <p class="diag-step__label">Шаг 02</p>
+          <p class="diag-step__title">Анализ системы</p>
+          <p class="diag-step__desc">Платформа рассчитывает<br>индекс управляемости бизнеса.</p>
+          <span class="diag-step__time">~5 секунд</span>
+        </div>
+      </div>
+
+      <!-- 03 -->
+      <div class="diag-step">
+        <div class="diag-step__top">
+          <div class="diag-node">
+            <span class="diag-node__n">03</span>
+          </div>
+          <div class="diag-conn" aria-hidden="true"></div>
+        </div>
+        <div class="diag-step__body">
+          <p class="diag-step__label">Шаг 03</p>
+          <p class="diag-step__title">Карта управляемости</p>
+          <p class="diag-step__desc">Система показывает<br>слабые зоны управления.</p>
+          <span class="diag-step__time">мгновенно</span>
+        </div>
+      </div>
+
+      <!-- 04 -->
+      <div class="diag-step diag-step--final">
+        <div class="diag-step__top">
+          <div class="diag-node diag-node--final">
+            <span class="diag-node__n">04</span>
+          </div>
+        </div>
+        <div class="diag-step__body">
+          <p class="diag-step__label">Шаг 04</p>
+          <p class="diag-step__title">Архитектура изменений</p>
+          <p class="diag-step__desc">Формируется дорожная карта<br>конкретных действий.</p>
+          <span class="diag-step__time">сразу после анализа</span>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+</section>
+
+<style>
+  /* ── Section 04: How it works ── */
+  .diag-steps {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0;
+    align-items: start;
+  }
+  /* Stagger: 1=0, 2=+32px, 3=+10px, 4=+40px */
+  .diag-step:nth-child(2) { margin-top: 32px; }
+  .diag-step:nth-child(3) { margin-top: 10px; }
+  .diag-step:nth-child(4) { margin-top: 40px; }
+  @media(max-width:767px) {
+    .diag-steps {
+      grid-template-columns: 1fr 1fr;
+      gap: 1px;
+      background: var(--border-subtle);
+    }
+    .diag-step:nth-child(2), .diag-step:nth-child(3), .diag-step:nth-child(4) { margin-top: 0; }
+  }
+  @media(max-width:479px) {
+    .diag-steps { grid-template-columns: 1fr; }
+  }
+
+  .diag-step {
+    display: flex;
+    flex-direction: column;
+    padding-right: 32px;
+  }
+  .diag-step--final { padding-right: 0; }
+
+  @media(max-width:767px) {
+    .diag-step { padding: 28px 24px; background: var(--bg-base); }
+  }
+
+  .diag-step__top {
+    display: flex;
+    align-items: center;
+    margin-bottom: 32px;
+  }
+
+  .diag-node {
+    width: 52px; height: 52px;
+    border: 1px solid rgba(59,130,246,0.22);
+    border-radius: 8px;
+    background: rgba(59,130,246,0.05);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 1;
+    transition: border-color 200ms, background 200ms;
+  }
+  .diag-node--first {
+    width: 60px; height: 60px;
+    border-color: rgba(59,130,246,0.55);
+    background: rgba(59,130,246,0.13);
+    box-shadow: 0 0 18px rgba(59,130,246,0.22), 0 0 40px rgba(59,130,246,0.08);
+  }
+  .diag-node--first .diag-node__n {
+    font-size: 15px;
+    color: rgba(59,130,246,0.92);
+  }
+  .diag-node--final {
+    border-color: rgba(59,130,246,0.45);
+    background: rgba(59,130,246,0.1);
+    box-shadow: 0 0 24px rgba(59,130,246,0.1);
+  }
+  .diag-step:hover .diag-node {
+    border-color: rgba(59,130,246,0.4);
+    background: rgba(59,130,246,0.09);
+  }
+
+  .diag-node__n {
+    font-family: var(--font-mono);
+    font-size: 14px;
+    font-weight: 600;
+    color: rgba(59,130,246,0.65);
+    letter-spacing: -0.02em;
+  }
+  .diag-node--final .diag-node__n {
+    color: rgba(59,130,246,0.9);
+  }
+
+  .diag-conn {
+    flex: 1;
+    height: 2px;
+    margin-left: 10px;
+    border-radius: 1px;
+    background: linear-gradient(
+      to right,
+      rgba(59,130,246,0.52),
+      rgba(59,130,246,0.10)
+    );
+    box-shadow: 0 0 6px rgba(59,130,246,0.22);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 700ms cubic-bezier(0.16,1,0.3,1);
+  }
+  .diag-steps.visible .diag-step:nth-child(1) .diag-conn { transform: scaleX(1); transition-delay: 100ms; }
+  .diag-steps.visible .diag-step:nth-child(2) .diag-conn { transform: scaleX(1); transition-delay: 420ms; }
+  .diag-steps.visible .diag-step:nth-child(3) .diag-conn { transform: scaleX(1); transition-delay: 740ms; }
+  @media(max-width:767px) { .diag-conn { display: none; } }
+
+  .diag-step__label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: rgba(255,255,255,0.18);
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+
+  .diag-step__title {
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--text-primary);
+    letter-spacing: -0.015em;
+    line-height: 1.25;
+    margin-bottom: 10px;
+  }
+
+  .diag-step__desc {
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.65;
+  }
+
+  .diag-step__time {
+    display: block;
+    font-family: var(--font-mono);
+    font-size: 9.5px;
+    color: rgba(59,130,246,0.42);
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    margin-top: 10px;
+  }
+  .diag-step--first .diag-step__time {
+    color: rgba(59,130,246,0.62);
+    font-weight: 500;
+  }
+</style>
+
+<!-- 05 REPORT EXAMPLE -->
+<section class="section section--dense" id="report-example" style="border-top:1px solid var(--border-subtle)">
+  <div style="width:100%;max-width:1200px;margin-inline:auto;padding-inline:var(--side)">
+
+    <!-- Header -->
+    <div class="reveal" style="margin-bottom:56px;max-width:640px">
+      <p class="idx">05</p>
+      <h2 style="font-size:clamp(26px,3.6vw,44px);font-weight:700;line-height:1.08;letter-spacing:-0.03em;color:var(--text-primary);margin-bottom:16px">
+        Как выглядит результат диагностики <span style="white-space:nowrap">K&#8209;A&#8209;Q&#8209;S</span>
+      </h2>
+      <p style="font-size:16px;color:var(--text-secondary);line-height:1.7">
+        Диагностика показывает реальное состояние системы управления.
+      </p>
+    </div>
+
+    <!-- Report card + detail cards -->
+    <div class="rpt-layout reveal d1">
+
+      <!-- Central report card -->
+      <div class="rpt-main">
+        <!-- Top bar -->
+        <div class="rpt-topbar">
+          <div class="rpt-topbar__left">
+            <span class="rpt-platform-dot"></span>
+            <span class="rpt-topbar__brand">K&#8209;A&#8209;Q&#8209;S™ Analytics</span>
+          </div>
+          <div class="rpt-topbar__meta">
+            <span class="rpt-badge">ДИАГНОСТИКА</span>
+          </div>
+        </div>
+
+        <!-- Score row -->
+        <div class="rpt-score-row" id="rpt-score-row">
+          <div>
+            <p class="rpt-score-label">Manageability Index</p>
+            <div class="rpt-score-val">
+              <span class="rpt-score-num">49</span>
+              <span class="rpt-score-denom">/ 100</span>
+            </div>
+            <div class="rpt-score-bar-track">
+              <div class="rpt-score-bar-fill" style="--sw:49%"></div>
+            </div>
+            <p class="rpt-score-status">Управляемость требует системной работы</p>
+          </div>
+          <!-- Analytics diamond graph -->
+          <div style="flex-shrink:0;padding-top:4px">
+            <svg viewBox="0 0 130 130" width="120" height="120" aria-label="K-A-Q-S analytics" aria-hidden="true">
+              <defs>
+                <filter id="rpt-glow" x="-70%" y="-70%" width="240%" height="240%">
+                  <feGaussianBlur stdDeviation="3.5" result="b"/>
+                  <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+                </filter>
+              </defs>
+
+              <!-- Ring links (very faint) -->
+              <line x1="65" y1="22"  x2="108" y2="65" stroke="rgba(255,255,255,0.05)" stroke-width="0.6"/>
+              <line x1="108" y1="65" x2="65"  y2="108" stroke="rgba(255,255,255,0.05)" stroke-width="0.6"/>
+              <line x1="65" y1="108" x2="22"  y2="65"  stroke="rgba(255,255,255,0.05)" stroke-width="0.6"/>
+              <line x1="22" y1="65"  x2="65"  y2="22"  stroke="rgba(255,255,255,0.05)" stroke-width="0.6"/>
+
+              <!-- Primary links CORE→axis, colored per axis -->
+              <line x1="65" y1="65" x2="65"  y2="22"  stroke="rgba(59,130,246,0.42)"  stroke-width="1"/>
+              <line x1="65" y1="65" x2="108" y2="65"  stroke="rgba(34,211,238,0.28)"  stroke-width="1"/>
+              <line x1="65" y1="65" x2="65"  y2="108" stroke="rgba(99,102,241,0.42)"  stroke-width="1"/>
+              <line x1="65" y1="65" x2="22"  y2="65"  stroke="rgba(16,185,129,0.22)"  stroke-width="1"/>
+
+              <!-- CORE — shows index -->
+              <circle cx="65" cy="65" r="15" fill="rgba(59,130,246,0.1)" stroke="rgba(59,130,246,0.38)" stroke-width="1.2" filter="url(#rpt-glow)"/>
+              <text x="65" y="63" text-anchor="middle" dominant-baseline="central" font-family="'IBM Plex Mono',monospace" font-size="11" font-weight="700" fill="rgba(255,255,255,0.75)" letter-spacing="-0.04em">49</text>
+              <text x="65" y="74" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="5.5" fill="rgba(255,255,255,0.22)" letter-spacing="0.06em">INDEX</text>
+
+              <!-- K — top (score 62, healthiest → largest) -->
+              <circle cx="65" cy="20" r="12" fill="rgba(59,130,246,0.18)" stroke="rgba(59,130,246,0.8)" stroke-width="1.2" filter="url(#rpt-glow)"/>
+              <text x="65" y="20" text-anchor="middle" dominant-baseline="central" font-family="'IBM Plex Mono',monospace" font-size="9" font-weight="700" fill="rgba(59,130,246,0.95)">K</text>
+              <text x="65" y="6"  text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="7" fill="rgba(59,130,246,0.6)">62</text>
+
+              <!-- A — right (score 41, critical → dimmest) -->
+              <circle cx="109" cy="65" r="9.5" fill="rgba(34,211,238,0.08)" stroke="rgba(34,211,238,0.5)" stroke-width="1"/>
+              <text x="109" y="65" text-anchor="middle" dominant-baseline="central" font-family="'IBM Plex Mono',monospace" font-size="8" font-weight="700" fill="rgba(34,211,238,0.82)">A</text>
+              <text x="122" y="65" text-anchor="middle" dominant-baseline="central" font-family="'IBM Plex Mono',monospace" font-size="6.5" fill="rgba(34,211,238,0.52)">41</text>
+
+              <!-- Q — bottom (score 55) -->
+              <circle cx="65" cy="110" r="11" fill="rgba(99,102,241,0.14)" stroke="rgba(99,102,241,0.72)" stroke-width="1.2" filter="url(#rpt-glow)"/>
+              <text x="65" y="110" text-anchor="middle" dominant-baseline="central" font-family="'IBM Plex Mono',monospace" font-size="9" font-weight="700" fill="rgba(99,102,241,0.9)">Q</text>
+              <text x="65" y="124" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="7" fill="rgba(99,102,241,0.55)">55</text>
+
+              <!-- S — left (score 38, most critical → smallest + dimmest) -->
+              <circle cx="21" cy="65" r="8.5" fill="rgba(16,185,129,0.06)" stroke="rgba(16,185,129,0.42)" stroke-width="0.9"/>
+              <text x="21" y="65" text-anchor="middle" dominant-baseline="central" font-family="'IBM Plex Mono',monospace" font-size="8" font-weight="700" fill="rgba(16,185,129,0.72)">S</text>
+              <text x="8"  y="65" text-anchor="middle" dominant-baseline="central" font-family="'IBM Plex Mono',monospace" font-size="6.5" fill="rgba(16,185,129,0.45)">38</text>
+            </svg>
+          </div>
+        </div>
+
+        <!-- Divider -->
+        <div class="rpt-divider"></div>
+
+        <!-- KAQS bars -->
+        <div class="rpt-kaqs">
+          <p class="rpt-kaqs__title">Компоненты системы</p>
+          <div class="rpt-kaqs__bars">
+
+            <div class="rpt-bar-item" id="rpt-bar-k">
+              <span class="rpt-bar-letter" style="color:rgba(59,130,246,0.9)">K</span>
+              <div class="rpt-bar-track">
+                <div class="rpt-bar-fill rpt-bar-fill--k" style="--bpct:62%">
+                  <span class="rpt-bar-fill__label">Kontrolling</span>
+                </div>
+              </div>
+              <span class="rpt-bar-score">62</span>
+            </div>
+
+            <div class="rpt-bar-item rpt-bar-item--warn" id="rpt-bar-a">
+              <span class="rpt-bar-letter" style="color:rgba(34,211,238,0.9)">A</span>
+              <div class="rpt-bar-track">
+                <div class="rpt-bar-fill rpt-bar-fill--a" style="--bpct:41%">
+                  <span class="rpt-bar-fill__label">Accountability</span>
+                </div>
+              </div>
+              <span class="rpt-bar-score rpt-bar-score--crit">41</span>
+            </div>
+
+            <div class="rpt-bar-item" id="rpt-bar-q">
+              <span class="rpt-bar-letter" style="color:rgba(99,102,241,0.9)">Q</span>
+              <div class="rpt-bar-track">
+                <div class="rpt-bar-fill rpt-bar-fill--q" style="--bpct:55%">
+                  <span class="rpt-bar-fill__label">Quality Gates</span>
+                </div>
+              </div>
+              <span class="rpt-bar-score">55</span>
+            </div>
+
+            <div class="rpt-bar-item rpt-bar-item--warn" id="rpt-bar-s">
+              <span class="rpt-bar-letter" style="color:rgba(16,185,129,0.9)">S</span>
+              <div class="rpt-bar-track">
+                <div class="rpt-bar-fill rpt-bar-fill--s" style="--bpct:38%">
+                  <span class="rpt-bar-fill__label">Scalability</span>
+                </div>
+              </div>
+              <span class="rpt-bar-score rpt-bar-score--crit">38</span>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Footer meta -->
+        <div class="rpt-footer">
+          <span class="rpt-footer__item">ID: KAQ-2024-09182</span>
+          <span class="rpt-footer__sep">·</span>
+          <span class="rpt-footer__item">Конфиденциально</span>
+          <span class="rpt-footer__sep">·</span>
+          <span class="rpt-footer__item rpt-footer__status">● ГОТОВО</span>
+        </div>
+      </div>
+
+      <!-- Four detail cards -->
+      <div class="rpt-cards">
+
+        <div class="rpt-card" data-rpt-card="index">
+          <div class="rpt-card__hdr">
+            <span class="rpt-card__num">01</span>
+            <div class="rpt-card__icon">◈</div>
+          </div>
+          <p class="rpt-card__title">Индекс управляемости</p>
+          <p class="rpt-card__desc">Общий балл системы управления. Показывает, насколько бизнес управляем без ручного контроля собственника.</p>
+        </div>
+
+        <div class="rpt-card rpt-card--alert" data-rpt-card="risks">
+          <div class="rpt-card__hdr">
+            <span class="rpt-card__num">02</span>
+            <div class="rpt-card__icon" style="color:rgba(234,179,8,0.75)">⚠</div>
+          </div>
+          <p class="rpt-card__title">Карта операционных рисков</p>
+          <p class="rpt-card__desc">Зоны, где процессы наиболее уязвимы. Видно, где накапливается ошибка и кто держит риск.</p>
+        </div>
+
+        <div class="rpt-card" data-rpt-card="failures">
+          <div class="rpt-card__hdr">
+            <span class="rpt-card__num">03</span>
+            <div class="rpt-card__icon">⬡</div>
+          </div>
+          <p class="rpt-card__title">Сценарии точек отказа</p>
+          <p class="rpt-card__desc">Что происходит, если ключевой человек уходит или нагрузка удваивается. Каждый сценарий — с вероятностью и последствиями.</p>
+        </div>
+
+        <div class="rpt-card" data-rpt-card="roadmap">
+          <div class="rpt-card__hdr">
+            <span class="rpt-card__num">04</span>
+            <div class="rpt-card__icon" style="color:rgba(59,130,246,0.7)">→</div>
+          </div>
+          <p class="rpt-card__title">Дорожная карта изменений</p>
+          <p class="rpt-card__desc">Конкретные шаги в порядке приоритета. Не список рекомендаций — последовательность действий с измеримым результатом.</p>
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+</section>
+<script>
+(function(){
+  var barIds  = ['rpt-bar-k','rpt-bar-a','rpt-bar-q','rpt-bar-s'];
+  var scoreRow = document.getElementById('rpt-score-row');
+
+  // What each card highlights: array of ids to KEEP full opacity; rest get dimmed
+  var cardFocus = {
+    index:    { full: ['rpt-score-row'], bars: null },
+    risks:    { full: null, bars: ['rpt-bar-a','rpt-bar-s'] },
+    failures: { full: null, bars: ['rpt-bar-a','rpt-bar-s'] },
+    roadmap:  { full: null, bars: ['rpt-bar-k','rpt-bar-a','rpt-bar-q','rpt-bar-s'] },
+  };
+
+  function resetAll(){
+    barIds.forEach(function(id){
+      var el = document.getElementById(id);
+      if(el) el.style.opacity = '';
+    });
+    if(scoreRow) scoreRow.style.opacity = '';
+  }
+
+  document.querySelectorAll('.rpt-card[data-rpt-card]').forEach(function(card){
+    var key = card.getAttribute('data-rpt-card');
+    var cfg = cardFocus[key];
+    if(!cfg) return;
+
+    card.addEventListener('mouseenter', function(){
+      resetAll();
+      if(cfg.bars){
+        // dim all bars, then brighten focused ones
+        barIds.forEach(function(id){
+          var el = document.getElementById(id);
+          if(el) el.style.opacity = cfg.bars.indexOf(id) >= 0 ? '1' : '0.22';
+        });
+      }
+      if(cfg.full && cfg.full.indexOf('rpt-score-row') >= 0 && scoreRow){
+        scoreRow.style.opacity = '1';
+        // dim bars slightly to draw focus to score
+        barIds.forEach(function(id){
+          var el = document.getElementById(id);
+          if(el) el.style.opacity = '0.38';
+        });
+      }
+    });
+    card.addEventListener('mouseleave', resetAll);
+  });
+})();
+</script>
+
+<style>
+  /* ── Section 05: Report Example ── */
+  .rpt-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    align-items: start;
+  }
+  @media(max-width:900px) {
+    .rpt-layout { grid-template-columns: 1fr; }
+  }
+
+  /* ── Main card ── */
+  .rpt-main {
+    background: rgba(19,26,34,0.96);
+    border: 1px solid rgba(255,255,255,0.09);
+    border-radius: 14px;
+    overflow: hidden;
+    font-family: var(--font-mono);
+  }
+
+  .rpt-topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 20px;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    background: rgba(255,255,255,0.02);
+  }
+  .rpt-topbar__left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .rpt-platform-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: rgba(59,130,246,0.7);
+    box-shadow: 0 0 8px rgba(59,130,246,0.5);
+  }
+  .rpt-topbar__brand {
+    font-size: 11px;
+    letter-spacing: .1em;
+    color: rgba(255,255,255,0.35);
+    text-transform: uppercase;
+  }
+  .rpt-badge {
+    font-size: 9px;
+    letter-spacing: .14em;
+    color: rgba(255,255,255,0.28);
+    border: 1px solid rgba(255,255,255,0.1);
+    padding: 3px 8px;
+    border-radius: 3px;
+    text-transform: uppercase;
+  }
+
+  .rpt-score-row {
+    padding: 28px 24px 20px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+  }
+  .rpt-score-label {
+    font-size: 10px;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.28);
+    margin-bottom: 8px;
+  }
+  .rpt-score-val {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    margin-bottom: 14px;
+  }
+  .rpt-score-num {
+    font-size: 52px;
+    font-weight: 700;
+    letter-spacing: -0.04em;
+    color: rgba(255,255,255,0.96);
+    line-height: 1;
+    font-family: var(--font-sans);
+    text-shadow: 0 0 22px rgba(59,130,246,0.28), 0 0 48px rgba(59,130,246,0.10);
+  }
+  .rpt-score-denom {
+    font-size: 16px;
+    color: rgba(255,255,255,0.2);
+    font-family: var(--font-sans);
+  }
+  .rpt-score-bar-track {
+    width: 180px;
+    height: 5px;
+    background: rgba(255,255,255,0.07);
+    border-radius: 3px;
+    margin-bottom: 10px;
+    overflow: hidden;
+  }
+  .rpt-score-bar-fill {
+    height: 100%;
+    width: var(--sw, 0%);
+    background: linear-gradient(to right, rgba(239,68,68,0.9), rgba(234,179,8,0.8));
+    border-radius: 3px;
+    box-shadow: 0 0 8px rgba(239,68,68,0.35);
+  }
+  .rpt-score-status {
+    font-size: 11px;
+    color: rgba(255,255,255,0.32);
+    letter-spacing: .02em;
+  }
+  .rpt-gauge {
+    flex-shrink: 0;
+    padding-top: 4px;
+  }
+
+  .rpt-divider {
+    height: 1px;
+    background: rgba(255,255,255,0.06);
+    margin: 0 24px;
+  }
+
+  /* KAQS bars */
+  .rpt-kaqs {
+    padding: 20px 24px 24px;
+  }
+  .rpt-kaqs__title {
+    font-size: 9px;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.2);
+    margin-bottom: 16px;
+  }
+  .rpt-kaqs__bars {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .rpt-bar-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .rpt-bar-letter {
+    font-size: 11px;
+    font-weight: 700;
+    width: 12px;
+    flex-shrink: 0;
+    letter-spacing: .04em;
+  }
+  .rpt-bar-track {
+    flex: 1;
+    height: 22px;
+    background: rgba(255,255,255,0.04);
+    border-radius: 3px;
+    overflow: hidden;
+    position: relative;
+  }
+  .rpt-bar-fill {
+    height: 100%;
+    width: var(--bpct, 0%);
+    border-radius: 3px;
+    display: flex;
+    align-items: center;
+    padding-left: 10px;
+    transition: width 1s cubic-bezier(0.16,1,0.3,1);
+  }
+  .rpt-bar-fill--k { background: rgba(59,130,246,0.18); border-right: 1px solid rgba(59,130,246,0.45); }
+  .rpt-bar-fill--a { background: rgba(34,211,238,0.14); border-right: 1px solid rgba(34,211,238,0.45); }
+  .rpt-bar-fill--q { background: rgba(99,102,241,0.18); border-right: 1px solid rgba(99,102,241,0.45); }
+  .rpt-bar-fill--s { background: rgba(16,185,129,0.14); border-right: 1px solid rgba(16,185,129,0.45); }
+
+  .rpt-bar-fill__label {
+    font-size: 9px;
+    letter-spacing: .06em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: rgba(255,255,255,0.22);
+    text-transform: uppercase;
+  }
+  .rpt-bar-score {
+    font-size: 12px;
+    font-weight: 600;
+    width: 24px;
+    text-align: right;
+    color: rgba(255,255,255,0.55);
+    flex-shrink: 0;
+  }
+  .rpt-bar-score--crit { color: rgba(239,68,68,0.85); }
+
+  .rpt-footer {
+    padding: 12px 24px;
+    border-top: 1px solid rgba(255,255,255,0.05);
+    background: rgba(255,255,255,0.015);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .rpt-footer__item {
+    font-size: 10px;
+    color: rgba(255,255,255,0.2);
+    letter-spacing: .06em;
+  }
+  .rpt-footer__sep { color: rgba(255,255,255,0.12); }
+  .rpt-footer__status { color: rgba(59,130,246,0.55); }
+
+  /* ── Warning bars (A=41, S=38) ── */
+  .rpt-bar-item {
+    transition: opacity 200ms ease;
+  }
+  .rpt-bar-item--warn {
+    position: relative;
+  }
+  .rpt-bar-item--warn .rpt-bar-track {
+    box-shadow: inset 0 0 0 1px rgba(239,68,68,0.10);
+  }
+  .rpt-bar-item--warn .rpt-bar-score {
+    color: rgba(248,113,113,0.88);
+  }
+
+  /* ── Four detail cards ── */
+  .rpt-cards {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    align-self: start;
+    align-items: start;
+  }
+  /* Stagger: правая колонка опускается */
+  .rpt-card:nth-child(2) { margin-top: 20px; }
+  .rpt-card:nth-child(4) { margin-top: 20px; }
+  @media(max-width:599px) {
+    .rpt-card:nth-child(2), .rpt-card:nth-child(4) { margin-top: 0; }
+  }
+
+  .rpt-card {
+    background: rgba(19,26,34,0.85);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 12px;
+    padding: 28px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    transition: border-color 200ms, box-shadow 200ms, transform 200ms;
+  }
+  .rpt-card:hover {
+    border-color: rgba(255,255,255,0.11);
+    box-shadow: 0 8px 28px rgba(0,0,0,0.4);
+    transform: translateY(-2px);
+  }
+  .rpt-card--alert { border-color: rgba(234,179,8,0.18); box-shadow: 0 0 18px rgba(234,179,8,0.04); }
+
+  /* Card header with num */
+  .rpt-card__hdr {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 2px;
+  }
+  .rpt-card__num {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    font-weight: 600;
+    color: rgba(59,130,246,0.35);
+    letter-spacing: .12em;
+    flex-shrink: 0;
+  }
+  .rpt-card--alert .rpt-card__num { color: rgba(234,179,8,0.40); }
+
+  .rpt-card__icon {
+    font-size: 20px;
+    color: rgba(59,130,246,0.6);
+    line-height: 1;
+  }
+  .rpt-card__title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-primary);
+    letter-spacing: -0.01em;
+    line-height: 1.3;
+  }
+  .rpt-card__desc {
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.65;
+  }
+
+  /* ── CTA ── */
+  .rpt-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 32px;
+    background: var(--accent-primary);
+    color: #fff;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: .02em;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: opacity 150ms, transform 150ms;
+  }
+  .rpt-cta:hover { opacity: 0.88; transform: translateY(-1px); }
+  .rpt-cta:active { transform: none; }
+
+  /* ── Bars animate on reveal ── */
+  .rpt-bar-fill { width: 0; transition: width 1.2s ease; }
+  .rpt-layout.visible .rpt-bar-fill { width: var(--bpct); }
+  /* ── Quick Check ── */
+  .qc-wrap { max-width: 860px; margin-inline: auto; }
+  .qc-panel {
+    background: rgba(19,26,34,0.88);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 16px;
+    padding: 48px 52px;
+    position: relative;
+    overflow: hidden;
+  }
+  @media(max-width:599px) { .qc-panel { padding: 32px 24px; } }
+  .qc-panel::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, rgba(59,130,246,0.8) 0%, rgba(99,102,241,0.8) 50%, rgba(16,185,129,0.8) 100%);
+  }
+
+  /* Progress */
+  .qc-prog-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 36px;
+  }
+  .qc-prog {
+    flex: 1;
+    height: 4px;
+    background: rgba(255,255,255,0.07);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .qc-prog__fill {
+    height: 100%;
+    background: rgba(59,130,246,0.75);
+    border-radius: 3px;
+    width: 0%;
+    box-shadow: 0 0 8px rgba(59,130,246,0.45);
+    transition: width 0.5s cubic-bezier(0.4,0,0.2,1);
+  }
+  .qc-prog-pct {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 600;
+    color: rgba(59,130,246,0.55);
+    letter-spacing: .06em;
+    width: 32px;
+    text-align: right;
+    flex-shrink: 0;
+    transition: color 0.3s;
+  }
+
+  /* Step */
+  .qc-step { display: none; }
+  .qc-step.qc-step--active { display: block; }
+
+  .qc-step-label {
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 14px;
+    font-family: 'IBM Plex Mono', monospace;
+  }
+  .qc-q-text {
+    font-size: clamp(17px, 2.2vw, 21px);
+    font-weight: 600;
+    line-height: 1.35;
+    color: var(--text-primary);
+    margin-bottom: 28px;
+    letter-spacing: -0.01em;
+  }
+
+  /* Options */
+  .qc-opts { display: flex; flex-direction: column; gap: 8px; }
+  .qc-opt {
+    display: flex;
+    align-items: center;
+    padding: 18px 22px;
+    border: 1px solid rgba(255,255,255,0.07);
+    border-left: 3px solid transparent;
+    border-radius: 10px;
+    background: rgba(15,20,28,0.55);
+    cursor: pointer;
+    transition: border-color 180ms, background 180ms, transform 150ms, box-shadow 180ms, opacity 200ms;
+    text-align: left;
+    color: var(--text-secondary);
+    font-size: 15px;
+    line-height: 1.45;
+    position: relative;
+  }
+  .qc-opt::before { display: none; }
+  .qc-opt:hover {
+    background: rgba(20,27,38,0.75);
+    transform: translateX(3px);
+    color: var(--text-primary);
+  }
+  .qc-opt.qc-opt--k:hover {
+    border-color: rgba(59,130,246,0.35);
+    border-left-color: rgba(59,130,246,0.65);
+    box-shadow: 0 0 16px rgba(59,130,246,0.07);
+  }
+  .qc-opt.qc-opt--q:hover {
+    border-color: rgba(99,102,241,0.35);
+    border-left-color: rgba(99,102,241,0.65);
+    box-shadow: 0 0 16px rgba(99,102,241,0.07);
+  }
+  .qc-opt.qc-opt--s:hover {
+    border-color: rgba(16,185,129,0.35);
+    border-left-color: rgba(16,185,129,0.65);
+    box-shadow: 0 0 16px rgba(16,185,129,0.07);
+  }
+  .qc-opt--selected.qc-opt--k {
+    border-color: rgba(59,130,246,0.40);
+    border-left-color: rgba(59,130,246,0.80);
+    background: rgba(59,130,246,0.09);
+    color: var(--text-primary);
+    box-shadow: 0 0 20px rgba(59,130,246,0.10);
+  }
+  .qc-opt--selected.qc-opt--q {
+    border-color: rgba(99,102,241,0.40);
+    border-left-color: rgba(99,102,241,0.80);
+    background: rgba(99,102,241,0.09);
+    color: var(--text-primary);
+    box-shadow: 0 0 20px rgba(99,102,241,0.10);
+  }
+  .qc-opt--selected.qc-opt--s {
+    border-color: rgba(16,185,129,0.40);
+    border-left-color: rgba(16,185,129,0.80);
+    background: rgba(16,185,129,0.09);
+    color: var(--text-primary);
+    box-shadow: 0 0 20px rgba(16,185,129,0.10);
+  }
+
+  /* System reaction */
+  .qc-reaction {
+    display: none;
+    align-items: center;
+    gap: 8px;
+    margin-top: 12px;
+    padding: 10px 16px;
+    border-radius: 7px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: .03em;
+    animation: qcRxIn 0.3s ease forwards;
+  }
+  @keyframes qcRxIn {
+    from { opacity: 0; transform: translateY(4px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .qc-reaction--visible { display: flex; }
+  .qc-reaction--ok   { color: rgba(34,211,238,0.85);  background: rgba(34,211,238,0.06);  border: 1px solid rgba(34,211,238,0.14); }
+  .qc-reaction--warn { color: rgba(249,115,22,0.85);  background: rgba(249,115,22,0.06);  border: 1px solid rgba(249,115,22,0.14); }
+  .qc-reaction--crit { color: rgba(239,68,68,0.85);   background: rgba(239,68,68,0.06);   border: 1px solid rgba(239,68,68,0.14); }
+
+  /* Next button */
+  .qc-next-btn {
+    display: none;
+    align-items: center;
+    gap: 8px;
+    margin-top: 20px;
+    padding: 13px 24px;
+    background: rgba(59,130,246,0.12);
+    border: 1px solid rgba(59,130,246,0.32);
+    border-radius: 9px;
+    color: rgba(59,130,246,0.92);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 200ms, border-color 200ms, transform 150ms;
+    animation: qcRxIn 0.35s ease 0.1s both;
+  }
+  .qc-next-btn--visible { display: inline-flex; }
+  .qc-next-btn:hover {
+    background: rgba(59,130,246,0.20);
+    border-color: rgba(59,130,246,0.50);
+    transform: translateX(2px);
+  }
+
+  /* Result */
+  .qc-res { display: none; }
+  .qc-res--active { display: block; }
+
+  .qc-res-top {
+    display: flex;
+    align-items: center;
+    gap: 36px;
+    margin-bottom: 36px;
+  }
+  @media(max-width:599px) { .qc-res-top { flex-direction: column; gap: 24px; } }
+
+  .qc-index-block { flex-shrink: 0; text-align: center; }
+  .qc-index-num {
+    font-size: 72px;
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -0.04em;
+    color: var(--text-primary);
+    font-family: 'IBM Plex Mono', monospace;
+  }
+  .qc-index-label {
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    font-family: 'IBM Plex Mono', monospace;
+    margin-top: 6px;
+  }
+  .qc-hint {
+    font-size: 15px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    flex: 1;
+    border-left: 1px solid rgba(255,255,255,0.07);
+    padding-left: 28px;
+  }
+  @media(max-width:599px) { .qc-hint { border-left: none; padding-left: 0; border-top: 1px solid rgba(255,255,255,0.07); padding-top: 20px; } }
+
+  /* Axis bars */
+  .qc-axes { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 32px; margin-bottom: 32px; }
+  @media(max-width:479px) { .qc-axes { grid-template-columns: 1fr; } }
+  .qc-axis { display: flex; flex-direction: column; gap: 6px; }
+  .qc-axis-hd { display: flex; justify-content: space-between; align-items: center; }
+  .qc-axis-name {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    font-family: 'IBM Plex Mono', monospace;
+  }
+  .qc-axis-val {
+    font-size: 13px;
+    font-weight: 700;
+    font-family: 'IBM Plex Mono', monospace;
+    color: var(--text-primary);
+  }
+  .qc-axis-track {
+    height: 4px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .qc-axis-fill {
+    height: 100%;
+    border-radius: 4px;
+    width: 0%;
+    transition: width 0.9s cubic-bezier(0.4,0,0.2,1);
+  }
+
+  /* Mini graph */
+  .qc-graph-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 28px;
+    margin-bottom: 32px;
+    padding: 24px;
+    background: rgba(6,8,14,0.6);
+    border: 1px solid rgba(255,255,255,0.05);
+    border-radius: 12px;
+  }
+  .qc-graph-legend { display: flex; flex-direction: column; gap: 8px; }
+  .qc-graph-legend-item { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--text-muted); font-family: 'IBM Plex Mono', monospace; }
+  .qc-graph-legend-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+
+  /* CTA */
+  .qc-cta-row { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+  .qc-cta-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 28px;
+    background: var(--accent-primary);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background 200ms, transform 150ms, box-shadow 200ms;
+    box-shadow: 0 0 0 0 rgba(59,130,246,0);
+  }
+  .qc-cta-btn:hover {
+    background: var(--accent-hover);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 24px rgba(59,130,246,0.3);
+  }
+  .qc-restart {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-size: 13px;
+    cursor: pointer;
+    transition: color 180ms;
+    padding: 4px 0;
+  }
+  .qc-restart:hover { color: var(--text-secondary); }
+</style>
+
+<style>
+  #cta {
+    position: relative;
+    overflow: hidden;
+  }
+  #cta::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -55%);
+    width: 700px;
+    height: 340px;
+    background: radial-gradient(ellipse at center,
+      rgba(59,130,246,0.10) 0%,
+      rgba(59,130,246,0.04) 40%,
+      transparent 72%
+    );
+    pointer-events: none;
+    z-index: 0;
+  }
+  #cta .container { position: relative; z-index: 1; }
+</style>
+
+<!-- 06 CTA -->
+<section class="section section--lg" id="cta" style="border-top:1px solid var(--border-subtle)">
+  <div class="container container--narrow" style="text-align:center">
+    <div class="reveal">
+      <p class="idx" style="text-align:center">06</p>
+      <h2 style="font-size:clamp(30px,5vw,52px);font-weight:700;line-height:1.08;letter-spacing:-0.03em;margin-bottom:20px">
+        Проверьте управляемость<br>вашего бизнеса за 15 минут.
+      </h2>
+      <p style="font-size:17px;color:var(--text-secondary);line-height:1.65;margin-bottom:32px;max-width:460px;margin-inline:auto">
+        Диагностика K-A-Q-S показывает реальное состояние системы управления — индекс, карту рисков и дорожную карту изменений.
+      </p>
+      <a href="kaqs-quiz.html" class="cta-btn-main">Пройти диагностику <span class="cta-arrow">→</span></a>
+      <p class="cta-trust">24 вопроса&nbsp;&nbsp;·&nbsp;&nbsp;15 минут&nbsp;&nbsp;·&nbsp;&nbsp;Результат сразу</p>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer__inner">
+      <span class="footer__logo">K-A-Q-S<sup style="font-size:.6em;vertical-align:super">™</sup></span>
+      <nav class="footer__links">
+        <a href="#problem"        class="footer__link">Проблема</a>
+        <a href="#architecture"   class="footer__link">Система</a>
+        <a href="#how-works"      class="footer__link">Диагностика</a>
+        <a href="#report-example" class="footer__link">Пример отчёта</a>
+        <a href="#cta"            class="footer__link">Начать</a>
+      </nav>
+      <div style="display:flex;align-items:center;gap:20px;flex-wrap:wrap">
+        <span style="font-family:var(--font-mono);font-size:10px;color:var(--text-muted);letter-spacing:.1em;text-transform:uppercase">// Документы</span>
+        <a href="oferta.html"         style="font-size:12px;color:var(--text-muted);transition:color 150ms;font-family:var(--font-mono);" onmouseover="this.style.color='var(--text-secondary)'" onmouseout="this.style.color='var(--text-muted)'">Условия подписки</a>
+        <span style="color:rgba(255,255,255,0.12);font-size:12px">·</span>
+        <a href="oferta-roadmap.html" style="font-size:12px;color:var(--text-muted);transition:color 150ms;font-family:var(--font-mono);" onmouseover="this.style.color='var(--text-secondary)'" onmouseout="this.style.color='var(--text-muted)'">Условия Roadmap</a>
+      </div>
+      <p style="font-size:12px;color:var(--text-muted);font-family:var(--font-mono)">
+        Методология K-A-Q-S™ разработана Кариной Карабут — AI-стратегом и операционным архитектором.
+      </p>
+      <p style="font-family:var(--font-mono);font-size:12px;color:var(--text-muted)">© 2026 K-A-Q-S™. Все права защищены.</p>
+    </div>
+  </div>
+</footer>
+
+<!-- Back to top -->
+<style>
+  #back-top {
+    position:fixed; bottom:32px; right:32px; z-index:40;
+    width:44px; height:44px; border-radius:10px;
+    background:rgba(19,26,34,0.9);
+    border:1px solid rgba(255,255,255,0.08);
+    display:flex; align-items:center; justify-content:center;
+    backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px);
+    text-decoration:none;
+    opacity:0; pointer-events:none;
+    transition:opacity .3s ease, transform .3s ease, border-color .2s ease, box-shadow .2s ease;
+  }
+  #back-top.visible { opacity:1; pointer-events:auto; }
+  #back-top:hover {
+    border-color:rgba(59,130,246,0.35);
+    box-shadow:0 0 16px rgba(59,130,246,0.18);
+    transform:translateY(-3px);
+  }
+  #back-top:hover path { stroke:rgba(59,130,246,0.9); }
+</style>
+<a href="#" id="back-top" aria-label="Наверх">
+  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+    <path d="M8 12V4M4 7l4-4 4 4" stroke="rgba(255,255,255,0.5)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="transition:stroke .2s"/>
+  </svg>
+</a>
+<script>
+(function(){
+  var btn = document.getElementById('back-top');
+  window.addEventListener('scroll', function(){
+    btn.classList.toggle('visible', window.scrollY > 400);
+  }, { passive: true });
+})();
+</script>
+
+<script>
+// Problem section — scroll-based sequential reveal
+(function(){
+  var section = document.getElementById('problem');
+  if(!section) return;
+
+  var cards = [0,1,2,3,4].map(function(i){
+    return section.querySelector('[data-prob-idx="'+i+'"]');
+  }).filter(Boolean);
+
+  var transition = section.querySelector('.prob-transition');
+  var triggered  = false;
+  var STEP = 700;
+
+  function trigger(){
+    triggered = true;
+    window.removeEventListener('scroll', onScroll);
+
+    cards.forEach(function(card, i){
+      setTimeout(function(){ card.classList.add('visible'); }, i * STEP);
+    });
+    if(transition){
+      setTimeout(function(){ transition.classList.add('visible'); }, cards.length * STEP + 120);
+    }
+  }
+
+  function onScroll(){
+    if(triggered) return;
+    var rect   = section.getBoundingClientRect();
+    var viewH  = window.innerHeight || document.documentElement.clientHeight;
+    // Fire when top of section is 75% down the screen
+    if(rect.top < viewH * 0.78){
+      trigger();
+    }
+  }
+
+  window.addEventListener('scroll', onScroll, { passive: true });
+  // Check once after paint — handles case where section is already visible
+  requestAnimationFrame(function(){ setTimeout(onScroll, 100); });
+})();
+</script>
+
+<script>
+  // Scroll reveal
+  const io = new IntersectionObserver(
+    entries => entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); } }),
+    { threshold: 0.1 }
+  );
+  document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+</script>
+
+<script>
+// Architecture: sequential K→A→Q→S node highlight on scroll
+(function(){
+  var seq = [
+    { node:'arch-node-k', line:'arch-line-k', nc:'59,130,246',  baseF:'rgba(59,130,246,0.14)',  baseS:'rgba(59,130,246,0.65)', baseLS:'rgba(59,130,246,0.50)', baseLW:'1.5' },
+    { node:'arch-node-a', line:'arch-line-a', nc:'34,211,238',  baseF:'rgba(34,211,238,0.12)',  baseS:'rgba(34,211,238,0.62)', baseLS:'rgba(34,211,238,0.42)', baseLW:'1.5' },
+    { node:'arch-node-q', line:'arch-line-q', nc:'37,99,235',   baseF:'rgba(37,99,235,0.14)',   baseS:'rgba(37,99,235,0.65)',  baseLS:'rgba(37,99,235,0.50)',  baseLW:'1.5' },
+    { node:'arch-node-s', line:'arch-line-s', nc:'45,212,191',  baseF:'rgba(45,212,191,0.12)',  baseS:'rgba(45,212,191,0.62)', baseLS:'rgba(45,212,191,0.42)', baseLW:'1.5' },
+  ];
+
+  function highlightStep(ax) {
+    var n = document.getElementById(ax.node);
+    var l = document.getElementById(ax.line);
+    var c = ax.nc;
+    if (n) {
+      n.style.fill = 'rgba('+c+',0.30)';
+      n.style.stroke = 'rgba('+c+',1.0)';
+      n.style.strokeWidth = '2';
+      n.style.filter = 'url(#sng)';
+    }
+    if (l) {
+      l.style.stroke = 'rgba('+c+',0.72)';
+      l.style.strokeWidth = '2.2';
+    }
+  }
+
+  function resetOthers(currentIdx) {
+    seq.forEach(function(ax, i) {
+      if (i === currentIdx) return;
+      var n = document.getElementById(ax.node);
+      var l = document.getElementById(ax.line);
+      if (n) {
+        n.style.fill = ax.baseF;
+        n.style.stroke = ax.baseS;
+        n.style.strokeWidth = '1';
+      }
+      if (l) {
+        l.style.stroke = ax.baseLS;
+        l.style.strokeWidth = ax.baseLW;
+      }
+    });
+  }
+
+  var done = false;
+  var layout = document.querySelector('.arch-layout');
+  if (!layout) return;
+
+  var io = new IntersectionObserver(function(entries) {
+    if (entries[0].isIntersecting && !done) {
+      done = true;
+      io.disconnect();
+      // Phase 1: highlight each node in sequence
+      seq.forEach(function(ax, i) {
+        setTimeout(function() {
+          resetOthers(i);
+          highlightStep(ax);
+        }, 500 + i * 750);
+      });
+      // Phase 2: after all highlighted, keep all bright
+      setTimeout(function() {
+        seq.forEach(function(ax) { highlightStep(ax); });
+      }, 500 + seq.length * 750 + 400);
+    }
+  }, { threshold: 0.35 });
+  io.observe(layout);
+})();
+</script>
+
+<script>
+// Arch diagram hover-link: card hover ↔ SVG node + line highlight
+(function(){
+  var nodeColors = { k:'59,130,246', a:'34,211,238', q:'37,99,235', s:'45,212,191' };
+  var nodeFillBase = { k:'rgba(59,130,246,0.14)', a:'rgba(34,211,238,0.12)', q:'rgba(37,99,235,0.14)', s:'rgba(45,212,191,0.12)' };
+  var nodeStrokeBase = { k:'rgba(59,130,246,0.65)', a:'rgba(34,211,238,0.62)', q:'rgba(37,99,235,0.65)', s:'rgba(45,212,191,0.62)' };
+  var lineStrokeBase = { k:'rgba(59,130,246,0.50)', a:'rgba(34,211,238,0.42)', q:'rgba(37,99,235,0.50)', s:'rgba(45,212,191,0.42)' };
+
+  ['k','a','q','s'].forEach(function(ax){
+    var card = document.querySelector('[data-arch-axis="'+ax+'"]');
+    var node = document.getElementById('arch-node-'+ax);
+    var line = document.getElementById('arch-line-'+ax);
+    if(!card || !node || !line) return;
+    var nc = nodeColors[ax];
+
+    card.addEventListener('mouseenter', function(){
+      node.style.fill   = 'rgba('+nc+',0.28)';
+      node.style.stroke = 'rgba('+nc+',1)';
+      node.style.strokeWidth = '1.8';
+      line.style.stroke = 'rgba('+nc+',0.72)';
+      line.style.strokeWidth = '2';
+    });
+    card.addEventListener('mouseleave', function(){
+      node.style.fill   = nodeFillBase[ax];
+      node.style.stroke = nodeStrokeBase[ax];
+      node.style.strokeWidth = '1';
+      line.style.stroke = lineStrokeBase[ax];
+      line.style.strokeWidth = '1';
+    });
+  });
+})();
+</script>
+</body>
+</html>
