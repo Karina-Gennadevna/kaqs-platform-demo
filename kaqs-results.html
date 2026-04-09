@@ -617,42 +617,22 @@
 
       <!-- Roadmap -->
       <p class="section-label">// Дорожная карта</p>
-      <div class="roadmap-grid">
+      <div class="roadmap-grid" id="roadmap-grid">
         <div class="roadmap-col">
           <p class="roadmap-period">Next 14 days</p>
           <p class="roadmap-subtitle">Первоочередные действия</p>
-          <ul class="roadmap-items">
-            <li class="roadmap-item"><span class="roadmap-arrow">→</span>Устранить: Silent fail в AI-процессах (Q-блок)</li>
-            <li class="roadmap-item"><span class="roadmap-arrow">→</span>Устранить: AI без стратегии (A-блок)</li>
-            <li class="roadmap-item"><span class="roadmap-arrow">→</span>Устранить: Хаос данных (K-блок)</li>
-          </ul>
+          <ul class="roadmap-items" id="roadmap-p0"></ul>
         </div>
         <div class="roadmap-col">
           <p class="roadmap-period">Next 60 days</p>
           <p class="roadmap-subtitle">Среднесрочные задачи</p>
-          <ul class="roadmap-items">
-            <li class="roadmap-item"><span class="roadmap-arrow">→</span>Закрыть: Нет стратегии роста</li>
-            <li class="roadmap-item"><span class="roadmap-arrow">→</span>Закрыть: Нет метрик устойчивости</li>
-            <li class="roadmap-item"><span class="roadmap-arrow">→</span>Внедрить базовый мониторинг AI-процессов</li>
-          </ul>
+          <ul class="roadmap-items" id="roadmap-p1"></ul>
         </div>
         <div class="roadmap-col">
           <p class="roadmap-period">Next 6 months</p>
           <p class="roadmap-subtitle">Стратегические направления</p>
-          <ul class="roadmap-items">
-            <li class="roadmap-item"><span class="roadmap-arrow">→</span>Заложить архитектурную базу: документация, роли, данные</li>
-            <li class="roadmap-item"><span class="roadmap-arrow">→</span>Разработать AI-стратегию с чёткими зонами применения</li>
-            <li class="roadmap-item"><span class="roadmap-arrow">→</span>Построить систему мониторинга и контроля качества</li>
-          </ul>
+          <ul class="roadmap-items" id="roadmap-p2"></ul>
         </div>
-      </div>
-
-      <!-- AI Layer -->
-      <p class="section-label">// AI-слой: рекомендации</p>
-      <div class="card">
-        <p class="ai-text">
-          AI уместен в задачах с понятным входом и выходом: генерация текстов, классификация, простая автоматизация. Блок AI Design (50%) требует укрепления перед расширением AI на критические бизнес-процессы. Избегать: AI для принятия решений без человека в контуре управления.
-        </p>
       </div>
 
     </div>
@@ -864,6 +844,33 @@
         </div>
       `
     }
+
+    // Roadmap — из рисков по уровням
+    const roadmapFallback = {
+      p0: ['Устранить главные слабые точки по блокам K-A-Q-S', 'Провести аудит текущих процессов', 'Зафиксировать ключевые метрики бизнеса'],
+      p1: ['Закрыть выявленные риски среднего уровня', 'Внедрить базовый контроль по слабым блокам', 'Настроить регулярный мониторинг показателей'],
+      p2: ['Выстроить системный подход к управляемости', 'Автоматизировать рутинные процессы', 'Сформировать команду и зоны ответственности'],
+    }
+
+    function fillRoadmap(risks) {
+      const p0 = risks.filter(r => r.level === 'P0')
+      const p1 = risks.filter(r => r.level === 'P1')
+      const p2 = risks.filter(r => r.level === 'P2')
+
+      const render = (el, items, fallback) => {
+        if (!el) return
+        const list = items.length ? items.map(r => r.title) : fallback
+        el.innerHTML = list.map(t =>
+          `<li class="roadmap-item"><span class="roadmap-arrow">→</span>${t}</li>`
+        ).join('')
+      }
+
+      render(document.getElementById('roadmap-p0'), p0, roadmapFallback.p0)
+      render(document.getElementById('roadmap-p1'), p1, roadmapFallback.p1)
+      render(document.getElementById('roadmap-p2'), p2, roadmapFallback.p2)
+    }
+
+    fillRoadmap(risks)
 
     // View tabs
     function setView(view, btn) {
