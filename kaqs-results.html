@@ -659,108 +659,8 @@
 
     <!-- Report view (hidden by default) -->
     <div id="view-report" style="display:none;">
-      <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;">
-
-        <!-- Report header -->
-        <div style="border-bottom:1px solid var(--border);padding:32px;">
-          <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:16px;">
-            <div>
-              <p style="font-family:'JetBrains Mono',monospace;font-size:.65rem;letter-spacing:.2em;color:var(--accent-l);text-transform:uppercase;margin-bottom:8px;">K-A-Q-S™ PLATFORM</p>
-              <h2 style="font-size:1.4rem;font-weight:600;color:var(--text);margin-bottom:6px;">AI Systems Maturity Report</h2>
-              <p style="font-size:.82rem;color:var(--muted);">Архитектурная диагностика зрелости AI-систем</p>
-            </div>
-            <div style="text-align:right;">
-              <p style="font-family:'JetBrains Mono',monospace;font-size:.65rem;color:var(--muted);">14 февраля 2025</p>
-              <p style="font-family:'JetBrains Mono',monospace;font-size:.65rem;color:var(--muted);margin-top:4px;">ID: a1b2c3d4</p>
-            </div>
-          </div>
-        </div>
-
-        <!-- Sections -->
-        <div style="padding:32px;border-bottom:1px solid var(--border);">
-          <p style="font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-bottom:16px;">01 / Executive Summary</p>
-          <p style="font-size:.88rem;color:var(--text2);line-height:1.7;margin-bottom:24px;">
-            Индекс зрелости AI-систем составил <strong style="color:var(--text)">67 из 120 (56%)</strong>. Уровень: «Управляемая». Наиболее сильный блок — Scalability Framework (67%). Наибольший дефицит — Quality & Risk Control (47%). Выявлено 4 критических риска (P0), требующих немедленного внимания. Основные процессы под контролем. AI можно масштабировать при условии закрытия архитектурных разрывов.
-          </p>
-          <div style="display:flex;align-items:center;gap:32px;">
-            <div>
-              <p style="font-family:'JetBrains Mono',monospace;font-size:2.6rem;font-weight:600;color:var(--text);line-height:1;">67</p>
-              <p style="font-size:.75rem;color:var(--muted);margin-top:4px;">из 120 баллов</p>
-            </div>
-            <div style="border:1px solid rgba(31,95,91,.35);border-radius:6px;padding:8px 16px;display:inline-flex;align-items:center;gap:8px;">
-              <span style="width:6px;height:6px;border-radius:50%;background:var(--accent-l);display:block;"></span>
-              <span style="font-family:'JetBrains Mono',monospace;font-size:.8rem;color:var(--accent-l);">Управляемая</span>
-            </div>
-          </div>
-        </div>
-
-        <div style="padding:32px;border-bottom:1px solid var(--border);">
-          <p style="font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-bottom:24px;">02 / Разрез по блокам</p>
-          <div style="display:flex;flex-direction:column;gap:20px;">
-            ${[
-              {m:'K',name:'Knowledge Architecture',score:18,max:30,pct:60,color:'#EAB308'},
-              {m:'A',name:'AI System Design',score:15,max:30,pct:50,color:'#EF4444'},
-              {m:'Q',name:'Quality & Risk Control',score:14,max:30,pct:47,color:'#EF4444'},
-              {m:'S',name:'Scalability Framework',score:20,max:30,pct:67,color:'#3B82F6'},
-            ].map(x => `
-              <div>
-                <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
-                  <div><span style="font-family:'JetBrains Mono',monospace;font-size:.78rem;color:var(--accent-l);margin-right:8px;">${x.m}</span><span style="font-size:.85rem;color:var(--text);">${x.name}</span></div>
-                  <span style="font-family:'JetBrains Mono',monospace;font-size:.85rem;color:var(--text);">${x.score}/${x.max}</span>
-                </div>
-                <div style="height:3px;background:var(--border2);border-radius:99px;overflow:hidden;">
-                  <div style="height:100%;width:${x.pct}%;background:${x.color};border-radius:99px;"></div>
-                </div>
-              </div>
-            `).join('')}
-          </div>
-        </div>
-
-        <div style="padding:32px;border-bottom:1px solid var(--border);">
-          <p style="font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-bottom:16px;">03 / Дорожная карта (3-уровневая)</p>
-          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px;">
-            <div>
-              <p style="font-family:'JetBrains Mono',monospace;font-size:.65rem;color:var(--accent-l);margin-bottom:4px;">Next 14 days</p>
-              <p style="font-size:.72rem;color:var(--muted);margin-bottom:12px;padding-bottom:12px;border-bottom:1px solid var(--border);">Первоочередные действия</p>
-              <ul style="list-style:none;display:flex;flex-direction:column;gap:8px;">
-                <li style="display:flex;gap:6px;font-size:.78rem;color:var(--text2);line-height:1.5;"><span style="color:var(--accent-l);">→</span>Устранить: Silent fail (Q)</li>
-                <li style="display:flex;gap:6px;font-size:.78rem;color:var(--text2);line-height:1.5;"><span style="color:var(--accent-l);">→</span>Устранить: AI без стратегии (A)</li>
-                <li style="display:flex;gap:6px;font-size:.78rem;color:var(--text2);line-height:1.5;"><span style="color:var(--accent-l);">→</span>Устранить: Хаос данных (K)</li>
-              </ul>
-            </div>
-            <div>
-              <p style="font-family:'JetBrains Mono',monospace;font-size:.65rem;color:var(--accent-l);margin-bottom:4px;">Next 60 days</p>
-              <p style="font-size:.72rem;color:var(--muted);margin-bottom:12px;padding-bottom:12px;border-bottom:1px solid var(--border);">Среднесрочные задачи</p>
-              <ul style="list-style:none;display:flex;flex-direction:column;gap:8px;">
-                <li style="display:flex;gap:6px;font-size:.78rem;color:var(--text2);line-height:1.5;"><span style="color:var(--accent-l);">→</span>Закрыть риск стратегии роста</li>
-                <li style="display:flex;gap:6px;font-size:.78rem;color:var(--text2);line-height:1.5;"><span style="color:var(--accent-l);">→</span>Внедрить мониторинг AI</li>
-                <li style="display:flex;gap:6px;font-size:.78rem;color:var(--text2);line-height:1.5;"><span style="color:var(--accent-l);">→</span>Закрыть метрики устойчивости</li>
-              </ul>
-            </div>
-            <div>
-              <p style="font-family:'JetBrains Mono',monospace;font-size:.65rem;color:var(--accent-l);margin-bottom:4px;">Next 6 months</p>
-              <p style="font-size:.72rem;color:var(--muted);margin-bottom:12px;padding-bottom:12px;border-bottom:1px solid var(--border);">Стратегические направления</p>
-              <ul style="list-style:none;display:flex;flex-direction:column;gap:8px;">
-                <li style="display:flex;gap:6px;font-size:.78rem;color:var(--text2);line-height:1.5;"><span style="color:var(--accent-l);">→</span>Архитектурная база</li>
-                <li style="display:flex;gap:6px;font-size:.78rem;color:var(--text2);line-height:1.5;"><span style="color:var(--accent-l);">→</span>AI-стратегия</li>
-                <li style="display:flex;gap:6px;font-size:.78rem;color:var(--text2);line-height:1.5;"><span style="color:var(--accent-l);">→</span>Система контроля качества</li>
-              </ul>
-            </div>
-          </div>
-        </div>
-
-        <div style="padding:32px;border-bottom:1px solid var(--border);">
-          <p style="font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-bottom:16px;">04 / AI-слой: рекомендации</p>
-          <p style="font-size:.88rem;color:var(--text2);line-height:1.7;">
-            AI уместен в задачах с понятным входом и выходом: генерация текстов, классификация, простая автоматизация. Блок AI Design (50%) требует укрепления перед расширением AI на критические бизнес-процессы. Избегать: AI для принятия решений без человека в контуре управления.
-          </p>
-        </div>
-
-        <div style="padding:24px 32px;display:flex;justify-content:space-between;align-items:center;">
-          <span style="font-family:'JetBrains Mono',monospace;font-size:.65rem;color:var(--muted);">K-A-Q-S™ Platform · Karina AI Systems Architect</span>
-          <span style="font-family:'JetBrains Mono',monospace;font-size:.65rem;color:var(--muted);">14 февраля 2025</span>
-        </div>
-
+      <div id="report-inner" style="background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;">
+        <!-- populated by JS -->
       </div>
     </div>
 
@@ -858,6 +758,111 @@
             <span class="risk-module">${r.axis}</span>
           </div>`
       }).join('')
+    }
+
+    // Полный отчёт — динамическая генерация
+    const axisFullNames = {
+      K: 'Знания и прозрачность',
+      A: 'Автоматизация',
+      Q: 'Качество и контроль',
+      S: 'Масштабируемость'
+    }
+    const reportDate = saved.date || new Date().toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' })
+
+    const reportInner = document.getElementById('report-inner')
+    if (reportInner) {
+      reportInner.innerHTML = `
+        <!-- Шапка -->
+        <div style="border-bottom:1px solid var(--border);padding:32px;">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap;">
+            <div>
+              <p style="font-family:'JetBrains Mono',monospace;font-size:.65rem;letter-spacing:.2em;color:var(--accent);text-transform:uppercase;margin-bottom:8px;">K-A-Q-S™ PLATFORM</p>
+              <h2 style="font-size:1.4rem;font-weight:600;color:var(--text);margin-bottom:6px;">Диагностика управляемости бизнеса</h2>
+              <p style="font-size:.82rem;color:var(--text2);">Персональный отчёт по системе K-A-Q-S™</p>
+            </div>
+            <div style="text-align:right;">
+              <p style="font-family:'JetBrains Mono',monospace;font-size:.65rem;color:var(--text2);">${reportDate}</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- 01 / Резюме -->
+        <div style="padding:32px;border-bottom:1px solid var(--border);">
+          <p style="font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;color:var(--text2);margin-bottom:16px;">01 / Резюме</p>
+          <p style="font-size:.88rem;color:var(--text2);line-height:1.7;margin-bottom:24px;">${summary || 'Индекс управляемости составил <strong style="color:var(--text)">' + target + '/100</strong>. Уровень: «' + statusLabel + '».'}</p>
+          <div style="display:flex;align-items:center;gap:24px;flex-wrap:wrap;">
+            <div>
+              <p style="font-family:'JetBrains Mono',monospace;font-size:2.6rem;font-weight:600;color:var(--text);line-height:1;">${target}</p>
+              <p style="font-size:.75rem;color:var(--text2);margin-top:4px;">из 100 баллов</p>
+            </div>
+            <div style="border:1px solid var(--accent-bd);border-radius:6px;padding:8px 16px;display:inline-flex;align-items:center;gap:8px;">
+              <span style="width:6px;height:6px;border-radius:50%;background:var(--accent);display:block;"></span>
+              <span style="font-family:'JetBrains Mono',monospace;font-size:.8rem;color:var(--accent);">${statusLabel}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 02 / Разрез по блокам -->
+        <div style="padding:32px;border-bottom:1px solid var(--border);">
+          <p style="font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;color:var(--text2);margin-bottom:24px;">02 / Разрез по блокам</p>
+          <div style="display:flex;flex-direction:column;gap:20px;">
+            ${['K','A','Q','S'].map(axis => {
+              const p = pct[axis] || 50
+              const color = barColor(p)
+              return `<div>
+                <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
+                  <div>
+                    <span style="font-family:'JetBrains Mono',monospace;font-size:.78rem;color:var(--accent);margin-right:8px;">${axis}</span>
+                    <span style="font-size:.85rem;color:var(--text);">${axisFullNames[axis]}</span>
+                  </div>
+                  <span style="font-family:'JetBrains Mono',monospace;font-size:.85rem;color:var(--text);">${p}%</span>
+                </div>
+                <div style="height:3px;background:var(--border);border-radius:99px;overflow:hidden;">
+                  <div style="height:100%;width:${p}%;background:${color};border-radius:99px;"></div>
+                </div>
+              </div>`
+            }).join('')}
+          </div>
+        </div>
+
+        <!-- 03 / Инсайты по блокам -->
+        <div style="padding:32px;border-bottom:1px solid var(--border);">
+          <p style="font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;color:var(--text2);margin-bottom:24px;">03 / Инсайты по блокам</p>
+          <div style="display:flex;flex-direction:column;gap:20px;">
+            ${['K','A','Q','S'].map(axis => {
+              const insight = insights[axis] || `Уровень ${pct[axis] || 50}%.`
+              return `<div style="padding:16px;background:var(--elevated);border-radius:8px;">
+                <p style="font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--accent);margin-bottom:8px;">${axis} — ${axisFullNames[axis]}</p>
+                <p style="font-size:.85rem;color:var(--text2);line-height:1.65;">${insight}</p>
+              </div>`
+            }).join('')}
+          </div>
+        </div>
+
+        <!-- 04 / Карта рисков -->
+        <div style="padding:32px;border-bottom:1px solid var(--border);">
+          <p style="font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;color:var(--text2);margin-bottom:24px;">04 / Карта рисков</p>
+          <div style="display:flex;flex-direction:column;gap:12px;">
+            ${(risks.length ? risks : [{ level:'P0', title:'Нет данных', desc:'Пройдите диагностику.', axis:'K' }]).map(r => {
+              const rColor = r.level === 'P0' ? '#EF4444' : r.level === 'P1' ? '#F97316' : '#EAB308'
+              return `<div style="display:flex;align-items:flex-start;gap:12px;padding:14px 16px;background:var(--elevated);border-radius:8px;">
+                <span style="font-family:'JetBrains Mono',monospace;font-size:.7rem;color:${rColor};border:1px solid ${rColor}33;border-radius:4px;padding:2px 7px;white-space:nowrap;margin-top:1px;">${r.level}</span>
+                <div style="flex:1;">
+                  <p style="font-size:.85rem;font-weight:500;color:var(--text);margin-bottom:4px;">${r.title}</p>
+                  <p style="font-size:.8rem;color:var(--text2);line-height:1.5;">${r.desc}</p>
+                </div>
+                <span style="font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--text2);">${r.axis}</span>
+              </div>`
+            }).join('')}
+          </div>
+        </div>
+
+        <!-- Footer -->
+        <div style="padding:20px 32px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
+          <span style="font-family:'JetBrains Mono',monospace;font-size:.65rem;color:var(--text2);">K-A-Q-S™ Platform</span>
+          <span style="font-family:'JetBrains Mono',monospace;font-size:.65rem;color:var(--text2);">${reportDate}</span>
+        </div>
+      `
     }
 
     // View tabs
