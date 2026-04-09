@@ -46,7 +46,7 @@ ${Object.keys(axisNames).map(ax => `═══ ${axisNames[ax]} ═══\n${form
       path: '/v1/messages',
       method: 'POST',
       headers: {
-        'x-api-key': process.env.ANTHROPIC_API_KEY,
+        'x-api-key': (process.env.ANTHROPIC_API_KEY || '').trim(),
         'anthropic-version': '2023-06-01',
         'content-type': 'application/json',
         'content-length': Buffer.byteLength(body)
