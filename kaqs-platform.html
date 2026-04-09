@@ -785,24 +785,7 @@
 
         <!-- Top priorities -->
         <p class="card-label" style="margin-bottom:10px;">// Приоритеты прямо сейчас</p>
-        <div class="quick-list">
-          <div class="quick-item">
-            <span class="quick-priority p0">P0</span>
-            <span class="quick-text"><strong>Silent fail в AI-процессах</strong> — Необработанные ошибки накапливаются незаметно. Блок Q.</span>
-          </div>
-          <div class="quick-item">
-            <span class="quick-priority p0">P0</span>
-            <span class="quick-text"><strong>AI без стратегии</strong> — Бессистемное внедрение блокирует архитектуру. Блок A.</span>
-          </div>
-          <div class="quick-item">
-            <span class="quick-priority p0">P0</span>
-            <span class="quick-text"><strong>Хаос данных</strong> — AI принимает решения на противоречивых источниках. Блок K.</span>
-          </div>
-          <div class="quick-item">
-            <span class="quick-priority p1">P1</span>
-            <span class="quick-text"><strong>Нет стратегии роста</strong> — Без плана рост потребует переписывания архитектуры. Блок S.</span>
-          </div>
-        </div>
+        <div class="quick-list" id="overview-priorities"></div>
       </div>
 
       <!-- ═══ ROADMAP ═══ -->
@@ -879,8 +862,9 @@
 /* ══════════════════════════════════════════════
    DATA
 ══════════════════════════════════════════════ */
-const SAVED = JSON.parse(localStorage.getItem('kaqs_results') || '{}')
-const INDEX  = SAVED.index || 67
+let SAVED = {}
+try { const raw = localStorage.getItem('kaqs_results'); if (raw) SAVED = JSON.parse(raw) || {} } catch(e) {}
+const INDEX  = (typeof SAVED.index === 'number') ? SAVED.index : 67
 const PCT    = SAVED.pct   || { K: 60, A: 50, Q: 47, S: 67 }
 const STATUS = SAVED.statusLabel || 'Управляемая'
 const DATE   = SAVED.date || '9 апреля 2026'
@@ -1040,6 +1024,17 @@ function renderOverview() {
     { text: 'S: ' + PCT.S + '%', cls: PCT.S >= 65 ? 'good' : PCT.S >= 45 ? 'warn' : 'crit' },
   ]
   tagsEl.innerHTML = tagData.map(t => `<span class="tag ${t.cls}">${t.text}</span>`).join('')
+
+  // Top priorities
+  const prioEl = document.getElementById('overview-priorities')
+  if (prioEl) {
+    const topRisks = RISKS.flatMap(g => g.items.map(r => ({ level: g.level, ...r }))).slice(0, 4)
+    prioEl.innerHTML = topRisks.map(r => `
+      <div class="quick-item">
+        <span class="quick-priority ${r.level.toLowerCase()}">${r.level}</span>
+        <span class="quick-text"><strong>${r.title}</strong> — ${r.desc} Блок ${r.axis}.</span>
+      </div>`).join('')
+  }
 
   // Axis grid
   const grid = document.getElementById('axis-grid')
