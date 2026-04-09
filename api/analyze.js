@@ -35,7 +35,7 @@ ${Object.keys(axisNames).map(ax => `═══ ${axisNames[ax]} ═══\n${form
 Правила: index = взвешенное среднее всех 24 вопросов в шкале 0-100. statusLabel: Хаотичная<40, Базовая 40-59, Управляемая 60-74, Зрелая 75+. P0: 1-3 шт, P1: 1-3, P2: 1-2.`
 
   const body = JSON.stringify({
-    model: 'claude-sonnet-4-6',
+    model: 'claude-3-5-sonnet-20241022',
     max_tokens: 1500,
     messages: [{ role: 'user', content: prompt }]
   })
