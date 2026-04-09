@@ -1904,16 +1904,20 @@ function showScreen(id) {
 }
 
 function showResults() {
-  const { index, pct } = calcScores()
-  const status = getStatus(index)
-  const data = {
-    index,
-    pct,
-    statusLabel: status.label,
-    statusDesc: status.desc,
-    date: new Date().toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' })
+  // Если runProcessing уже сохранил полный результат от API — не перезаписываем
+  const existing = localStorage.getItem('kaqs_results')
+  if (!existing) {
+    const { index, pct } = calcScores()
+    const status = getStatus(index)
+    const data = {
+      index,
+      pct,
+      statusLabel: status.label,
+      statusDesc: status.desc,
+      date: new Date().toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' })
+    }
+    localStorage.setItem('kaqs_results', JSON.stringify(data))
   }
-  localStorage.setItem('kaqs_results', JSON.stringify(data))
   window.location.href = 'kaqs-results.html'
 }
 
