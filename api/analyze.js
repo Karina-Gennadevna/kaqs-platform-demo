@@ -1,18 +1,16 @@
 const https = require('https')
 
 module.exports = async function handler(req, res) {
-  console.log('analyze called, method:', req.method)
-
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' })
   }
 
-  const key = (process.env.ANTHROPIC_API_KEY || '').trim()
-  console.log('key length:', key.length, 'starts with:', key.slice(0, 10))
+  const key = (process.env.GEMINI_API_KEY || '').trim()
+  if (!key) {
+    return res.status(500).json({ error: 'GEMINI_API_KEY not set' })
+  }
 
   const { answers } = req.body
-  console.log('answers count:', answers ? answers.length : 'null')
-
   if (!answers || !Array.isArray(answers)) {
     return res.status(400).json({ error: 'answers required' })
   }
@@ -42,19 +40,17 @@ ${Object.keys(axisNames).map(ax => `═══ ${axisNames[ax]} ═══\n${form
 Правила: index = взвешенное среднее всех 24 вопросов в шкале 0-100. statusLabel: Хаотичная<40, Базовая 40-59, Управляемая 60-74, Зрелая 75+. P0: 1-3 шт, P1: 1-3, P2: 1-2.`
 
   const body = JSON.stringify({
-    model: 'claude-3-5-sonnet-20241022',
-    max_tokens: 1500,
-    messages: [{ role: 'user', content: prompt }]
+    contents: [{ parts: [{ text: prompt }] }],
+    generationConfig: { temperature: 0.3, maxOutputTokens: 2048 }
   })
 
   return new Promise((resolve) => {
+    const path = `/v1beta/models/gemini-1.5-flash:generateContent?key=${key}`
     const options = {
-      hostname: 'api.anthropic.com',
-      path: '/v1/messages',
+      hostname: 'generativelanguage.googleapis.com',
+      path,
       method: 'POST',
       headers: {
-        'x-api-key': (process.env.ANTHROPIC_API_KEY || '').trim(),
-        'anthropic-version': '2023-06-01',
         'content-type': 'application/json',
         'content-length': Buffer.byteLength(body)
       }
@@ -64,15 +60,14 @@ ${Object.keys(axisNames).map(ax => `═══ ${axisNames[ax]} ═══\n${form
       let data = ''
       response.on('data', chunk => { data += chunk })
       response.on('end', () => {
-        console.log('anthropic status:', response.statusCode, 'data length:', data.length)
         try {
           if (response.statusCode !== 200) {
-            console.error('anthropic error:', data.slice(0, 300))
-            res.status(500).json({ error: 'anthropic_error', status: response.statusCode, body: data })
+            console.error('Gemini error:', response.statusCode, data.slice(0, 300))
+            res.status(500).json({ error: 'gemini_error', status: response.statusCode, body: data })
             return resolve()
           }
           const apiData = JSON.parse(data)
-          const text = apiData.content[0].text.trim()
+          const text = apiData.candidates[0].content.parts[0].text.trim()
           const cleaned = text.replace(/^```(?:json)?\n?/i, '').replace(/\n?```$/i, '').trim()
           const result = JSON.parse(cleaned)
 
@@ -83,13 +78,15 @@ ${Object.keys(axisNames).map(ax => `═══ ${axisNames[ax]} ═══\n${form
           result.date = new Date().toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' })
           res.status(200).json(result)
         } catch (e) {
-          res.status(500).json({ error: 'parse_failed', message: e.message, raw: data.slice(0, 500) })
+          console.error('Parse error:', e.message, data.slice(0, 300))
+          res.status(500).json({ error: 'parse_failed', message: e.message })
         }
         resolve()
       })
     })
 
     request.on('error', (e) => {
+      console.error('Request error:', e.message)
       res.status(500).json({ error: 'request_failed', message: e.message })
       resolve()
     })
