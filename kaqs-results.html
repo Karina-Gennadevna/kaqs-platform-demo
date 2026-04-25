@@ -661,6 +661,7 @@
     const insights    = saved.insights   || {}
     const risks       = saved.risks      || []
     const summary     = saved.summary    || ''
+    const roadmapData = saved.roadmap    || null
 
     const axisNames = { K: 'Знания и прозрачность', A: 'Автоматизация', Q: 'Качество и контроль', S: 'Масштабируемость' }
 
@@ -837,6 +838,27 @@
           </div>
         </div>
 
+        <!-- 05 / Roadmap -->
+        <div style="padding:32px;border-bottom:1px solid var(--border);">
+          <p style="font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;color:var(--text2);margin-bottom:24px;">05 / Roadmap</p>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;">
+            ${[
+              { period: 'Next 14 days', subtitle: 'Первоочередные действия', items: roadmapData ? (roadmapData.p0 || []) : risks.filter(r=>r.level==='P0').map(r=>r.title), fallback: ['Провести аудит слабых точек', 'Зафиксировать ключевые метрики', 'Назначить ответственных'] },
+              { period: 'Next 60 days', subtitle: 'Среднесрочные задачи',   items: roadmapData ? (roadmapData.p1 || []) : risks.filter(r=>r.level==='P1').map(r=>r.title), fallback: ['Закрыть риски среднего уровня', 'Внедрить базовый контроль'] },
+              { period: 'Next 6 months', subtitle: 'Стратегические шаги',   items: roadmapData ? (roadmapData.p2 || []) : risks.filter(r=>r.level==='P2').map(r=>r.title), fallback: ['Выстроить системный подход', 'Автоматизировать рутинные процессы'] },
+            ].map(col => {
+              const list = col.items.length ? col.items : col.fallback
+              return `<div style="padding:16px;background:var(--elevated);border-radius:8px;">
+                <p style="font-family:'JetBrains Mono',monospace;font-size:.68rem;color:var(--accent);margin-bottom:4px;">${col.period}</p>
+                <p style="font-size:.75rem;color:var(--text2);margin-bottom:14px;">${col.subtitle}</p>
+                <ul style="list-style:none;display:flex;flex-direction:column;gap:8px;">
+                  ${list.map(t => `<li style="font-size:.8rem;color:var(--text);display:flex;gap:8px;align-items:flex-start;"><span style="color:var(--accent);flex-shrink:0;margin-top:1px;">→</span>${t}</li>`).join('')}
+                </ul>
+              </div>`
+            }).join('')}
+          </div>
+        </div>
+
         <!-- Footer -->
         <div style="padding:20px 32px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
           <span style="font-family:'JetBrains Mono',monospace;font-size:.65rem;color:var(--text2);">K-A-Q-S™ Platform</span>
@@ -852,25 +874,30 @@
       p2: ['Выстроить системный подход к управляемости', 'Автоматизировать рутинные процессы', 'Сформировать команду и зоны ответственности'],
     }
 
-    function fillRoadmap(risks) {
-      const p0 = risks.filter(r => r.level === 'P0')
-      const p1 = risks.filter(r => r.level === 'P1')
-      const p2 = risks.filter(r => r.level === 'P2')
-
+    function fillRoadmap(risks, roadmap) {
       const render = (el, items, fallback) => {
         if (!el) return
-        const list = items.length ? items.map(r => r.title) : fallback
+        const list = items.length ? items : fallback
         el.innerHTML = list.map(t =>
           `<li class="roadmap-item"><span class="roadmap-arrow">→</span>${t}</li>`
         ).join('')
       }
 
-      render(document.getElementById('roadmap-p0'), p0, roadmapFallback.p0)
-      render(document.getElementById('roadmap-p1'), p1, roadmapFallback.p1)
-      render(document.getElementById('roadmap-p2'), p2, roadmapFallback.p2)
+      if (roadmap && roadmap.p0) {
+        render(document.getElementById('roadmap-p0'), roadmap.p0, roadmapFallback.p0)
+        render(document.getElementById('roadmap-p1'), roadmap.p1 || [], roadmapFallback.p1)
+        render(document.getElementById('roadmap-p2'), roadmap.p2 || [], roadmapFallback.p2)
+      } else {
+        const p0 = risks.filter(r => r.level === 'P0').map(r => r.title)
+        const p1 = risks.filter(r => r.level === 'P1').map(r => r.title)
+        const p2 = risks.filter(r => r.level === 'P2').map(r => r.title)
+        render(document.getElementById('roadmap-p0'), p0, roadmapFallback.p0)
+        render(document.getElementById('roadmap-p1'), p1, roadmapFallback.p1)
+        render(document.getElementById('roadmap-p2'), p2, roadmapFallback.p2)
+      }
     }
 
-    fillRoadmap(risks)
+    fillRoadmap(risks, roadmapData)
 
     // View tabs
     function setView(view, btn) {
